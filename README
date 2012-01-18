@@ -1,0 +1,24 @@
+Tutorial for talloc and tevent libraries
+
+Many network services use the concept of event libraries to achieve better
+performance by avoiding blocking I/O calls and using the concept of callbacks
+instead. One of the event libraries in use is tevent, used by the Samba project
+or the SSSD daemon.
+
+Unfortunately, there is no documentation for tevent, which raises the bar for
+new contributors significantly. The goal of this bachelor thesis is to provide
+developer-oriented documentation for tevent, including tutorial and examples.
+
+The thesis will include:
+
+  - an introduction and tutorial to talloc, the underlying memory allocator that
+    tevent (and Samba and SSSD themselves) use. There is only incomplete API
+reference to talloc, no tutorial either.
+  - an overview of the concept of event libraries, how they work under the hood
+    (/dev/poll, select(), epoll(), etc.) a developer tutorial that gradually
+explains the concepts of event libraries and tevent in particular. The tutorial
+should include examples, ranging from simple library initialization to complex
+nested asynchronous events.
+  - a comparison of tevent and other event libraries (libevent for example).
+
+The tutorial with examples should be discussed with the tevent upstream.
