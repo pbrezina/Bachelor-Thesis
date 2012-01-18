@@ -1,0 +1,10 @@
+thesis/tmp/*
+examples/bin/*
+
+.project
+.cproject
+.texlipse
+.settings
+
+*.log
+*.pdf
