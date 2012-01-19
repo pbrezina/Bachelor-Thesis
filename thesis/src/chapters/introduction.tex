@@ -1,0 +1,57 @@
+\chapter{Introduction}
+
+Retrieving and storing data have been always much slower than the processing of
+data. Even though the speed of I/O devices has grown dramatically over the
+decades, it is no match for billions of operations that can be done by current
+processors per second. The currently available hard disk drives can transfer
+approximately 100MB per second; solid state drives are a little bit faster with
+200-300MB per second. Although these speeds can be enough for most of the
+applications, it is very popular to store data on a remote system accessed via
+the Internet. The quality of the Internet connectivity depends on the country
+but the global average speed is 2.6Mbps \cite{StateOfTheInternet} which is very
+slow, not to mention that the usual latency is about 100ms. And of course we
+can not forget the slowest input device ever – the user. Therefore many programs
+spend most of their time waiting for an I/O operation to finish. We can find
+plenty of applications where this is not desirable or even acceptable (network
+services, monitoring tools, applications with graphical interface, etc.).
+
+There are two main approaches that give us the option to continue in code
+processing while waiting for the I/O operation to finish – asynchronous
+computation \cite{ParallelComputing} and asynchronous I/O \cite{AsynchronousIO}.
+
+Asynchronous computation takes advantage of the current multi-cored processors
+which provides us the ability to run several parts of the same program
+simultaneously using operating system objects called threads \cite{Threads}.
+This, however, requires a whole new level of code complexity to handle the
+synchronization of these threads. Also some libraries do not behave correctly
+when used in multiple threaded programs. Therefore, if we do not really need two
+simultaneous computations, it is still better to use the simpler asynchronous
+I/O which can (but does not necessary have to) operate only as a single thread.
+
+Asynchronous I/O (also referred to as a non-blocking I/O) is a technique
+when instead of waiting for an I/O operation to finish; the program continues
+processing code unrelated to this operation. After a while the program tests
+the status of the transmission (using simple polling or more sophisticated tools
+like signals or interrupts). If it is finished, the application will take
+an appropriate action or does something else otherwise. It can be used with
+multiple I/O operations at once. This technique is widely used in operating
+systems (OS) with multi-tasking capability: if one program starts a synchronous
+(blocking) I/O transaction, OS puts it to sleep and temporarily replaces it
+with another program. The low level API for asynchronous I/O is often aggregated
+in event libraries. One of such library is tevent.
+
+Tevent is a very mature and easy to use event library written in C, developed
+and maintained by the Samba team\footnote{\url{http://www.samba.org}}.
+Unfortunately there is very little documentation available, which makes tevent
+difficult to learn. There are no tutorials, nor examples; there is only a small
+API reference on the Samba web page so one must learn the usage from very
+complex programs like Samba or SSSD\footnote{System Security Services Daemon:
+\url{https://fedorahosted.org/sssd}}. Therefore, the purpose of this thesis is
+to provide a complete set of code samples and tutorials – from simple library
+initialization to complex nested asynchronous events.
+
+This thesis consists of three parts. The first part is an overview of event
+libraries concepts and describes how they work under the hood. The second part
+contains a description of, and tutorials for, the talloc library – the
+underlying memory allocator that is widely used in tevent. And finally the part
+three focuses on the tevent library itself.
