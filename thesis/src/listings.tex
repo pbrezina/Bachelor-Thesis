@@ -1,0 +1,45 @@
+\usepackage{listings}
+\usepackage{color}
+
+\lstset{%
+  language=C,
+  %
+  stepnumber=1,
+  numbersep=10pt,
+  numbers=left,
+  %
+  tabsize=2,
+  showtabs=false,
+  showspaces=false,
+  showstringspaces=false,
+  %
+  captionpos=b,
+  breaklines=true,
+  breakatwhitespace=false,
+  %
+  frame=none,
+  backgroundcolor=\color{white},
+  basicstyle=\footnotesize\ttfamily,
+  commentstyle=\footnotesize,
+  numberstyle=\footnotesize,
+  %
+  escapeinside={(*@}{@*)}
+}
+
+\lstMakeShortInline[keywordstyle=]|
+
+\lstnewenvironment 
+  {commandline}
+  {\lstset{language=bash,numbers=none,basicstyle=\footnotesize\ttfamily,belowskip=0pt}}
+  {}
+
+\lstnewenvironment 
+  {funcproto}
+  {\lstset{numbers=none,basicstyle=\footnotesize\ttfamily,belowskip=0pt}}
+  {}
+
+\newenvironment{funcdesc}
+  {\begin{changemargin}{1.5em}{0cm}}
+  {\end{changemargin}}
+
+\newcommand{\funclistend}{\vspace{0.5em}\noindent}
