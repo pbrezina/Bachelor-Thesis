@@ -1,0 +1,33 @@
+TALLOC
+ - má za úkol zabránit leakům
+ - přináší problém, že nějaký kontext může nabalovat pořád víc a víc paměti
+ - src/test/common_checks.c
+   leak_check_push/_pop
+
+   ctx = talloc_new(NULL);
+   get_foo(ctx, &foo);
+   talloc_free(foo); //aby se ctx vratilo na puvodni velikost
+   check_leaks_pop(ctx); //tohle vyfailuje pokud si get_foo() neco alokovalo navic krome foo
+
+ - examply na destruktory
+ - popsat jak to funguje uvnitř¨
+ - srovnání s jinými alokátory
+
+ - přeformulovat odstavec "PERFORMANCE" z man talloc
+   ideálně podpořený nějakým benchmarkem
+
+TALLOC - BEST PRACTICES
+ - pouzivani tmp_ctx alokovaneho na NULL aby valgrind pripadne ukazal leaky
+
+ - int nicnevraci(int dalsi, float parametr)
+   {
+     // uvnitr si pracovat jen s tmp_ctx alokovanym na NULL;
+     talloc_free(tmp_ctx);
+     return ret;
+   }
+   a jen pokud funkce neco vraci tak predavat zvenku mem_ctx,
+   interne alokovat na tmp_ctx a jen v pripade ze chces neco vratit tak stealnout na mem-ctx
+
+ - tohhle se casto porusuje v pripade async requestu
+   kde se misto tmp-ctx casto pouziva state -- je alokovany na requestu
+   takze je jiste ze zanikne az zanikne request takze pouzivat tmp-ctx je zbytecnost
