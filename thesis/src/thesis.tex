@@ -1,0 +1,52 @@
+\documentclass[12pt,oneside,final]{fithesis2}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[plainpages=false,pdfpagelabels,unicode]{hyperref}
+\usepackage{setspace}
+\usepackage{biblatex}
+\usepackage{url}
+\usepackage{underscore}
+\usepackage{perpage}
+\usepackage{enumerate}
+\usepackage{float}
+\usepackage{tikz}
+\usepackage{amsmath}
+
+\MakePerPage{footnote}
+\setcounter{tocdepth}{2}
+\setcounter{secnumdepth}{2}
+
+\newcommand{\cmplref}[1]{\ref{#1}: \nameref{#1}}
+
+\newenvironment{changemargin}[2]
+  {\list{}{\rightmargin#2\leftmargin#1\parsep=0pt\topsep=0pt\partopsep=0pt}
+   \item[]}
+  {\endlist}
+
+% \renewcommand{\theenumii}{\arabic{enumii}}
+% \renewcommand{\labelenumii}{\theenumi.\theenumii.}
+% \makeatletter
+% \renewcommand{\p@enumii}{\theenumi.}
+%\makeatother
+
+\bibliography{bibliography}
+
+\input{listings}
+\input{hyphenation}
+\input{preamble}
+
+\begin{document}
+
+\FrontMatter
+\ThesisTitlePage
+
+%\onehalfspacing
+
+\MainMatter
+
+\tableofcontents
+
+\printbibliography
+
+\end{document} 

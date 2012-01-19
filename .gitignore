@@ -1,4 +1,13 @@
 thesis/tmp/*
+thesis/src/fi-logo.514pk
+thesis/src/fi-logo.600pk
+thesis/src/fi-logo.tfm
+thesis/src/thesis-blx.bib
+thesis/src/thesis.run.xml
+thesis/src/thesis.bbl
+thesis/src/thesis.blg
+thesis/thesis.synctex.gz
+
 examples/bin/*
 
 .project
