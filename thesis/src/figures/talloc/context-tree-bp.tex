@@ -1,0 +1,15 @@
+\begin{tikzpicture}
+[level/.style={sibling distance=10mm},
+ level 1/.style={sibling distance=50mm},
+ every node/.style=
+   {minimum height=6mm,rectangle,draw=black,font=\footnotesize}]
+\node [] {struct user}
+  child {node [] {char *username} }
+  child {node [] {char **groups}
+    child {node [] {[0]}}
+    child {node [] {[1]}}
+    child {node [] {[2]}}
+    child {node [draw=none] {$\cdots$} edge from parent[draw=none]}
+    child {node [] {[n]}}
+  };
+\end{tikzpicture}
