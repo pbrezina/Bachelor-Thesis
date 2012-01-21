@@ -1,0 +1,244 @@
+\section{Talloc context}
+\label{talloc:sec:context}
+
+Talloc context is a logical unit of this memory pool system. In combination with
+other contexts it creates an n-ary tree.
+
+It is internally handled as a special structure (called talloc_chunk) that
+contains information about the allocated data - name, size, destructor,
+references, child contexts and its parent context. All of these information can
+be read or manipulated with using proper functions.
+
+Probably the biggest advantage over the other memory pool systems is that there
+is no difference between a talloc context and a talloc pointer. Every pointer
+that is returned from this library is considered to be a context and can be used
+in such manner.
+
+Talloc context is of type |TALLOC_CTX*|. However, |TALLOC_CTX| is only an alias
+for |void| and exists only for a semantical reason - so we can differentiate
+between |void*| (arbitrary data) and |TALLOC_CTX*| (talloc context).
+
+\subsection{Creating a new context}
+\label{talloc:subsec:new-context}
+
+Many functions exist that has the ability to create a new talloc context. This
+section describes only the most fundamental ones that deals with primitive data
+types and structures. Functions that manipulates with strings and arrays are
+described later in this text (sections \ref{talloc:sec:strings} and
+\ref{talloc:sec:arrays}).
+
+We can separate these functions to four categories: those that allows us to
+set a name of the context, functions that creates a zero-length context and type
+safe and type unsafe functions.
+
+All of these functions share the following properties:
+\begin{itemize}
+  \item it returns new talloc context or |NULL| if the system is out of memory,
+  \item the first parameter is a talloc context which serves as a parent of
+  the new context,
+  \item the parent context can be either an existing context or |NULL| which
+  will create a new top level context.
+\end{itemize}
+
+\subsubsection{Contexts with custom name}
+
+Every talloc context has a name.
+If we want to create a context with a strong semantical meaning, we can set a
+custom name to differentiate it from the other contexts.
+
+% \begin{description}
+%   \item[void * talloc_named(TALLOC_CTX *ctx, size_t size, const char *fmt,
+%   \ldots)] \hfill  \\
+%   This function creates a new talloc context of size |size|. This context will
+%   be named according to specified |printf|-style format |fmt|.
+% 
+% \item[]
+%   \item[void * talloc_named_const(TALLOC_CTX *ctx, size_t size, const char
+%   *name)] \hfill \\
+% 
+% \end{description}
+
+\subsubsection{Zero-length contexts}
+
+Zero-length context is basically a context without any special semantical
+meaning. We can use it the same way as any other context, the only difference is
+that it does not contain any data and therefore it is strictly of type
+|TALLOC_CTX*|. It is often used when we want to aggregate several data
+structures under one parent (zero-length) context.
+
+% \begin{description}
+%   \item[TALLOC_CTX * talloc_init(const char *fmt, \ldots)] \hfill  \\
+%   \item[TALLOC_CTX * talloc_new(TALLOC_CTX *ctx)] \hfill  \\
+% \end{description}
+
+\subsubsection{Type safe functions that creates a new context}
+
+Type safe functions takes as one of their parameters a data type we want to
+create. It allocates the size that is necessary for this type and returns a new
+properly casted pointer. This is useful if we want to rely on the compiler to
+detect type mismatches.
+
+% \begin{description}
+%   \item[(\#type) * talloc(TALLOC_CTX *ctx, \#type)] \hfill  \\
+%   \item[(\#type) * talloc_zero(TALLOC_CTX *ctx, \#type)] \hfill  \\
+% \end{description}
+
+\subsubsection{Type unsafe functions that creates a new context}
+
+Type unsafe functions takes as a parameter directly the size we want to
+allocate instead of the type and returns a pointer to |void|. We should not use
+these functions unless it is necessary (e.g. reading binary data from a file).
+
+% \begin{description}
+%   \item[void * talloc_size(TALLOC_CTX *ctx, size_t size)] \hfill  \\
+%   \item[void * talloc_zero_size(TALLOC_CTX *ctx, size_t size)] \hfill  \\
+%   \item[void * talloc_ptrtype(TALLOC_CTX *ctx, \#type)] \hfill  \\
+% \end{description}
+
+%- talloc_new
+%- talloc
+%- talloc_init
+%- talloc_named
+%- talloc_named_const
+%- talloc_ptrtype
+
+\subsection{Freeing a context}
+\label{talloc:subsec:free-context}
+
+There are two functions defined that deal with deallocating a context. Both
+take memory context as their argument and if this context is |NULL| then no
+action is performed.
+
+\begin{funcproto}
+int talloc_free(TALLOC_CTX *ctx)
+\end{funcproto}
+\begin{funcdesc}
+  Deallocates memory occupied by the context and recursively frees its 
+  children as well. The returned value is |0| on success, |-1| if |ctx| is NULL
+  or if the destructor\footnote{More information on destructors is in section
+  \cmplref{talloc:sec:destructors}} attached to this context fails.
+\end{funcdesc}
+\begin{funcproto}
+void talloc_free_children(TALLOC_CTX *ctx)
+\end{funcproto}
+\begin{funcdesc}
+  Frees only the children of the context.
+\end{funcdesc}
+\funclistend
+Besides these two functions we can find useful a macro named |TALLOC_FREE| which
+is defined as:
+
+\begin{lstlisting}[caption={TALLOC_FREE(ctx)},label=lst:TALLOC_FREE]
+#define TALLOC_FREE(ctx) do { \
+  talloc_free(ctx);           \
+  ctx = NULL;                 \
+} while(0);
+\end{lstlisting}
+
+%- talloc_autofree_context
+%- TALLOC_FREE
+%- talloc_free - 0 or 1 parent
+%- talloc_free_children
+%- talloc_unlink - more parents
+
+%-  talloc_set_destructors
+
+\subsection{Changing parent of a context}
+\label{talloc:subsec:stealing}
+
+Talloc has the ability to change the parent of a talloc pointer to another
+context. This is necessary if we want the pointer to outlive the context it is
+created on.
+
+This is frequently used in functions that return data which has been created on
+an inner context. The common usage of this technique is described in section
+\cmplref{talloc:subsec:function-use-own-context}.
+
+\begin{funcproto}
+void *talloc_steal(TALLOC_CTX *ctx, const void *ptr)
+\end{funcproto}
+\begin{funcdesc}
+  Changes the parent of the |ptr| to |ctx| and returns |ptr|.
+\end{funcdesc}
+\begin{funcproto}
+void *talloc_move(TALLOC_CTX *ctx, const void **ptr)
+\end{funcproto}
+\begin{funcdesc}
+  This function is a wrapper around |talloc_steal()|. It will assing |NULL| into
+  |*ptr| after the parent of |ptr| is changed. Returns the same pointer as
+  |talloc_steal()| would return.
+\end{funcdesc}
+\
+\subsection{Dynamic type checking}
+\label{talloc:subsec:type-checking}
+
+%- talloc_reparent
+%- talloc_steal
+%- talloc_move
+
+\subsection{Managing references}
+\label{talloc:subsec:references}
+
+\subsection{Decreasing number of malloc() calls}
+\label{talloc:subsec:pool}
+
+%Allocation of a new memory space is usually an expensive kernel space
+%operation.
+
+Allocation of a new memory is an expensive kernel space operation and large
+programs can contain thousands of calls of |malloc()| for a single operation.
+This can pour out into an unnecessary slowdown of the application. Number of
+|malloc()| calls can be decreased by using memory pool.
+
+Memory pool\footnote{An example of a simple memory pool can be found in appendix
+@TODO} is a preallocated memory space of a fixed size. If we need to allocate
+new data we can simply take the desired amount from the pool instead of
+requesting new memory from the system. Hovewer, this requires some special
+behaviour of a programmer.
+
+The talloc library contains its own implementation of a memory pool and the
+great thing about this is that it is completely transparent for the programmer.
+The only thing that needs to be done is an initialization of a new pool context
+using |talloc_pool()|\footnote{\lstinline{TALLOC_CTX *
+talloc_pool(TALLOC_CTX *ctx, size_t size)}}. This context can be used in the
+same way as any other context.
+
+Talloc pool context has the following properties:
+
+\begin{itemize}
+  \item if we are allocating data on a pool context, it takes the  desirable
+  amount of space from the pool,
+  \item if the context is a descendant of the pool context, it takes the space
+  from the pool as well,
+  \item if the pool is out of memory, it creates a new, normal context,
+  \item if we change the parent of a child of talloc pool to a parent that is
+  outside of this pool, the whole pool memory will not be freed until the child
+  is freed.
+\end{itemize}
+
+\begin{lstlisting}[caption={Talloc pool},label=lst:talloc_pool]
+/* allocate 1KiB in a pool */
+TALLOC_CTX *pool_ctx = talloc_pool(NULL, 1024);
+
+/* take 512B from the pool, 512B left */
+void *ptr = talloc_size(pool_ctx, 512);
+
+/* 1024B > 512B, this will create new talloc chunk */
+void *ptr2 = talloc_size(ptr, 1024);
+
+/* the pool still contains 512 free bytes
+ * this will take 200B from them */
+void *ptr3 = talloc_size(ptr, 200);
+
+/* this will destroy context 'ptr3' but the memory
+ * is not freed, the available space in the pool
+ * will increase to 512B */
+talloc_free(ptr3);
+
+/* this will free memory taken by 'pool_ctx'
+ *  and 'ptr3' as well */
+talloc_free(pool_ctx);
+\end{lstlisting}
+
+%- talloc_get_type
+%- talloc_get_type_abort
