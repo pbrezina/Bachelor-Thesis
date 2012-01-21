@@ -1,0 +1,23 @@
+Talloc is a hierarchical, reference counted memory pool system with destructors.
+It is built atop the standard C library and it defines a set of utility
+functions that altogether simplifies allocation and deallocation of data,
+especially large structures that contains many dynamically allocated elements
+such as strings and arrays.
+
+The main goals of this library are: removing the needs for creating a cleanup
+function for every complex structure, providing logical organization of
+the allocated memory blocks and lowering the possibility of creating memory
+leaks in the long running applications. All of this is achieved by a
+hierarchical structure of talloc contexts where deallocating one context will
+end up freeing all its descendants as well.
+
+\subsubsection{Main features}
+\begin{itemize}
+  \item Open source project
+  \item Hierarchical memory model
+  \item Natural projection of data structures into the memory
+  \item Simplifies memory management of large data structures
+  \item Automatic execution of a destructor before the memory is freed
+  \item Simulates dynamic type system
+  \item Transparent memory pool
+\end{itemize}
