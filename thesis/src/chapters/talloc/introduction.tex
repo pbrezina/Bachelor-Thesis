@@ -1,0 +1,11 @@
+Talloc is a hierarchical, reference counted memory pool system with destructors.
+It is built atop the standard C library and it defines a set of utility
+functions that altogether simplifies allocation and deallocation of data,
+especially large structures that contains many dynamically allocated elements
+such as strings and arrays.
+
+The main purpose of this library is to lower the possibility of creating
+memory leaks in long running applications. This is achieved by a hierarchical
+structure of talloc contexts where deallocating one context will end up
+freeing all its descendants as well.
+
