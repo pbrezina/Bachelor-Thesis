@@ -1,0 +1,8 @@
+\begin{tikzpicture}
+[level/.style={sibling distance=20mm},
+ every node/.style=
+   {minimum height=6mm,rectangle,draw=black,font=\footnotesize}]
+\node [circle,draw] {ctx}
+  child {node [] {foo}}
+  child {node [] {bar}};
+\end{tikzpicture}
