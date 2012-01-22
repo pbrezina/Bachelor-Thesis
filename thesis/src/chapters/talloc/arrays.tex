@@ -1,0 +1,77 @@
+\section{Arrays and talloc}
+\label{talloc:sec:arrays}
+
+Another difficult thing in C language are dynamically allocated arrays. I can
+not say that talloc make the creation of an array significantly easier, but it
+makes the interface to look more natural. However, one of the talloc strongest
+points is in the deallocation of arrays.
+
+\subsection{Creating a new array}
+
+To create an array, we can use several functions that are very similar to those
+that allocates the basic types. In fact, those functions are more or less a
+wrapper around the more generic ones where the size of the context is simply
+calculated as |size * count| (as we would if we used the standard library).
+
+\begin{funcproto}
+(#type)* talloc_array(TALLOC_CTX *ctx, #type,
+                   unsigned count)
+(#type)* talloc_zero_array(TALLOC_CTX *ctx, #type
+                           unsigned count)
+void* talloc_array_size(TALLOC_CTX *ctx, size_t size,
+                        unsigned count)
+void* talloc_array_ptrtype(TALLOC_CTX *ctx, #ptr,
+                           unsigned count)
+\end{funcproto}
+
+\subsection{Reallocating an array}
+
+Talloc developers did not forget on reallocation either. It works the same way
+as standard |realloc()| would, that is it may move the memory occupied by |ptr|
+to a new location and returns the new pointer.
+
+\begin{funcproto}
+void* talloc_realloc(TALLOC_CTX *ctx, void *ptr,
+                     #type, size_t count)
+void* talloc_realloc_size(TALLOC_CTX *ctx, void *ptr,
+                          size_t size)
+\end{funcproto}
+
+\subsection{Determining length of an array}
+
+We can find ourselves in situation when we need to iterate through an array but
+we are not able to use a special delimiter to mark the end of the array. We need
+to have the knowledge of the size of this array stored in other variable.
+
+Every talloc context carries its size in bytes with it, this gives us the means
+to determine the length of the array at any time. Therefore we do not have to
+carry the number of the elements separately. Talloc has defined a macro
+|talloc_array_length(ctx)| for this purpose.
+
+It can be also used as a more efficient way of computing a number of characters
+in a string that has been created with talloc library.
+
+\subsection{Deallocating arrays}
+
+If we want to deallocate an array using the means of C standard library, we need
+to free every element of the array individually in the first place. This usually
+requires a lot of code (the more the bigger the dimension of the array is), not
+to mention a lot of places for a mistake. But if we use talloc and we project
+the array structure to the context hierarchy, we can do it very simply by
+calling |talloc_free()| on the array.
+
+\subsection{Examples}
+
+\begin{lstlisting}[caption={Length of an array},label=lst:array-length]
+TALLOC_CTX *ctx = talloc_new(NULL);
+int *i = talloc_zero(ctx, int);
+char *str = talloc_strdup(ctx, "hello world");
+int *array = talloc_array(ctx, int, 10);
+
+printf("%lu\n", talloc_array_length(ctx));  /*  0 */
+printf("%lu\n", talloc_array_length(i));     /*  1 */
+printf("%lu\n", talloc_array_length(str));   /* 12 */
+printf("%lu\n", talloc_array_length(array)); /* 10 */
+
+talloc_free(ctx);
+\end{lstlisting}
