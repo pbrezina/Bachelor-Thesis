@@ -1,0 +1,90 @@
+\section{Working with strings}
+\label{talloc:sec:strings}
+
+One of the most common issues that a programmer must take care of in a C
+programming language is a duplication of and formatting a string.
+
+In the C standard library this is usually done with |strdup()| (string
+duplication), |strndup()| (string duplication with length limitation) and
+|sprintf()| (stores the formatted string in a preallocated buffer).
+
+The POSIX compliant systems provide us a much nicer function for creating a
+formatted string -- |asprintf()| that allocates all the necessary space
+automatically or its non-variadic equivalent |vasprintf()|.
+
+Talloc has adopted its own variants of not only |strdup()| and |strndup()| from
+the C standard library but also |asprintf()| and |vasprintf()| which are
+demanded by the POSIX standard.
+
+As an addition to these basic routines it adds a very useful alternatives that
+will append the result to an existing string or at the end of the context. This
+gives us a total of twelve functions for string manipulation.
+
+All of these routines returns a string that is also a valid talloc context
+which is named exactly the same as the output string. The basic variants take as
+the first parameter an arbitrary talloc context which will serve as a parent to
+the newly created context. The extended |_append| variants take a talloc context
+that is also a valid string to which the result will be appended.
+
+\subsection{Duplicating a string}
+
+\begin{funcproto}
+char* talloc_strdup(TALLOC_CTX *ctx, const char *str)
+\end{funcproto}
+\begin{funcdesc}
+  Creates a new talloc context as a child of |ctx| and duplicates |str| to
+  this context. Returns the new string.
+\end{funcdesc}
+\begin{funcproto}
+char* talloc_strdup_append(char *dest, const char *str)
+\end{funcproto}
+\begin{funcdesc}
+  Reallocates |dest| to required length and appends |str| to |dest|. Returns the
+  new pointer to |dest| (the original pointer may not be longer valid).
+\end{funcdesc}
+\begin{funcproto}
+char* talloc_strdup_append_buffer(char *dest, const char *s)
+\end{funcproto}
+\begin{funcdesc}
+  This is similar to the previous funcion but it append |str| to the end of the
+  context itself.
+\end{funcdesc}
+\funclistend
+The |strndup| variants have the same behaviour but they will duplicate only |n|
+characters from |str|.
+
+\begin{funcproto}
+char* talloc_strndup(TALLOC_CTX *ctx, const char *str,
+                     size_t n)
+char* talloc_strndup_append(char *dest, const char *str,
+                            size_t n)
+char* talloc_strndup_append_buffer(char *dest, const char
+                                   *str, size_t n)
+\end{funcproto}
+
+\subsection{Formatted string}
+
+Functions for formatted strings are very similar to the previous. The difference
+is that they take a printf-style format string and its parameters. Talloc define
+both variadic and non-variadic variants.
+
+Variadic:
+\begin{funcproto}
+char* talloc_asprintf(TALLOC_CTX *ctx, const char *fmt, ...)
+char* talloc_asprintf_append(char *dest, const char *fmt,
+                             ...)
+char* talloc_asprintf_append_buffer(char *dest, const char
+                                    *fmt, ...)
+\end{funcproto}
+
+Non-variadic:
+\begin{funcproto}
+char* talloc_vasprintf(TALLOC_CTX *ctx, const char *fmt,
+                       va_list ap)
+char* talloc_vasprintf_append(char *dest, const char *fmt,
+                              va_list ap)
+char* talloc_vasprintf_append_buffer(char *dest, const char
+                                     *fmt, va_list ap)
+\end{funcproto}
+
+\subsection{Examples}
