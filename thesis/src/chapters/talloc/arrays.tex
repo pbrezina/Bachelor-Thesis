@@ -1,0 +1,105 @@
+\section{Arrays and talloc}
+\label{talloc:sec:arrays}
+
+\subsection{Creating a new array}
+
+We are already able to create an array with the knowledge introduced in
+previous text. We can do it in the same way as in the C standard library using
+|talloc_size()| where the size of the context would be |sizeof(type) *|
+|number_of_elements|.
+
+However this has two disadvantages. First of all we have to use the type unsafe
+functions to allocate the requested size which is just wrong. And at second,
+we have to do the multiplication by ourselves. Talloc developers were aware of
+it and they created a separate interface for arrays:
+
+\begin{funcproto}
+(#type)* talloc_array(TALLOC_CTX *ctx, #type,
+                      unsigned int count)
+(#type)* talloc_zero_array(TALLOC_CTX *ctx, #type
+                           unsigned int count)
+void* talloc_array_size(TALLOC_CTX *ctx, size_t size,
+                        unsigned int count)
+void* talloc_array_ptrtype(TALLOC_CTX *ctx, #ptrtype,
+                           unsigned int count)
+\end{funcproto}
+\funclistend
+Or to reallocate the array use:
+
+\begin{funcproto}
+void* talloc_realloc(TALLOC_CTX *parent,
+                     TALLOC_CTX *ctx,
+                     #type, size_t count)
+void* talloc_realloc_size(TALLOC_CTX *parent,
+                          TALLOC_CTX *ctx,
+                          size_t size)
+\end{funcproto}
+\begin{funcdesc}
+If |ctx| is |NULL| new context is created. If |count| or |size| is zero, it will
+free the context. The memory occupied by |ctx| may be moved to other location,
+therefore always replace it by the returned pointer.
+\end{funcdesc}
+\funclistend
+We should always project the natural structure of an array into talloc context
+hierarchy. That is, always use the array as a parent of its dynamically created
+elements.
+
+\begin{lstlisting}[caption={Array of users and context hierarchy},
+label={array-users}] int i, j;
+struct user **users;
+users = talloc_zero_array(NULL, struct user*, N + 1);
+
+for (i = 0; i < N; i++) {
+  users[i] = talloc_zero(users, struct user);
+  users[i]->num_groups = i;
+  users[i]->groups = talloc_zero_array(users[i], char*, i);
+  
+  for (j = 0; j < i; j++) {
+    users[i]->groups[j] = talloc_asprintf(
+                          users[i]->groups[j],"Group %d",j);
+  }
+}
+\end{lstlisting}
+
+This way we gain a lot of flexibility. We do not have to free every element
+separately to deallocate the whole array, we can achieve this simply by calling
+|talloc_free(users)|. Or we can move any part of the array to another parent
+context to keep it accessible even if we free the array later.
+
+The context tree that graphically illustrates the hierarchy from previous
+listing can be find on Figure \ref{fig:context-tree-users}.
+
+\begin{figure}[H]
+  \centering
+  \input{./figures/talloc/context-tree-users}
+  \caption{Context tree from Listing \ref{array-users}}
+  \label{fig:context-tree-users}
+\end{figure}
+
+\subsection{Determining length of an array}
+
+We can find ourselves in situation when we need to iterate through an array but
+we are not able to use a special delimiter to mark the end of the array. We need
+to have the knowledge of the size of this array stored in other variable.
+
+Every talloc context carries its size in bytes with it, this gives us the means
+to determine the length of the array at any time. Therefore we do not have to
+carry the number of the elements separately. Talloc has defined a macro
+|talloc_array_length(ctx)| for this purpose.
+
+It can be also used as a more efficient way of computing a number of characters
+in a string that has been created with talloc library.
+
+\begin{lstlisting}[caption={Length of an array},label=lst:array-length]
+TALLOC_CTX *ctx = talloc_new(NULL);
+int *i = talloc_zero(ctx, int);
+char *str = talloc_strdup(ctx, "hello world");
+int *array = talloc_array(ctx, int, 10);
+
+printf("%lu\n", talloc_array_length(ctx));   /*  0 */
+printf("%lu\n", talloc_array_length(i));     /*  1 */
+printf("%lu\n", talloc_array_length(str));   /* 12 */
+printf("%lu\n", talloc_array_length(array)); /* 10 */
+
+talloc_free(ctx);
+\end{lstlisting}
