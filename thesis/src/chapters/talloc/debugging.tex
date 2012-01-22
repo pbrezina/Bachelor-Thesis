@@ -1,0 +1,181 @@
+\section{Debugging options}
+
+Although talloc makes memory management significantly easier than the standard
+library does, developers are still only humans. Therefore it may be a good idea
+to know the tools for the inspection of talloc memory usage.
+
+\subsection{Memory usage reports}
+
+Talloc can print reports of memory usage of specified talloc context to a file
+(or to |stdout| or |stderr|). The report can be simple or full. The simple
+report provides information only about the context itself and its direct
+descendants. The full report goes recursively through the entire context tree.
+
+\begin{funcproto}
+void talloc_report(TALLOC_CTX *ctx, FILE *file)
+void talloc_report_full(TALLOC_CTX *ctx, FILE *file)
+\end{funcproto}
+\funclistend
+We will use following code to retrieve the sample report:
+
+\begin{lstlisting}[caption={Full report}]
+struct foo {
+  char *str;
+};
+
+TALLOC_CTX *ctx = talloc_new(NULL);
+char *str =  talloc_strdup(ctx, "my string");
+struct foo *foo = talloc_zero(ctx, struct foo);
+foo->str = talloc_strdup(foo, "I am Foo");
+char *str2 = talloc_strdup(foo, "Foo is my parent");
+
+/* print full report */
+talloc_report_full(ctx, stdout);
+\end{lstlisting}
+
+\noindent
+It will print a full report of |ctx| to the standard output. The message should
+be similar to:
+
+\begin{lstlisting}[keywordstyle=,caption={Sample output of talloc full report}]
+full talloc report on 'talloc_new: ../src/main.c:82' (total 46 bytes in 5 blocks)
+  struct foo contains 34 bytes in 3 blocks (ref 0) 0x1495130
+    Foo is my parent contains 17 bytes in 1 blocks (ref 0) 0x1495200
+    I am Foo contains 9 bytes in 1 blocks (ref 0) 0x1495190
+  my string contains 10 bytes in 1 blocks (ref 0) 0x14950c0
+\end{lstlisting}
+
+\noindent
+We can notice in this report that something is wrong with the context containing
+|struct foo|. We know that the structure has only one string element. However we
+can see in the report that it has two children. This indicates that we have
+either violated the memory hiearchy (|"Foo is my parent"| should be attached to
+|ctx|) or forgot to free it as a temporary data.
+
+The following functions affect the behaviour of talloc reports. To get correct
+results, they should be called before any other routine from talloc library.
+
+\begin{funcproto}
+void talloc_enable_null_tracking(void)
+void talloc_disable_null_tracking(void)
+\end{funcproto}
+\begin{funcdesc}
+Enables/disables tracking of talloc contexts without a parent. If it is enabled,
+we can use |NULL| as a context for report and it will print the summary of all
+available contexts.
+\end{funcdesc}
+
+\begin{funcproto}
+void talloc_enable_leak_report(void)
+void talloc_enable_leak_report_full(void)
+\end{funcproto}
+\begin{funcdesc}
+  Enables automatic simple/full report of all contexts at program exit. The
+  report is printed in |stderr|.
+\end{funcdesc}
+
+\subsection{Leak check routines}
+
+We frequently need to provide a talloc context as a parameter to a function, so
+this function can use it as a parent context for output values. But sometimes a
+programmer makes a mistake and allocates something more than he is supposed to.
+
+This issue can not be usually seen in talloc reports, but fortunately it can be
+tested automatically with the knowledge of total size (size of a context and
+its children) of the parent context.
+
+\begin{lstlisting}[caption={Leak check example}]
+/* creates new talloc context *_foo as a child of mem_ctx */
+int struct_foo_init(TALLOC_CTX *mem_ctx, struct foo **_foo);
+
+int ret;
+size_t total_size;
+struct foo *foo = NULL;
+TALLOC_CTX *ctx = talloc_new(NULL);
+
+total_size = talloc_total_size(ctx)
+ret = struct_foo_init(test_ctx, &foo);
+talloc_free(foo);
+if (total_size != talloc_total_size(ctx)) {
+  /* struct_foo_init() allocated on 'ctx'
+     more than 'foo' */
+}
+\end{lstlisting}
+
+However such checks are not suitable for an application itself as we have to
+free |foo| before other usage of the parent context. Therefore the proper place
+for this is in your test suit, possibly in unit tests. If you are using the
+Check\footnote{\url{http://check.sourceforge.net}} library for unit testing in
+C, I suggest you use the methods of Martin Nagy.
+
+Martin Nagy, a former developer of SSSD, invented a set of
+functions\footnote{Available in appendinx @TODO} which goal is to detect memory
+leaks on a talloc context in unit tests created with the Check library (but it
+can be easily modified for other test suits). It does it in a more advance
+manner than the previous example introduced. It works on a push/pop basis,
+where the unit test will fail if a context has after the pop operation
+different size than it had during the push operation.
+
+\begin{lstlisting}[caption={Martin Nagy's leak check routines},
+morekeywords={leak_check_setup,check_leaks_push,
+              check_leaks_pop,leak_check_teardown}]
+/* creates new talloc context *_foo as a child of mem_ctx */
+int struct_foo_init(TALLOC_CTX *mem_ctx, struct foo **_foo);
+
+/* create new unit test with Check library */
+START_TEST(test_struct_foo_init)
+{
+  int ret;
+  struct foo *foo = NULL;
+  TALLOC_CTX *test_ctx = talloc_new(NULL);
+  fail_if(test_ctx == NULL); /* if the condition is met,
+                                the unit test will fail */
+  
+  /* initialize the leak check routines */
+  leak_check_setup();
+  
+  /* remember current test_ctx total size */
+  check_leaks_push(test_ctx);
+  
+  ret = struct_foo_init(test_ctx, &foo);
+  fail_if(ret != EOK)
+  
+  /* ... test foo values ... */
+  
+  talloc_free(foo);
+  
+  /* check for memory leak,
+     this will fail the test if struct_foo_init()
+     allocated more than 'foo' on test_ctx */
+  check_leaks_pop(test_ctx);
+  
+  talloc_free(test_ctx);
+  
+  /* clean up after the leak check routines */
+  leak_check_teardown();(*@\footnotemark@*)
+}
+\end{lstlisting}
+\footnotetext{setup and teardown functions can be run automatically with
+\lstinline{tcase_add_}\lstinline{checked_fixture()}}
+
+% /* initialize unit tests */
+% Suite *
+% create_suite(void)
+% {
+%   Suite *s = suite_create("foo tests");
+%   TCase *tc = tcase_create("foo tests");
+% 
+%   /* run leak_check_setup() before and 
+%      leak_check_teardown() after each unit test */
+%     tcase_add_checked_fixture(tc, leak_check_setup, leak_check_teardown);
+%     
+%   /* register unit tests */
+%   tcase_add_test(tc, test_struct_foo_init);
+% 
+%   /* add all test cases to the test suite */
+%   suite_add_tcase(s, tc);
+% 
+%   return s;
+% }
+
+\label{talloc:sec:debugging}
