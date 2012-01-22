@@ -1,0 +1,82 @@
+\section{Using destructors}
+\label{talloc:sec:destructors}
+
+Destructors are well known methods in the world of object oriented programming.
+A destructor is a method of an object that is automatically run when the object
+is destroyed. It is usually used to return resources taken by the object back to
+the system (e.g. closing file descriptors, terminating connection to a database,
+deallocating memory).
+
+With talloc we can take the advantage of destructors even in C. We can easily
+attach our own destructor to a talloc context. When the context is freed the
+destructor is run automatically.
+
+\subsection{Behaviour}
+
+If we will attempt to free a talloc context (|ctx|) that has one or more
+children with a destructor attached, we may encounter a strange behaviour. If a
+destructor of |ctx| fails, |talloc_free(ctx)| will fail as well and there will
+be no attempt to free the children of |ctx|.
+
+But if the destructor of |ctx| succeeds, |talloc_free(ctx)| will succeed and
+the memory of |ctx| is deallocated even if destructor on one of the children
+fails.
+
+\subsection{Destructor prototype}
+
+Destructor in talloc is a function with following prototype:
+
+\begin{funcproto}
+int destructor(void *ctx)
+\end{funcproto}
+\funclistend
+Parameter |ctx| is the talloc context that is about to be freed. The proper type
+can be retrieved with |talloc_get_type()|. The destructor is type safe if we
+use GCC 3 and newer. With this compiler we can avoid  using |void*| and the
+parameter can be any valid pointer type.
+
+The destructor should return |0| for succes and |-1| on failure. If it returns
+|-1| then |talloc_free()| will fail and the memory of the context nor its
+children will not be freed.
+
+\subsection{Managing destructors}
+
+To attach a destructor to a talloc context we will use:
+
+\begin{funcproto}
+void talloc_set_destructor(TALLOC_CTX *ctx,
+                           int(*)(void *) destructor) 
+\end{funcproto}
+\funclistend
+Every context can have one destructor attached as a maximum. To dettach the
+destructor from the context we will call the same function providing |NULL| as
+the new destructor.
+
+\subsection{Examples}
+
+\begin{lstlisting}[caption={Close a file}]
+int destroy_fd(void *ctx)
+{
+  int *fd = talloc_get_type_abort(ctx, int);
+  close(*fd);
+  return 0;
+}
+
+int* open_file(TALLOC_CTX *mem_ctx,
+                const char *filename,
+                int flags)
+{
+  int *fd = talloc_ptrtype(mem_ctx, fd);
+  if (file == NULL) {
+    return NULL;
+  }
+  *fd = open(filename, flags);
+  if (*fd < 0) {
+    talloc_free(fd);
+    return NULL;
+  }
+  
+  talloc_set_destructor(fd, destroy_fd);
+  return fd;
+}
+\end{lstlisting}
