@@ -1,0 +1,134 @@
+\section{Working with strings}
+\label{talloc:sec:strings}
+
+One of the most common issues that a programmer must take care of in a C
+programming language is a duplication of and formatting a string.
+
+In the C standard library this is usually done with |strdup()| (string
+duplication), |strndup()| (string duplication with limited length) and
+|sprintf()| (stores the formatted string in a preallocated buffer). The POSIX
+compliant systems contains in addition a much nicer function for creating a
+formatted string -- |asprintf()| that allocates all the necessary space
+automatically.
+
+Talloc has adopted its own variants of not only |strdup()| and |strndup()| from
+the C standard library but also |asprintf()| and its non-variadic
+equivalent |vasprintf()| which are demanded by the POSIX standard.
+
+As an addition to these basic routines it adds a very useful alternatives that
+will append the result to an existing string or at the actual end of the talloc
+context. This gives us a total of twelve functions for string manipulation.
+
+All of these routines returns a string that is also a valid talloc context
+which is named exactly the same as the output string. The basic variants take as
+the first parameter an arbitrary talloc context which will serve as a parent to
+the newly created context. The extended |_append| variants take a talloc context
+that has to be a valid string to which the result will be appended.
+
+\subsection{Duplicating a string}
+
+\begin{funcproto}
+char* talloc_strdup(TALLOC_CTX *ctx, const char *str)
+\end{funcproto}
+\begin{funcdesc}
+  Creates a new talloc context as a child of |ctx| and copies |str| to
+  this context. Returns the new string.
+\end{funcdesc}
+\begin{funcproto}
+char* talloc_strdup_append(char *dest, const char *str)
+\end{funcproto}
+\begin{funcdesc}
+  Reallocates |dest| to required length and appends |str| to |dest|. Returns the
+  new pointer to |dest| (the original pointer may not be longer valid).
+\end{funcdesc}
+\begin{funcproto}
+char* talloc_strdup_append_buffer(char *dest, const char *s)
+\end{funcproto}
+\begin{funcdesc}
+  This is similar to the previous function but it appends |str| to the actual
+  end of the context itself (it ignores the terminating zero).
+\end{funcdesc}
+\funclistend
+The |strndup| variants have the same behaviour but they will duplicate only |n|
+characters from |str|.
+
+\begin{funcproto}
+char* talloc_strndup(TALLOC_CTX *ctx, const char *str,
+                     size_t n)
+char* talloc_strndup_append(char *dest, const char *str,
+                            size_t n)
+char* talloc_strndup_append_buffer(char *dest, const char
+                                   *str, size_t n)
+\end{funcproto}
+
+\subsection{Formatted string}
+
+Functions for formatted strings are very similar to the previous ones. The
+difference is that they take a printf-style format string and its parameters.
+Talloc define both variadic and non-variadic variants.
+
+Variadic:
+\begin{funcproto}
+char* talloc_asprintf(TALLOC_CTX *ctx, const char *fmt, ...)
+char* talloc_asprintf_append(char *dest, const char *fmt,
+                             ...)
+char* talloc_asprintf_append_buffer(char *dest, const char
+                                    *fmt, ...)
+\end{funcproto}
+
+Non-variadic:
+\begin{funcproto}
+char* talloc_vasprintf(TALLOC_CTX *ctx, const char *fmt,
+                       va_list ap)
+char* talloc_vasprintf_append(char *dest, const char *fmt,
+                              va_list ap)
+char* talloc_vasprintf_append_buffer(char *dest, const char
+                                     *fmt, va_list ap)
+\end{funcproto}
+
+\subsection{Difference between _append and _append_buffer}
+
+The behaviour of |_append| and |_append_buffer| is the same in the most majority
+of cases. The later one serves as the much more efficient way of appending a
+string as it does not calculate the length of the destination string. This
+performance trick takes effect in loops with many iterations. For example, we
+want to build an LDAP filter to search all users that are member of at least one
+group from the provided list:
+
+\begin{lstlisting}[caption={Appending a string}]
+char *filter = talloc_strdup(NULL, "(|");
+for (i=0; groups[i] != NULL; i++) {
+  filter = talloc_asprintf_append(filter, "(group=%s)",
+                                  groups[i]);
+}
+filter = talloc_strdup_append(filter, ")");
+\end{lstlisting}
+
+To simplify the example, let say that each group has a name that consists from
+$n$ characters and the list contains $m$ groups. What will happen is that
+the length of both |filter| and |groups[i]| will be computed every time.
+
+The length of the string is determined by |strlen()|, that means it iterates
+over each character of the string and increments the character counter until it
+finds the terminating zero. This gives us $2 + \sum_{i=1}^m (2 + 8*i + n*i) +
+n*m + 1$\footnote{$2$ for \lstinline{"(|"}, $\sum_{i=1}^m (2 + 8*i + n*i)$ for
+\lstinline{filter}, $m*n$ for \lstinline{groups[i]} and $1$ for \lstinline{")"}}
+iterations in |strlen()|. For $n = 10, m = 100$ it is $92.103$ iterations. If
+we just replace the |_append| with |_append_buffer|, the whole number will
+decrease to $2 + \sum_{i=0}^m n + 1 = 1003$. This can be a big performance
+boost in applications that contains a lot pieces of similar code.
+
+However we must be careful if we put |'\0'| in the middle of the string. The two
+functions will act differently:
+
+\begin{lstlisting}[caption={Zero in the middle of a string}]
+char *str_a = talloc_strdup(NULL, "hello world");
+char *str_b = talloc_strdup(NULL, "hello world");
+str_a[5] = str_b[5] = '\0';
+
+char *app = talloc_strdup_append(str_a, ", hello");
+char *buf = talloc_strdup_append_buffer(str_b, ", hello");
+
+printf("%s\n", app); /* hello, hello */
+printf("%s\n", buf); /* hello (hello\0world, hello) */
+\end{lstlisting}
