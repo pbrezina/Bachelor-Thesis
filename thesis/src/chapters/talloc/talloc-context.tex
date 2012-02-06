@@ -78,6 +78,20 @@ create. It allocates the size that is necessary for this type and returns a new
 properly casted pointer. This is useful if we want to rely on the compiler to
 detect type mismatches.
 
+%\funcdesc{(#type) *talloc(TALLOC_CTX *ctx, #type)}
+
+%\begin{lstlisting}[stepnumber=0,basicstyle=\small\ttfamily]
+%(#type) *talloc(TALLOC_CTX *ctx, #type)
+%\end{lstlisting}
+
+\begin{funcproto}
+(#type)* talloc(TALLOC_CTX *ctx, #type)
+(#type)* talloc_zero(TALLOC_CTX *ctx, #type)
+\end{funcproto}
+\begin{funcdesc}
+
+\end{funcdesc}
+
 % \begin{description}
 %   \item[(\#type) * talloc(TALLOC_CTX *ctx, \#type)] \hfill  \\
 %   \item[(\#type) * talloc_zero(TALLOC_CTX *ctx, \#type)] \hfill  \\
