@@ -21,10 +21,15 @@ between |void*| (arbitrary data) and |TALLOC_CTX*| (talloc context).
 \subsection{Creating a new context}
 \label{talloc:subsec:new-context}
 
+Creating a new talloc context means that we want to create a new talloc chunk
+(which stores the information about this context -- especially its parent),
+allocate the desirable amount of system memory and retrieve a pointer to this
+memory.
+
 Many functions exist that has the ability to create a new talloc context. This
 section describes only the most fundamental ones that deals with primitive data
-types and structures. Functions that manipulates with strings and arrays are
-described later in this text (sections \ref{talloc:sec:strings} and
+types and structures. Functions that specialize itselves to strings and arrays
+are described later in this text (sections \ref{talloc:sec:strings} and
 \ref{talloc:sec:arrays}).
 
 We can separate these functions to four categories: those that allows us to
@@ -42,34 +47,29 @@ All of these functions share the following properties:
 
 \subsubsection{Contexts with custom name}
 
-Every talloc context has a name.
-If we want to create a context with a strong semantical meaning, we can set a
-custom name to differentiate it from the other contexts.
+Every talloc context has a name. If we want to create a context with a strong
+semantical meaning, we can set a custom name to differentiate it from the other
+contexts.
 
-% \begin{description}
-%   \item[void * talloc_named(TALLOC_CTX *ctx, size_t size, const char *fmt,
-%   \ldots)] \hfill  \\
-%   This function creates a new talloc context of size |size|. This context will
-%   be named according to specified |printf|-style format |fmt|.
-% 
-% \item[]
-%   \item[void * talloc_named_const(TALLOC_CTX *ctx, size_t size, const char
-%   *name)] \hfill \\
-% 
-% \end{description}
+\begin{funcproto}
+void* talloc_named(TALLOC_CTX *ctx, size_t size,
+                   const char *fmt, ...)
+void* talloc_named_const(TALLOC_CTX *ctx, size_t size,
+                         const char *name)
+\end{funcproto}
 
 \subsubsection{Zero-length contexts}
 
 Zero-length context is basically a context without any special semantical
 meaning. We can use it the same way as any other context, the only difference is
 that it does not contain any data and therefore it is strictly of type
-|TALLOC_CTX*|. It is often used when we want to aggregate several data
+|TALLOC_CTX*|. It is often used in case we want to aggregate several data
 structures under one parent (zero-length) context.
 
-% \begin{description}
-%   \item[TALLOC_CTX * talloc_init(const char *fmt, \ldots)] \hfill  \\
-%   \item[TALLOC_CTX * talloc_new(TALLOC_CTX *ctx)] \hfill  \\
-% \end{description}
+\begin{funcproto}
+TALLOC_CTX* talloc_init(const char *fmt, ...)
+TALLOC_CTX* talloc_new(TALLOC_CTX *ctx)
+\end{funcproto}
 
 \subsubsection{Type safe functions that creates a new context}
 
@@ -78,19 +78,17 @@ create. It allocates the size that is necessary for this type and returns a new
 properly casted pointer. This is useful if we want to rely on the compiler to
 detect type mismatches.
 
-%\funcdesc{(#type) *talloc(TALLOC_CTX *ctx, #type)}
-
-%\begin{lstlisting}[stepnumber=0,basicstyle=\small\ttfamily]
-%(#type) *talloc(TALLOC_CTX *ctx, #type)
-%\end{lstlisting}
+Another feature of these functions is that they automatically set the name of
+the context to the name of the data type. This can be used for a dynamic type
+checking which is described in section \cmplref{talloc:subsec:type-checking}.
 
 \begin{funcproto}
 (#type)* talloc(TALLOC_CTX *ctx, #type)
 (#type)* talloc_zero(TALLOC_CTX *ctx, #type)
 \end{funcproto}
-\begin{funcdesc}
-
-\end{funcdesc}
+\funclistend
+The only difference between these two functions is that |talloc_zero()| ensures
+that the new memory space is initialized with zeros.
 
 % \begin{description}
 %   \item[(\#type) * talloc(TALLOC_CTX *ctx, \#type)] \hfill  \\
@@ -103,18 +101,11 @@ Type unsafe functions takes as a parameter directly the size we want to
 allocate instead of the type and returns a pointer to |void|. We should not use
 these functions unless it is necessary (e.g. reading binary data from a file).
 
-% \begin{description}
-%   \item[void * talloc_size(TALLOC_CTX *ctx, size_t size)] \hfill  \\
-%   \item[void * talloc_zero_size(TALLOC_CTX *ctx, size_t size)] \hfill  \\
-%   \item[void * talloc_ptrtype(TALLOC_CTX *ctx, \#type)] \hfill  \\
-% \end{description}
-
-%- talloc_new
-%- talloc
-%- talloc_init
-%- talloc_named
-%- talloc_named_const
-%- talloc_ptrtype
+\begin{funcproto}
+void* talloc_size(TALLOC_CTX *ctx, size_t size)
+void* talloc_zero_size(TALLOC_CTX *ctx, size_t size)
+void* talloc_prttype(TALLOC_CTX *ctx, #type)
+\end{funcproto}
 
 \subsection{Freeing a context}
 \label{talloc:subsec:free-context}
