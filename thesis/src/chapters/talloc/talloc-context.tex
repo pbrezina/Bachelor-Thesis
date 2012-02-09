@@ -4,7 +4,7 @@
 Talloc context is a logical unit of this memory pool system. In combination with
 other contexts it creates an n-ary tree.
 
-It is internally handled as a special structure (called talloc_chunk) that
+It is internally handled as a special structure (called talloc chunk) that
 contains information about the allocated data - name, size, destructor,
 references, child contexts and its parent context. All of these information can
 be read or manipulated with using proper functions.
@@ -15,7 +15,7 @@ that is returned from this library is considered to be a context and can be used
 in such manner.
 
 Talloc context is of type |TALLOC_CTX*|. However, |TALLOC_CTX| is only an alias
-for |void| and exists only for a semantical reason - so we can differentiate
+for |void| and exists only for a semantical reason -- so we can differentiate
 between |void*| (arbitrary data) and |TALLOC_CTX*| (talloc context).
 
 \subsection{Creating a new context}
@@ -26,10 +26,10 @@ Creating a new talloc context means that we want to create a new talloc chunk
 allocate the desirable amount of system memory and retrieve a pointer to this
 memory.
 
-Many functions exist that has the ability to create a new talloc context. This
-section describes only the most fundamental ones that deals with primitive data
-types and structures. Functions that specialize itselves to strings and arrays
-are described later in this text (sections \ref{talloc:sec:strings} and
+Many functions exist that have the ability to create a new talloc context. This
+section describes only the most fundamental ones that deal with primitive data
+types and structures. Functions that are specialized in strings and arrays are
+described later in this text (sections \ref{talloc:sec:strings} and
 \ref{talloc:sec:arrays}).
 
 We can separate these functions to four categories: those that allows us to
@@ -80,7 +80,7 @@ detect type mismatches.
 
 Another feature of these functions is that they automatically set the name of
 the context to the name of the data type. This can be used for a dynamic type
-checking which is described in section \cmplref{talloc:subsec:type-checking}.
+checking which is described in section \ref{talloc:subsec:type-checking}.
 
 \begin{funcproto}
 (#type)* talloc(TALLOC_CTX *ctx, #type)
@@ -148,7 +148,7 @@ is defined as:
 
 %-  talloc_set_destructors
 
-\subsection{Changing parent of a context}
+\subsection{Changing the parent of a context}
 \label{talloc:subsec:stealing}
 
 Talloc has the ability to change the parent of a talloc pointer to another
@@ -193,7 +193,7 @@ void *talloc_move(TALLOC_CTX *ctx, const void **ptr)
 Allocation of a new memory is an expensive kernel space operation and large
 programs can contain thousands of calls of |malloc()| for a single operation.
 This can pour out into an unnecessary slowdown of the application. Number of
-|malloc()| calls can be decreased by using memory pool.
+|malloc()| calls can be decreased by using a memory pool.
 
 Memory pool\footnote{An example of a simple memory pool can be found in appendix
 @TODO} is a preallocated memory space of a fixed size. If we need to allocate
