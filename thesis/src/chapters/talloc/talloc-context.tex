@@ -47,9 +47,11 @@ All of these functions share the following properties:
 
 \subsubsection{Contexts with custom name}
 
-Every talloc context has a name. If we want to create a context with a strong
-semantical meaning, we can set a custom name to differentiate it from the other
-contexts.
+Every talloc context has a name. This name can be used for two purposes: to
+differentiate from other contexts during debugging and for dynamic type
+checking.
+
+We can create a context with a custom name using the following functions: 
 
 \begin{funcproto}
 void* talloc_named(TALLOC_CTX *ctx, size_t size,
@@ -57,19 +59,11 @@ void* talloc_named(TALLOC_CTX *ctx, size_t size,
 void* talloc_named_const(TALLOC_CTX *ctx, size_t size,
                          const char *name)
 \end{funcproto}
-
-\subsubsection{Zero-length contexts}
-
-Zero-length context is basically a context without any special semantical
-meaning. We can use it the same way as any other context, the only difference is
-that it does not contain any data and therefore it is strictly of type
-|TALLOC_CTX*|. It is often used in case we want to aggregate several data
-structures under one parent (zero-length) context.
-
-\begin{funcproto}
-TALLOC_CTX* talloc_init(const char *fmt, ...)
-TALLOC_CTX* talloc_new(TALLOC_CTX *ctx)
-\end{funcproto}
+\funclistend
+Hovewer, there is not much practical use for setting a custom name. These
+funtions are internally used by all of the functions below which set the name
+either at the current location in the source file or at the name of the data
+type.
 
 \subsubsection{Type safe functions that creates a new context}
 
@@ -148,6 +142,44 @@ if (foo == NULL) {
   return ENOMEM;
 }
 
+\end{lstlisting}
+
+\subsubsection{Zero-length contexts}
+
+Zero-length context is basically a context without any special semantical
+meaning. We can use it the same way as any other context, the only difference is
+that it does not contain any data and therefore it is strictly of type
+|TALLOC_CTX*|. It is often used in case we want to aggregate several data
+structures under one parent (zero-length) context.
+
+\begin{funcproto}
+TALLOC_CTX* talloc_init(const char *fmt, ...)
+\end{funcproto}
+\begin{funcdesc}
+Creates a new top level zero-length context with a custom name.
+\end{funcdesc}
+\begin{funcproto}
+TALLOC_CTX* talloc_new(TALLOC_CTX *ctx)
+\end{funcproto}
+\begin{funcdesc}
+Creates a new zero-length context as a child of |ctx|. The name of the context
+will be the current location in the source file prefixed with
+\lstinline[showspaces=true]{"talloc_new: "}.
+\end{funcdesc}
+
+\begin{lstlisting}[caption={talloc_new()},label=lst:talloc_new]
+TALLOC_CTX *ctx = NULL;
+struct foo *foo = NULL;
+struct bar *bar = NULL;
+
+/* new zero-length top level context */
+ctx = talloc_new(NULL);
+if (ctx == NULL) {
+  return ENOMEM;
+}
+
+foo = talloc(ctx, struct foo);
+bar = talloc(ctx, struct bar);
 \end{lstlisting}
 
 \subsection{Freeing a context}
