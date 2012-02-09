@@ -73,7 +73,7 @@ TALLOC_CTX* talloc_new(TALLOC_CTX *ctx)
 
 \subsubsection{Type safe functions that creates a new context}
 
-Type safe functions takes as one of their parameters a data type we want to
+Type safe functions take as one of their parameters a data type we want to
 create. It allocates the size that is necessary for this type and returns a new
 properly casted pointer. This is useful if we want to rely on the compiler to
 detect type mismatches.
@@ -82,30 +82,73 @@ Another feature of these functions is that they automatically set the name of
 the context to the name of the data type. This can be used for a dynamic type
 checking which is described in section \ref{talloc:subsec:type-checking}.
 
+The appropriate functions with this behaviour are:
+
 \begin{funcproto}
 (#type)* talloc(TALLOC_CTX *ctx, #type)
 (#type)* talloc_zero(TALLOC_CTX *ctx, #type)
 \end{funcproto}
 \funclistend
-The only difference between these two functions is that |talloc_zero()| ensures
-that the new memory space is initialized with zeros.
+The difference between |talloc()| and |talloc_zero()| is that the later ensures
+the whole new memory space to be initialized with zeros.
 
-% \begin{description}
-%   \item[(\#type) * talloc(TALLOC_CTX *ctx, \#type)] \hfill  \\
-%   \item[(\#type) * talloc_zero(TALLOC_CTX *ctx, \#type)] \hfill  \\
-% \end{description}
+\begin{lstlisting}[caption={talloc() and talloc_zero()},label=lst:talloc_zero]
+struct user *user = talloc(ctx, struct user);
+if (user == NULL) {
+  return ENOMEM;
+}
+
+/* initialize to default values */
+user->uid = 0;
+user->name = NULL;
+user->num_groups = 0;
+user->groups = NULL;
+
+/* or we can achieve the same result with */
+struct user *user_zero = talloc_zero(ctx, struct user);
+if (user_zero == NULL) {
+  return ENOMEM;
+}
+\end{lstlisting}
 
 \subsubsection{Type unsafe functions that creates a new context}
 
-Type unsafe functions takes as a parameter directly the size we want to
-allocate instead of the type and returns a pointer to |void|. We should not use
-these functions unless it is necessary (e.g. reading binary data from a file).
+Type unsafe functions take as a parameter directly the size we want to
+allocate instead of the type and return a pointer to |void|. However this way
+we loose the compiler ability to detect type mismatches. Therefore we should
+avoid using these functions unless we really want to retrieve a |void*| (e.g.
+reading binary data from a file).
+
+This type of functions also sets the name of the context to a current location
+in the source file where the function is called.
+
+The following functions are type unsafe variants of |talloc()| and
+|talloc_zero()|:
 
 \begin{funcproto}
 void* talloc_size(TALLOC_CTX *ctx, size_t size)
 void* talloc_zero_size(TALLOC_CTX *ctx, size_t size)
-void* talloc_prttype(TALLOC_CTX *ctx, #type)
 \end{funcproto}
+\funclistend
+There is also one very interesting macro |talloc_ptrtype(ctx, ptr)| that may or
+may not be type unsafe depending on the compiler. If the compiler is GCC of
+version greater or equal to 3, it is type safe (it uses the |__typeof__|
+feature of this compiler). It is type unsafe otherwise.
+
+It is a wrapper around |talloc_size()|, therefore the name of the context will
+be the location in the source file where the macro is used. This does not depend
+on whether it will be type safe or type unsafe during the compilation.
+
+The usage can be as follows:
+
+\begin{lstlisting}[caption={talloc_ptrtype(ctx, ptr)},label=lst:talloc_ptrtype]
+struct foo *foo = talloc_ptrtype(ctx, foo);
+
+if (foo == NULL) {
+  return ENOMEM;
+}
+
+\end{lstlisting}
 
 \subsection{Freeing a context}
 \label{talloc:subsec:free-context}
