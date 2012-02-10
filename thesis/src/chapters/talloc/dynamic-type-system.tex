@@ -1,0 +1,96 @@
+\section{Dynamic type system}
+\label{talloc:dyn-ts}
+
+Duplicating a code is not a recommended way of creating an application. 
+
+Generic programming in C language is very difficult. There is no inheritance nor
+templates known from object oriented languages. Therefore generic programming in
+this language is usually done in following way:
+
+\begin{lstlisting}
+void generic_function(callback_fn cb, void *pvt)
+{
+  /* do some stuff */
+  
+  cb(pvt);
+}
+
+void specific_callback(void *pvt)
+{
+  struct specific_struct *data;
+  data = (struct specific_struct*)data;
+  /* ... */
+}
+
+void specific_function()
+{
+  struct specific_struct data;
+  generic_function(callback, &data);
+}
+\end{lstlisting}
+
+If we loose the type information as a result to type casting a variable to a
+|void*|, we loose also the compiler capability of finding type mismatches.
+However, such variable will be eventually casted back to its original type. But
+the programmer does not have any means how to ensure type safety during this
+operation. Talloc brings a solution for these situations.
+
+Every talloc context contains a name which can be used to perform a type check
+during the runtime of an application. Although the name of the context can be
+set to any arbitrary string, the best way of using it to simulate dynamic type
+system is to set it directly to the type of the variable. It is recommended to
+use one of |talloc()|, |talloc_zero()|, |talloc_array()| or
+|talloc_zero_array()| to create the context as they set its name to the type
+automatically.
+
+\begin{funcproto}
+(#type)* talloc_get_type(TALLOC_CTX *ctx, #type)
+(#type)* talloc_get_type_abort(TALLOC_CTX *ctx, #type)
+\end{funcproto}
+\funclistend
+Both functions takes as the first parameter a valid talloc context and as the
+second parameter the type which the context is supposed to be. If the provided
+type equals to the context name, they will return properly casted pointer to
+this type.
+
+They differ in the other scenario -- when the context name is different. The
+first one will simply return |NULL|, the other one will by default abort the
+application using |abort()|. We can change the behaviour by setting our own
+abort function using:
+
+\begin{funcproto}
+void talloc_set_abort_fn(
+  void (*abort_fn)(const char *reason)
+)
+\end{funcproto}
+
+
+==========
+
+We can find ourselves in a situation when we need to provide private data to our
+callback which is called from 
+
+
+\subsection{Manipulating with context name}
+
+\begin{funcproto}
+const char* talloc_set_name(TALLOC_CXT *ctx,
+                            const char *fmt, ...)
+void talloc_set_name_const(TALLOC_CTX,
+                           const char *name)
+void talloc_set_type(TALLOC_CTX *ctx, #type)
+\end{funcproto}
+\funclistend
+
+\subsection{Retrieving private data}
+
+\begin{funcproto}
+(#type)* talloc_get_type(TALLOC_CTX *ctx, #type)
+(#type)* talloc_get_type_abort(TALLOC_CTX *ctx, #type)
+\end{funcproto}
+\funclistend
+
+\begin{funcproto}
+void talloc_set_abort_fn
+  (void (*abort_fn)(const char *))
+\end{funcproto}
