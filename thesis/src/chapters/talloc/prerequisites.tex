@@ -1,0 +1,27 @@
+\section{Prerequisites}
+\label{talloc:prerequisites}
+
+This thesis uses talloc version 2.0.6 as a reference.
+
+The current version of talloc library can be obtained from the project homepage:
+{\footnotesize\url{http://talloc.samba.org}}.
+
+It is also available in Fedora and Ubuntu repositories a therefore it can be
+installed on those systems using:
+
+\begin{commandline}
+# on Fedora
+yum install libtalloc libtalloc-devel
+
+# on Ubuntu
+apt-get install libtalloc2 libtalloc-dev
+\end{commandline}
+\funclistend
+Each example in this chapter expects that |talloc.h| header file is included and
+|talloc| library is properly linked to the assembly.
+
+Also I decided to include the error checking code only when a new function is
+introduced to make the examples simpler and shorter. The full version of the
+examples with the error checks can be found on the attached DVD medium.
+
+
