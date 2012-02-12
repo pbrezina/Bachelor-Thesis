@@ -1,18 +1,45 @@
 \section{Talloc context}
 \label{talloc:sec:context}
 
-Talloc context is a logical unit of this memory pool system. In combination with
-other contexts it creates an n-ary tree.
+Talloc context is the most important part of this library for it is responsible
+for every single feature of this memory allocator. It is a logical unit which
+represents a memory space managed by talloc.
 
-It is internally handled as a special structure (called talloc chunk) that
-contains information about the allocated data - name, size, destructor,
-references, child contexts and its parent context. All of these information can
-be read or manipulated with using proper functions.
+Every talloc context carries along the code several information:
 
-Probably the biggest advantage over the other memory pool systems is that there
-is no difference between a talloc context and a talloc pointer. Every pointer
-that is returned from this library is considered to be a context and can be used
-in such manner.
+\begin{itemize}
+  \item name
+  \item size of the context in bytes
+  \item attached destructor
+  \item references to the context
+  \item parent context
+  \item children contexts
+  \item pointer to the memory for user data
+\end{itemize}
+
+From the programmer point of view, talloc context is completely equivalent to a
+pointer that would return memory routines from the C standard library. This
+means that every context that is returned from the talloc library can be used
+directly in functions that do not use talloc internally. For example we can do
+this:
+
+\begin{lstlisting}
+char *str1 = strdup("I am NOT a talloc context");
+char *str2 = talloc_strdup(NULL, "I AM a talloc context");
+
+printf("%d\n", strcmp(str1, str2) == 0);
+
+free(str1);
+talloc_free(str2); /* we can not use free(str2) */
+\end{lstlisting}
+
+This is possible because internally is the context handled as a special
+fixed-length structure called talloc chunk. When talloc function returns a
+context (pointer), it returns in fact a pointer to the user space part of the
+chunk. And when we want to manipulate with this context the library will
+transform the pointer to the user space part back to the starting address of the
+chunk. This is also the reason why we were unable to use |free(str2)| in the
+previous example.
 
 Talloc context is of type |TALLOC_CTX*|. However, |TALLOC_CTX| is only an alias
 for |void| and exists only for a semantical reason -- so we can differentiate
