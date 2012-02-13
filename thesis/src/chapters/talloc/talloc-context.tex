@@ -5,18 +5,6 @@ Talloc context is the most important part of this library for it is responsible
 for every single feature of this memory allocator. It is a logical unit which
 represents a memory space managed by talloc.
 
-Every talloc context carries along the code several information:
-
-\begin{itemize}
-  \item name
-  \item size of the context in bytes
-  \item attached destructor
-  \item references to the context
-  \item parent context
-  \item children contexts
-  \item pointer to the memory for user data
-\end{itemize}
-
 From the programmer point of view, talloc context is completely equivalent to a
 pointer that would return memory routines from the C standard library. This
 means that every context that is returned from the talloc library can be used
@@ -34,17 +22,15 @@ talloc_free(str2); /* we can not use free(str2) */
 \end{lstlisting}
 
 This is possible because internally is the context handled as a special
-fixed-length structure called talloc chunk. When talloc function returns
-a context (pointer), it returns in fact a pointer to the user space part of the
-chunk. And when we want to manipulate with this context the library will
-transform the pointer to the user space part back to the starting address of the
-chunk. This is also the reason why we were unable to use |free(str2)| in the
-previous example -- because  |str2| does not point at the beginning of the
-allocated memory.
-
-Talloc context is of type |TALLOC_CTX*|. However, |TALLOC_CTX| is only an alias
-for |void| and exists only for a semantical reason -- so we can differentiate
-between |void*| (arbitrary data) and |TALLOC_CTX*| (talloc context).
+fixed-length structure called talloc chunk. Each chunk stores context meta data
+followed by memory space requested by the programmer. When talloc function
+returns a context (pointer), it returns in fact a pointer to the user space
+part of the chunk. And when we want to manipulate with this context, the
+library will transform the pointer to the user space part back to the starting
+address of the chunk. This is also the reason why we were unable to use
+|free(str2)| in the previous example -- because  |str2| does not point at the
+beginning of the allocated block of memory. This is illustrated on Figure
+\ref{fig:talloc-context}.
 
 \begin{figure}[H]
   \centering
@@ -82,7 +68,24 @@ between |void*| (arbitrary data) and |TALLOC_CTX*| (talloc context).
     
   \end{picture}
   \caption{Talloc context}
+  \label{fig:talloc-context}
 \end{figure}
+
+Talloc context is of type |TALLOC_CTX*|. However, |TALLOC_CTX| is only an alias
+for |void| and exists only for a semantical reason -- so we can differentiate
+between |void*| (arbitrary data) and |TALLOC_CTX*| (talloc context).
+
+\subsubsection{Context meta data}
+Every talloc context carries along the code several information:
+
+\begin{itemize}
+  \item name
+  \item size of the requested memory in bytes
+  \item attached destructor
+  \item references to the context
+  \item parent context
+  \item children contexts
+\end{itemize}
 
 \subsection{Creating a new context}
 \label{talloc:subsec:new-context}
