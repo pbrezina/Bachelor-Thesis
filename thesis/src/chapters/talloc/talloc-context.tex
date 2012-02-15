@@ -355,7 +355,7 @@ same way as any other context.
 Talloc pool context has the following properties:
 
 \begin{itemize}
-  \item if we are allocating data on a pool context, it takes the  desirable
+  \item if we are allocating data on a pool context, it takes the desirable
   amount of space from the pool,
   \item if the context is a descendant of the pool context, it takes the space
   from the pool as well,
@@ -385,7 +385,7 @@ void *ptr3 = talloc_size(ptr, 200);
 talloc_free(ptr3);
 
 /* this will free memory taken by 'pool_ctx'
- *  and 'ptr3' as well */
+ *  and 'ptr2' as well */
 talloc_free(pool_ctx);
 \end{lstlisting}
 
