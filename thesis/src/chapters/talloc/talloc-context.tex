@@ -47,9 +47,12 @@ between |void*| (arbitrary data) and |TALLOC_CTX*| (talloc context).
 Every talloc context carries along the code several information:
 
 \begin{itemize}
-  \item name
+  \item name - which is used in reports of context hierarchy (section
+  \ref{talloc:sec:debugging}) and to simulate dynamic type system (section
+  \ref{talloc:dyn-ts})
   \item size of the requested memory in bytes
-  \item attached destructor
+  \item attached destructor - which is executed just before the memory block is
+  about to be freed (section \ref{talloc:sec:destructors})
   \item references to the context
   \item parent context
   \item children contexts
