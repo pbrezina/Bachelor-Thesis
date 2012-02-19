@@ -9,3 +9,13 @@ memory leaks in long running applications. This is achieved by a hierarchical
 structure of talloc contexts where deallocating one context will end up
 freeing all its descendants as well.
 
+\subsubsection{Main features}
+\begin{itemize}
+  \item Open source project
+  \item Hierarchical memory model
+  \item Natural projection of data structures into the memory
+  \item Simplifies memory management of large data structures
+  \item Automatic execution of a destructor before the memory is freed
+  \item Simulates dynamic type system
+  \item Transparent memory pool
+\end{itemize}
