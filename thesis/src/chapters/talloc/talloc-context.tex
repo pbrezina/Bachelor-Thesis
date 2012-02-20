@@ -50,21 +50,22 @@ Every talloc context carries along the code several information:
   \item name - which is used in reports of context hierarchy (section
   \ref{talloc:sec:debugging}) and to simulate dynamic type system (section
   \ref{talloc:dyn-ts})
-  \item size of the requested memory in bytes
+  \item size of the requested memory in bytes - this can be used to determine
+  number of elements in arrays
   \item attached destructor - which is executed just before the memory block is
   about to be freed (section \ref{talloc:sec:destructors})
   \item references to the context
-  \item parent context
   \item children contexts
+  \item parent context
 \end{itemize}
 
 \subsection{Creating a new context}
 \label{talloc:subsec:new-context}
 
 Creating a new talloc context means that we want to create a new talloc chunk
-(which stores the information about this context -- especially its parent),
-allocate the desirable amount of system memory and retrieve a pointer to this
-memory.
+(which stores the information about this context -- especially its parent and
+children), allocate the desirable amount of system memory and retrieve a pointer
+to this memory.
 
 Many functions exist that have the ability to create a new talloc context. This
 section describes only the most fundamental ones that deal with primitive data
@@ -85,26 +86,6 @@ All of these functions share the following properties:
   will create a new top level context.
 \end{itemize}
 
-\subsubsection{Contexts with custom name}
-
-Every talloc context has a name. This name can be used for two purposes: to
-differentiate from other contexts during debugging and for dynamic type
-checking.
-
-We can create a context with a custom name using the following functions: 
-
-\begin{funcproto}
-void* talloc_named(TALLOC_CTX *ctx, size_t size,
-                   const char *fmt, ...)
-void* talloc_named_const(TALLOC_CTX *ctx, size_t size,
-                         const char *name)
-\end{funcproto}
-\funclistend
-Hovewer, there is not much practical use for setting a custom name. These
-funtions are internally used by all of the functions below which set the name
-either at the current location in the source file or at the name of the data
-type.
-
 \subsubsection{Type safe functions that creates a new context}
 
 Type safe functions take as one of their parameters a data type we want to
@@ -113,8 +94,10 @@ properly casted pointer. This is useful if we want to rely on the compiler to
 detect type mismatches.
 
 Another feature of these functions is that they automatically set the name of
-the context to the name of the data type. This can be used for a dynamic type
-checking which is described in section \ref{talloc:subsec:type-checking}.
+the context to the name of the data type. We can find this behaviour very handy
+as it carries the type information even if we cast a variable to some other
+type. We can then check for the type during the runtime as described in section
+\cmplref{talloc:dyn-ts}.
 
 The appropriate functions with this behaviour are:
 
@@ -148,13 +131,14 @@ if (user_zero == NULL) {
 \subsubsection{Type unsafe functions that creates a new context}
 
 Type unsafe functions take as a parameter directly the size we want to
-allocate instead of the type and return a pointer to |void|. However this way
-we loose the compiler ability to detect type mismatches. Therefore we should
-avoid using these functions unless we really want to retrieve a |void*| (e.g.
-reading binary data from a file).
+allocate instead of the type and return a pointer to |void|. The name of the
+context is set to a current location in the source file where the function is
+called.
 
-This type of functions also sets the name of the context to a current location
-in the source file where the function is called.
+If we choose to use these functions we loose both the compile-time and runtime
+ability to detect a type mismatch. Therefore we should avoid using these
+routines unless we really want to retrieve a |void*| (e.g. reading binary data
+from a file).
 
 The following functions are type unsafe variants of |talloc()| and
 |talloc_zero()|:
@@ -165,7 +149,7 @@ void* talloc_zero_size(TALLOC_CTX *ctx, size_t size)
 \end{funcproto}
 \funclistend
 There is also one very interesting macro |talloc_ptrtype(ctx, ptr)| that may or
-may not be type unsafe depending on the compiler. If the compiler is GCC of
+may not be type unsafe depending on the compiler. If the compiler is |GCC| of
 version greater or equal to 3, it is type safe (it uses the |__typeof__|
 feature of this compiler). It is type unsafe otherwise.
 
@@ -173,7 +157,7 @@ It is a wrapper around |talloc_size()|, therefore the name of the context will
 be the location in the source file where the macro is used. This does not depend
 on whether it will be type safe or type unsafe during the compilation.
 
-The usage can be as follows:
+We can use it to shorten the notation:
 
 \begin{lstlisting}[caption={talloc_ptrtype(ctx, ptr)},label=lst:talloc_ptrtype]
 struct foo *foo = talloc_ptrtype(ctx, foo);
@@ -181,7 +165,6 @@ struct foo *foo = talloc_ptrtype(ctx, foo);
 if (foo == NULL) {
   return ENOMEM;
 }
-
 \end{lstlisting}
 
 \subsubsection{Zero-length contexts}
@@ -221,6 +204,24 @@ if (ctx == NULL) {
 foo = talloc(ctx, struct foo);
 bar = talloc(ctx, struct bar);
 \end{lstlisting}
+
+\subsubsection{Contexts with custom name}
+
+We can create a context with a custom name using the following functions: 
+
+\begin{funcproto}
+void* talloc_named(TALLOC_CTX *ctx, size_t size,
+                   const char *fmt, ...)
+void* talloc_named_const(TALLOC_CTX *ctx, size_t size,
+                         const char *name)
+\end{funcproto}
+\funclistend
+However, there is not much practical use for setting a custom name. These two
+functions serves mainly as a generic background for the previous methods.
+
+The only reasonable usage is to set a name of a context that is supposed to
+exist for a very long time (possibly for a life time of the application). The
+name will help us to identify such context during debugging. 
 
 \subsection{Freeing a context}
 \label{talloc:subsec:free-context}
