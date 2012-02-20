@@ -59,6 +59,122 @@ Every talloc context carries along the code several information:
   \item parent context
 \end{itemize}
 
+\subsection{Hierarchy of talloc contexts}
+
+Every talloc context contains information about its parent and children. Talloc
+uses this information to create a hierarchical model of memory or to be more
+precise, it creates an n-ary tree where each node represents a single talloc
+context. The root node of the tree represents a top level context -- a context
+without any parent.
+
+This approach has several advantages:
+
+\begin{itemize}
+  \item as a consequence of freeing a talloc context, all of its descendants
+  will be properly deallocated as well
+  \item at any time, we can change the parent of a context, which
+  will result in moving the whole branch of the tree to another node
+  \item it creates a more natural way of managing data structures
+\end{itemize}
+
+Let me illustrate this on an example. We have a structure that stores
+information about a user -- his name, id and groups he is a member of:
+
+\begin{lstlisting}[caption={struct user},label={struct-user}]
+struct user {
+  uid_t uid;
+  char *username;
+  size_t num_groups;
+  char **groups;
+}
+\end{lstlisting}
+
+Building of such structure with talloc is very similar to the way it is done
+using C standard library. We have to allocate memory for every single element of
+|struct user|. The main difference is that we will specify the parent to which
+the new talloc context will be attached to.
+
+The following listing illustrates how it would be done with the C standard
+library:
+
+\begin{lstlisting}[caption={Building struct user -- C standard library}]
+/* checks for unsuccessful allocation
+ * and type casts are skipped */
+
+int i;
+struct user *user = malloc(sizeof(struct user));
+user->uid = 1000;
+user->num_groups = N;
+
+user->username = strdup("Test user");
+user->groups = malloc(sizeof(char*) * user->num_groups);
+
+for (i = 0; i < N; i++) {
+  user->groups[i] = asprintf("Test group %d", i);
+}
+\end{lstlisting}
+
+\noindent
+The following sample solves the same issue but using talloc library. We will
+create a context tree that is illustrated on Figure
+\ref{fig:context-tree-1-user}.
+
+\begin{lstlisting}[caption={Building struct user -- talloc library}]
+/* checks for unsuccessful allocation are skipped */
+
+/* create new top level context */
+struct user *user = talloc(NULL, struct user);
+
+user->uid = 1000;
+user->num_groups = N;
+
+/* make user the parent of following context */
+user->username = talloc_strdup(user, "Test user");
+user->groups = talloc_array(user, char*, user->num_groups);
+
+for (i = 0; i < N; i++) {
+  /* make user->groups the parent of following context */
+  user->groups[i] = talloc_asprintf(user->groups,
+                                    "Test group %d", i);
+}
+\end{lstlisting}
+
+\begin{figure}[H]
+  \centering
+  \input{./figures/talloc/context-tree-1-user}
+  \caption{Context tree}
+  \label{fig:context-tree-1-user}
+\end{figure}
+
+This way, we have gained a lot of abilities one of which is very easy
+deallocation of the structure.
+
+With standard C library we need to first iterate over the array of groups and
+free every element separately. Then deall ocate the array that stores them.
+Deallocate the username and as the last step free the structure itself.
+
+\begin{lstlisting}[caption={Freeing struct user -- C standard library},
+                   label={lst:free-struct-user-c}]
+int i;
+
+for (i = 0; i < user->num_groups; i++) {
+  free(user->groups[i]);
+}
+
+free(user->groups);
+free(user->username);
+free(user);
+\end{lstlisting}
+
+\noindent
+But with talloc, the only operation we need to execute is free the structure
+context. Its descendants will be freed automatically.
+
+\begin{lstlisting}[caption={Freeing struct user -- talloc library},
+                   label={lst:free-struct-user-talloc}]
+talloc_free(user);
+\end{lstlisting}
+
 \subsection{Creating a new context}
 \label{talloc:subsec:new-context}
 
