@@ -321,6 +321,13 @@ foo = talloc(ctx, struct foo);
 bar = talloc(ctx, struct bar);
 \end{lstlisting}
 
+\begin{figure}[H]
+  \centering
+  \input{./figures/talloc/context-tree-talloc-new}
+  \caption{Context tree -- zero-length context}
+  \label{fig:context-tree-talloc-new}
+\end{figure}
+
 \subsubsection{Contexts with custom name}
 
 We can create a context with a custom name using the following functions: 
