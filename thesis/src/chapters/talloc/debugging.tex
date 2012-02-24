@@ -1,2 +1,108 @@
 \section{Debugging options}
+
+Although talloc makes memory management significantly easier than the standard
+library do, developers are still only humans.
+
+
+ Therefore it may be a good idea to
+know the API for memory usage inspection.
+
+\subsection{Usage reports}
+
+
+
+\subsection{Leak check routines}
+
+We frequently need to provide a talloc context as a parameter to a function, so
+this function can use it as a parent context for output values. But sometimes a
+programmer makes a mistake and allocates something more than he is supposed to.
+
+This issue can not be usually seen in talloc reports, but fortunately it can be
+tested automatically with the knowledge of total size (size of a context and
+its children) of the parent context.
+
+\begin{lstlisting}
+  int ret;
+  struct foo *foo = NULL;
+  size_t total_size;
+  
+  total_size = talloc_total_size(ctx)
+  ret = struct_foo_init(test_ctx, &foo);
+  talloc_free(foo);
+  if (total_size != talloc_total_size(ctx)) {
+    /* struct_foo_init() allocated on 'ctx' more than 'foo' */
+  }
+\end{lstlisting}
+
+However such check are not suitable for an application itself as we have to free
+|foo| as soon as possible. Therefore the proper place for this is in your test
+suit, possibly in unit tests. If you are using the
+Check\footnote{\url{http://check.sourceforge.net}} library for unit testing in
+C, I suggest you use the methods of Martin Nagy.
+
+Martin Nagy, a former developer of SSSD, invented a set of functions which goal
+is to detect memory leaks on a talloc context in unit tests created with the
+Check library (but it can be easily modified for other  test suits). It does it
+with a more advance manner than the previous example.
+
+\begin{lstlisting}[caption={Martin Nagy's leak check routines example},
+morekeywords={leak_check_setup,check_leaks_push,
+              check_leaks_pop,leak_check_teardown}]
+/* creates new talloc context *_foo as a child of mem_ctx */
+int struct_foo_init(TALLOC_CTX *mem_ctx, struct foo **_foo);
+
+/* create new unit test with Check library */
+START_TEST(test_struct_foo_init)
+{
+  int ret;
+  struct foo *foo = NULL;
+  TALLOC_CTX *test_ctx = talloc_new(NULL);
+  fail_if(test_ctx == NULL); /* if the condition is met,
+                                the unit test will fail */
+  
+  /* initialize leak check routines */
+  leak_check_setup();
+  
+  /* remember current test_ctx size */
+  check_leaks_push(test_ctx);
+  
+  ret = struct_foo_init(test_ctx, &foo);
+  fail_if(ret != EOK)
+  
+  /* ... test foo values ... */
+  
+  talloc_free(foo);
+  
+  /* check for memory leak,
+     this will fail the test if struct_foo_init()
+     allocated more than 'foo' on test_ctx */
+  check_leaks_pop(test_ctx);
+  
+  talloc_free(test_ctx);
+  
+  /* clean after leak check routines */
+  leak_check_teardown();
+}
+\end{lstlisting}
+
+% /* initialize unit tests */
+% Suite *
+% create_suite(void)
+% {
+%   Suite *s = suite_create("foo tests");
+%   TCase *tc = tcase_create("foo tests");
+% 
+%   /* run leak_check_setup() before and 
+%      leak_check_teardown() after each unit test */
+%     tcase_add_checked_fixture(tc, leak_check_setup, leak_check_teardown);
+%     
+%   /* register unit tests */
+%   tcase_add_test(tc, test_struct_foo_init);
+% 
+%   /* add all test cases to the test suite */
+%   suite_add_tcase(s, tc);
+% 
+%   return s;
+% }
+
 \label{talloc:sec:debugging}
