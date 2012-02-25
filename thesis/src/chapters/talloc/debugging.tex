@@ -1,15 +1,10 @@
 \section{Debugging options}
 
 Although talloc makes memory management significantly easier than the standard
-library do, developers are still only humans.
-
-
- Therefore it may be a good idea to
-know the API for memory usage inspection.
+library does, developers are still only humans. Therefore it may be a good idea
+to know the tools for the inspection of talloc memory usage.
 
 \subsection{Usage reports}
-
-
 
 \subsection{Leak check routines}
 
@@ -21,31 +16,39 @@ This issue can not be usually seen in talloc reports, but fortunately it can be
 tested automatically with the knowledge of total size (size of a context and
 its children) of the parent context.
 
-\begin{lstlisting}
-  int ret;
-  struct foo *foo = NULL;
-  size_t total_size;
-  
-  total_size = talloc_total_size(ctx)
-  ret = struct_foo_init(test_ctx, &foo);
-  talloc_free(foo);
-  if (total_size != talloc_total_size(ctx)) {
-    /* struct_foo_init() allocated on 'ctx' more than 'foo' */
-  }
+\begin{lstlisting}[caption={Leak check example}]
+/* creates new talloc context *_foo as a child of mem_ctx */
+int struct_foo_init(TALLOC_CTX *mem_ctx, struct foo **_foo);
+
+int ret;
+size_t total_size;
+struct foo *foo = NULL;
+TALLOC_CTX *ctx = talloc_new(NULL);
+
+total_size = talloc_total_size(ctx)
+ret = struct_foo_init(test_ctx, &foo);
+talloc_free(foo);
+if (total_size != talloc_total_size(ctx)) {
+  /* struct_foo_init() allocated on 'ctx'
+     more than 'foo' */
+}
 \end{lstlisting}
 
-However such check are not suitable for an application itself as we have to free
-|foo| as soon as possible. Therefore the proper place for this is in your test
-suit, possibly in unit tests. If you are using the
+However such checks are not suitable for an application itself as we have to
+free |foo| before other usage of the parent context. Therefore the proper place
+for this is in your test suit, possibly in unit tests. If you are using the
 Check\footnote{\url{http://check.sourceforge.net}} library for unit testing in
 C, I suggest you use the methods of Martin Nagy.
 
 Martin Nagy, a former developer of SSSD, invented a set of functions which goal
 is to detect memory leaks on a talloc context in unit tests created with the
-Check library (but it can be easily modified for other  test suits). It does it
-with a more advance manner than the previous example.
+Check library (but it can be easily modified for other test suits). It does it
+in a more advance manner than the previous example introduced. It works on a
+push/pop basis, where the unit test will fail if a context has after the pop
+operation different size than it had during the push operation.
 
-\begin{lstlisting}[caption={Martin Nagy's leak check routines example},
+
+\begin{lstlisting}[caption={Martin Nagy's leak check routines},
 morekeywords={leak_check_setup,check_leaks_push,
               check_leaks_pop,leak_check_teardown}]
 /* creates new talloc context *_foo as a child of mem_ctx */
@@ -60,10 +63,10 @@ START_TEST(test_struct_foo_init)
   fail_if(test_ctx == NULL); /* if the condition is met,
                                 the unit test will fail */
   
-  /* initialize leak check routines */
+  /* initialize the leak check routines */
   leak_check_setup();
   
-  /* remember current test_ctx size */
+  /* remember current test_ctx total size */
   check_leaks_push(test_ctx);
   
   ret = struct_foo_init(test_ctx, &foo);
@@ -80,10 +83,12 @@ START_TEST(test_struct_foo_init)
   
   talloc_free(test_ctx);
   
-  /* clean after leak check routines */
-  leak_check_teardown();
+  /* clean up after the leak check routines */
+  leak_check_teardown();(*@\footnotemark@*)
 }
 \end{lstlisting}
+\footnotetext{setup and teardown functions can be run automatically with
+\lstinline{tcase_add_}\lstinline{checked_fixture()}}
 
 % /* initialize unit tests */
 % Suite *
