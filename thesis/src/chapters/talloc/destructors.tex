@@ -8,7 +8,7 @@ the system (e.g. closing file descriptors, terminating connection to a database,
 deallocating memory).
 
 With talloc we can take the advantage of destructors even in C. We can easily
-attach our own destructor to a talloc context. When the context is freed the
+attach our own destructor to a talloc context. When the context is freed, the
 destructor is run automatically.
 
 \subsection{Behaviour}
@@ -30,8 +30,8 @@ Destructor in talloc is a function with following prototype:
 int destructor(void *ctx)
 \end{funcproto}
 \funclistend
-Parameter |ctx| is the talloc context that is about to be freed. The proper type
-can be retrieved with |talloc_get_type()|. The destructor is type safe during
+The parameter |ctx| is the talloc context that is about to be freed. The proper
+type can be retrieved with |talloc_get_type()|. The destructor is type safe during
 the compilation if we use |GCC 3| or newer. With this compiler we can avoid 
 using |void*| and the parameter can be any valid pointer type.
 
