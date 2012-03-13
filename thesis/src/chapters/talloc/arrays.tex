@@ -9,7 +9,7 @@ previous text. We can do it in the same way as in the C standard library using
 |number_of_elements|.
 
 However this has two disadvantages. First of all we have to use the type unsafe
-functions to allocate the requested size which is just wrong. And at second,
+functions to allocate the requested size which is unreliable. And at second,
 we have to do the multiplication by ourselves. Talloc developers were aware of
 it and they created a separate interface for arrays:
 
@@ -76,7 +76,7 @@ listing can be find on Figure \ref{fig:context-tree-users}.
   \label{fig:context-tree-users}
 \end{figure}
 
-\subsection{Determining length of an array}
+\subsection{Determining the length of an array}
 
 We can find ourselves in situation when we need to iterate through an array but
 we are not able to use a special delimiter to mark the end of the array. We need
