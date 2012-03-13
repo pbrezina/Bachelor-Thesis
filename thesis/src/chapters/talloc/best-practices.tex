@@ -5,7 +5,7 @@
 \label{talloc:subsec:function-use-own-context}
 
 It is a good practice to create a temporary talloc context at the function
-beginning and free this context just before the return statement. Every data
+beginning and free this context just before the return statement. All the data
 must be allocated on this context or on its children. This ensures that no
 memory leaks are created as long as we do not forget to free the temporary
 context.
