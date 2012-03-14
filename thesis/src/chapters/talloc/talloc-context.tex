@@ -74,13 +74,13 @@ This approach has several advantages:
   \item as a consequence of freeing a talloc context, all of its children
   will be properly deallocated as well
   \item at any time, we can change the parent of a context, which
-  will result in moving the whole subtree of the tree under another node
+  will result in moving the whole subtree under another node
   \item it creates a more natural way of managing data structures
 \end{itemize}
 
-Let me illustrate this on an example. We have a structure that stores
-information about a user -- his name, identification number and groups he is a
-member of:
+Let me illustrate this on an example. We have a structure that stores basic
+information about a user -- his/her name, identification number and groups
+he/she is a member of:
 
 \begin{lstlisting}[caption={struct user},label={struct-user}]
 struct user {
@@ -100,9 +100,6 @@ The following listing illustrates how it would be done with the C standard
 library:
 
 \begin{lstlisting}[caption={Building struct user -- C standard library}]
-/* checks for unsuccessful allocation
- * and type casts are skipped */
-
 int i;
 struct user *user = malloc(sizeof(struct user));
 user->uid = 1000;
@@ -123,8 +120,6 @@ create a context tree that is illustrated on Figure
 
 \begin{lstlisting}[caption={Building struct user -- talloc library},
 morekeywords={talloc,talloc_strdup,talloc_array,talloc_asprintf}]
-/* checks for unsuccessful allocation are skipped */
-
 /* create new top level context */
 struct user *user = talloc(NULL, struct user);
 
