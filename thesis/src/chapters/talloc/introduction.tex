@@ -4,10 +4,12 @@ functions that altogether simplifies allocation and deallocation of data,
 especially large structures that contains many dynamically allocated elements
 such as strings and arrays.
 
-The main purpose of this library is to lower the possibility of creating
-memory leaks in long running applications. This is achieved by a hierarchical
-structure of talloc contexts where deallocating one context will end up
-freeing all its descendants as well.
+The main goals of this library are: removing the needs for creating a cleanup
+function for every complex structure, providing logical organization of
+the allocated memory blocks and lowering the possibility of creating memory
+leaks in the long running applications. All of this is achieved by a
+hierarchical structure of talloc contexts where deallocating one context will
+end up freeing all its descendants as well.
 
 \subsubsection{Main features}
 \begin{itemize}
