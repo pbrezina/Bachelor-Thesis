@@ -1,6 +1,10 @@
 \section{Arrays and talloc}
 \label{talloc:sec:arrays}
 
+The following sections describe the array interface and special properties that
+talloc implements. Namely how to create, manage and free an array and how to
+determine its length from the context size.
+
 \subsection{Creating a new array}
 
 We are already able to create an array with the knowledge introduced in
@@ -79,16 +83,17 @@ listing can be find on Figure \ref{fig:context-tree-users}.
 \subsection{Determining the length of an array}
 
 We can find ourselves in situation when we need to iterate through an array but
-we are not able to use a special delimiter to mark the end of the array. We need
-to have the knowledge of the size of this array stored in other variable.
+we are not able or we do not want to use a special delimiter to mark the end of
+the array. We need to store the size of the array in other variable and carry
+this information with the array.
 
-Every talloc context carries its size in bytes with it, this gives us the means
-to determine the length of the array at any time. Therefore we do not have to
-carry the number of the elements separately. Talloc has defined a macro
-|talloc_array_length(ctx)| for this purpose.
-
-It can be also used as a more efficient way of computing a number of characters
-in a string that has been created with talloc library.
+Talloc makes this easier as every talloc context already contains the
+information about its size (in bytes). Therefore instead of carrying the number
+of the elements separately, we can just divide the context size by the size of
+the data type the array consists of. Talloc has a macro
+|talloc_array_length(ctx)| that serves for this purpose. It requires the name of
+the context to be the name of the data type. So if we want to use this feature,
+we should use the type safe functions to create the array.
 
 \begin{lstlisting}[caption={Length of an array},label=lst:array-length]
 TALLOC_CTX *ctx = talloc_new(NULL);
@@ -102,4 +107,25 @@ printf("%lu\n", talloc_array_length(str));   /* 12 */
 printf("%lu\n", talloc_array_length(array)); /* 10 */
 
 talloc_free(ctx);
+\end{lstlisting}
+
+It can be also used as a more efficient way of computing a number of characters
+in a string that has been created with talloc library. However, we need to
+create our own function (or macro) to do this. Although we must be very careful
+with the usage as it will misbehave once we put a |'\0'| character inside the
+string, having that on mind we will gain the constant complexity. For example:
+
+\begin{lstlisting}[caption={Length of a string},label=lst:array-length]
+size_t talloc_strlen(const char *str)
+{
+  return talloc_array_length(ctx) - 1;
+}
+
+char *str = talloc_strdup(ctx, "hello world");
+char *str2 = talloc_strdup(ctx, "hello world");
+str2[5] = '\0';
+
+printf("%lu\n", talloc_strlen(str));   /* 11 */
+printf("%lu\n", talloc_strlen(str2));  /* (*@{\ttfamily\bf 11}@*) */
+printf("%lu\n", strlen(str2));         /* (*@{\ttfamily\bf 5 !}@*) */
 \end{lstlisting}
