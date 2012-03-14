@@ -39,9 +39,10 @@ beginning of the allocated block of memory. This is illustrated on Figure
   \label{fig:talloc-context}
 \end{figure}
 
-Talloc context is of type |TALLOC_CTX*|. However, |TALLOC_CTX| is just an alias
-for |void| and exists only for a semantical reason -- so we can differentiate
-between |void*| (arbitrary data) and |TALLOC_CTX*| (talloc context).
+A type |TALLOC_CTX| is defined to identify a talloc context in function
+parameters. However, this type is just an alias for |void| and exists only
+for a semantical reason -- so we can differentiate between |void*| (arbitrary
+data) and |TALLOC_CTX*| (talloc context).
 
 \subsubsection{Context meta data}
 Every talloc context carries several information along the code:
