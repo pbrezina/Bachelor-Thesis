@@ -366,8 +366,10 @@ void talloc_free_children(TALLOC_CTX *ctx)
   Frees only the children of the context.
 \end{funcdesc}
 \funclistend
-Besides these two functions we can find useful a macro named |TALLOC_||FREE|
-which is defined as:
+Besides these two functions we can find useful a macro that would automatically
+set the |ctx| to |NULL| to avoid accessing deallocated data. Such macro is
+already defined in |talloc.h|. The name is |TALLOC_||FREE| and it is
+currently defined as:
 
 \begin{lstlisting}[caption={TALLOC_FREE(ctx)},label=lst:TALLOC_FREE]
 #define TALLOC_FREE(ctx) do { \
@@ -375,14 +377,6 @@ which is defined as:
   ctx = NULL;                 \
 } while(0);
 \end{lstlisting}
-
-%- talloc_autofree_context
-%- TALLOC_FREE
-%- talloc_free - 0 or 1 parent
-%- talloc_free_children
-%- talloc_unlink - more parents
-
-%-  talloc_set_destructors
 
 \subsection{Changing the parent of a context}
 \label{talloc:subsec:stealing}
