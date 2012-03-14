@@ -1,6 +1,11 @@
 \section{Best practices}
 \label{talloc:sec:best-practices}
 
+The following sections contain several best practices and good manners that were
+found by the Samba and SSSD developers during the years. Those will help you to
+write a better code, easier to debug and with as little (hopefully none) memory
+leaks as possible.
+
 \subsection{Every function should use it's own context}
 \label{talloc:subsec:function-use-own-context}
 
@@ -10,7 +15,14 @@ must be allocated on this context or on its children. This ensures that no
 memory leaks are created as long as we do not forget to free the temporary
 context.
 
+This pattern applies to both situations - when a function does not return any
+dynamically allocated value and when it does. However it needs a little
+extension for the latter case.
+
 \subsubsection{Functions that does not return any dynamically allocated value}
+
+If the function does not return any value created on the heap, we will just obey
+the aforementioned pattern.
 
 \begin{lstlisting}[caption={Temporary context \#1},label=lst:tmp-ctx-1]
 int bar()
