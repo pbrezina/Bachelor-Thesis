@@ -86,7 +86,7 @@ char* talloc_vasprintf_append_buffer(char *dest, const char
                                      *fmt, va_list ap)
 \end{funcproto}
 
-\subsection{Difference between _append and _append_buffer}
+\subsection{Difference between append and append_buffer}
 
 The behaviour of |_append| and |_append_buffer| is the same in the most majority
 of cases. The later one serves as the much more efficient way of appending a
@@ -95,9 +95,9 @@ performance trick takes effect in loops with many iterations. For example, we
 want to build an LDAP filter to search all users that are member of at least one
 group from the provided list:
 
-\begin{lstlisting}[caption={Appending a string}]
+\begin{lstlisting}[caption={Appending a string},label={lst:append_buffer}]
 char *filter = talloc_strdup(NULL, "(|");
-for (i=0; groups[i] != NULL; i++) {
+for (i = 0; groups[i] != NULL; i++) {
   filter = talloc_asprintf_append(filter, "(group=%s)",
                                   groups[i]);
 }
@@ -130,5 +130,5 @@ char *app = talloc_strdup_append(str_a, ", hello");
 char *buf = talloc_strdup_append_buffer(str_b, ", hello");
 
 printf("%s\n", app); /* hello, hello */
-printf("%s\n", buf); /* hello (hello\0world, hello) */
+printf("%s\n", buf); /* hello ((*@{\ttfamily\bf hello\textbackslash 0}@*)world, hello) */
 \end{lstlisting}
