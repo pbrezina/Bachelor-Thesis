@@ -1,0 +1,63 @@
+\section{Decreasing number of malloc() calls}
+\label{talloc:pool}
+
+Allocation of a new memory is an expensive kernel space operation. Large
+programs can contain thousands of calls of |malloc()| for a single operation.
+This can pour out into an undesirable slowdown of the application. We can avoid
+this slowdown by decreasing number of |malloc()| calls by using a memory pool.
+
+Memory pool\footnote{An example of a simple memory pool can be found in appendix
+@TODO} is a preallocated memory space with a fixed size. If we need to allocate
+new data we will take the desired amount of the memory from the pool instead of
+requesting new memory from the system. This is done by creating a pointer that
+points inside the preallocated memory. Such pool can not be reallocated as it
+would change its location -- pointers that were pointing inside the pool would
+become invalid. Therefore memory pool requires a very good estimate of the
+required memory space.
+
+The talloc library contains its own implementation of a memory pool. It is
+highly transparent for the programmer. The only thing that needs to be done is
+an initialization of a new pool context using |talloc_pool()|\footnotemark --
+it can be used in the same way as any other context.
+
+\footnotetext{\lstinline{TALLOC_CTX *talloc_pool(TALLOC_CTX *ctx, size_t size)}}
+
+Refactoring of an existing code (that uses talloc) to take the advantage of a
+memory pool is quite simple due to the following properties of the pool context:
+
+\begin{itemize}
+  \item if we are allocating data on a pool context, it takes the desired
+  amount of memory from the pool,
+  \item if the context is a descendant of the pool context, it takes the space
+  from the pool as well,
+  \item if the pool does not have sufficient portion of memory left, it will
+  create a new non-pool context, leaving the pool intact,
+  \item if we change the parent of a child of talloc pool to a parent that is
+  outside of this pool, the whole pool memory will not be freed until the child
+  is freed.
+\end{itemize}
+
+\begin{lstlisting}[caption={Talloc pool},label=lst:talloc_pool]
+/* allocate 1KiB in a pool */
+TALLOC_CTX *pool_ctx = talloc_pool(NULL, 1024);
+
+/* take 512B from the pool, 512B is left there */
+void *ptr = talloc_size(pool_ctx, 512);
+
+/* 1024B > 512B, this will create new talloc chunk outside
+   the pool */
+void *ptr2 = talloc_size(ptr, 1024);
+
+/* the pool still contains 512 free bytes
+ * this will take 200B from them */
+void *ptr3 = talloc_size(ptr, 200);
+
+/* this will destroy context 'ptr3' but the memory
+ * is not freed, the available space in the pool
+ * will increase to 512B */
+talloc_free(ptr3);
+
+/* this will free memory taken by 'pool_ctx'
+ *  and 'ptr2' as well */
+talloc_free(pool_ctx);
+\end{lstlisting}
