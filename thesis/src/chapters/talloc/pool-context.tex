@@ -1,0 +1,125 @@
+\section{Decreasing number of malloc() calls}
+\label{talloc:pool}
+
+Allocation of a new memory is an expensive kernel space operation. Large
+programs can contain thousands of calls of |malloc()| for a single computation.
+This can pour out into an undesirable slowdown of the application. We can avoid
+this slowdown by decreasing number of |malloc()| calls by using a memory pool.
+
+Memory pool\footnote{An example of a simple memory pool can be found in appendix
+@TODO} is a preallocated memory space with a fixed size. If we need to allocate
+new data we will take the desired amount of the memory from the pool instead of
+requesting new memory from the system. This is done by creating a pointer that
+points inside the preallocated memory. Such pool must not be reallocated as it
+would change its location -- pointers that were pointing inside the pool would
+become invalid. Therefore memory pool requires a very good estimate of the
+required memory space.
+
+The talloc library contains its own implementation of a memory pool. It is
+highly transparent for the programmer. The only thing that needs to be done is
+an initialization of a new pool context using |talloc_pool()|\footnotemark --
+it can be used in the same way as any other context.
+
+\footnotetext{\lstinline{TALLOC_CTX *talloc_pool(TALLOC_CTX *ctx, size_t size)}}
+
+Refactoring of an existing code (that uses talloc) to take the advantage of a
+memory pool is quite simple due to the following properties of the pool context:
+
+\begin{itemize}
+  \item if we are allocating data on a pool context, it takes the desired
+  amount of memory from the pool,
+  \item if the context is a descendant of the pool context, it takes the space
+  from the pool as well,
+  \item if the pool does not have sufficient portion of memory left, it will
+  create a new non-pool context, leaving the pool intact,
+\end{itemize}
+
+\begin{lstlisting}[caption={Talloc pool},label=lst:talloc_pool,
+morekeywords={talloc_pool}]
+/* allocate 1KiB in a pool */
+TALLOC_CTX *pool_ctx = talloc_pool(NULL, 1024);
+
+/* take 512B from the pool, 512B is left there */
+void *ptr = talloc_size(pool_ctx, 512);
+
+/* 1024B > 512B, this will create new talloc chunk outside
+   the pool */
+void *ptr2 = talloc_size(ptr, 1024);
+
+/* the pool still contains 512 free bytes
+ * this will take 200B from them */
+void *ptr3 = talloc_size(ptr, 200);
+
+/* this will destroy context 'ptr3' but the memory
+ * is not freed, the available space in the pool
+ * will increase to 512B */
+talloc_free(ptr3);
+
+/* this will free memory taken by 'pool_ctx'
+ *  and 'ptr2' as well */
+talloc_free(pool_ctx);
+\end{lstlisting}
+
+\noindent
+This is very nice. However it has one big issue that we must be aware of. See,
+if we change the parent of a child of talloc pool to a parent that is outside
+this pool, the whole pool memory will not be freed until the child is freed.
+For this reason we must be very careful when stealing a descendant of a pool
+context.
+
+\begin{lstlisting}[caption={Stealing from pool context},
+morekeywords={talloc_pool,talloc_steal,talloc_free}]
+TALLOC_CTX *mem_ctx = talloc_new(NULL);
+TALLOC_CTX *pool_ctx = talloc_pool(NULL, 1024);
+struct foo *foo = talloc(pool_ctx, struct foo);
+
+/* mem_ctx is not in the pool */
+talloc_steal(mem_ctx, foo);
+
+/* pool_ctx is marked as freed but the memory is not
+   deallocated, accessing the pool_ctx again will cause
+   an error */
+talloc_free(pool_ctx);
+
+/* now is pool_ctx deallocated */
+talloc_free(mem_ctx);
+\end{lstlisting}
+
+\noindent
+It may be often better to copy the memory we want to steal to avoid this
+problem. We can use |talloc_memdup()| to do this:
+
+\begin{funcproto}
+TALLOC_CTX *talloc_memdup(TALLOC_CTX *parent,
+                          TALLOC_CTX *ctx, size_t size)
+\end{funcproto}
+\begin{funcdesc}
+Creates new context and copies |size| bytes from |ctx| into it. The name of the
+context will be the location in the source code where is this function called.
+\end{funcdesc}
+\funclistend
+For example, the most effective way of creating the LDAP filter with groups
+(introduced in the Listing \ref{lst:append_buffer}) will look like:
+
+\begin{lstlisting}[caption={Appending a string with a pool context},
+morekeywords={talloc_pool,talloc_memdup}]
+char* create_filter(TALLOC_CTX *mem_ctx, char **groups)
+{
+  int i;
+  TALLOC_CTX *pool_ctx = talloc_pool(mem_ctx, 10240);
+  char *output = NULL;
+  char *filter = talloc_strdup(pool_ctx, "(|");
+  for (i=0; groups[i] != NULL; i++) {
+    filter = talloc_asprintf_append_buffer(
+               filter, "(group=%s)", groups[i]);
+  }
+  filter = talloc_strdup_append_buffer(filter, ")");
+  
+  /* copy the filter */
+  output = talloc_memdup(mem_ctx, filter,
+                         talloc_array_length(filter));
+  talloc_free(pool_ctx);
+
+  return output;
+}
+\end{lstlisting}
