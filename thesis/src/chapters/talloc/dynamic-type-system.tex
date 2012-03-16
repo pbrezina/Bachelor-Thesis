@@ -87,15 +87,12 @@ type cast of the returned pointer.
 
 \subsection{Examples}
 
-\begin{lstlisting}[caption={Dynamic type system \#1}]
-int generic_function(callback_fn cb, void *pvt)
-{
-  /* ... */
-  cb(pvt);
-  /* ... */
-}
+Here is an example of a generic programming with talloc -- if we provide invalid
+data to the callback, the program will be aborted. This is sufficient
+reaction for such an error in the most applications.
 
-void foo_cb(void *pvt)
+\begin{lstlisting}[caption={Dynamic type system \#1}]
+void foo_callback(void *pvt)
 {
   struct foo *data = talloc_get_type_abort(pvt, struct foo);
   /* ... */
@@ -108,9 +105,16 @@ int do_foo()
     return ENOMEM;
   }
 
-  return generic_function(foo_cb, data);
+  return generic_function(foo_callback, data);
 }
 \end{lstlisting}
+
+\noindent
+But what if we are creating a service application that should be running for the
+uptime of a server? We may want to abort the application during the development
+process (to make sure the error is not overlooked) but try to recover from the
+error in the customer release. This can be achieved by creating a custom abort
+function with conditional build.
 
 \begin{lstlisting}[caption={Custom abort function}]
 void my_abort(const char *reason)
@@ -127,11 +131,17 @@ void init()
 }
 \end{lstlisting}
 
+\noindent
+The usage of |talloc_get_type_abort()| would be then:
+
 \begin{lstlisting}[caption={Sample output}]
 init();
 
 TALLOC_CTX *ctx = talloc_new(NULL);
 char *str = talloc_get_type_abort(ctx, char);
+if (str == NULL) {
+  /* recovery code */
+}
 /* talloc abort: ../src/main.c:25: Type mismatch: 
    name[talloc_new: ../src/main.c:24] expected[char] */
 \end{lstlisting}
