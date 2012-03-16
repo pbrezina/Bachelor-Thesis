@@ -2,7 +2,7 @@
 \label{talloc:pool}
 
 Allocation of a new memory is an expensive kernel space operation. Large
-programs can contain thousands of calls of |malloc()| for a single operation.
+programs can contain thousands of calls of |malloc()| for a single computation.
 This can pour out into an undesirable slowdown of the application. We can avoid
 this slowdown by decreasing number of |malloc()| calls by using a memory pool.
 
@@ -10,7 +10,7 @@ Memory pool\footnote{An example of a simple memory pool can be found in appendix
 @TODO} is a preallocated memory space with a fixed size. If we need to allocate
 new data we will take the desired amount of the memory from the pool instead of
 requesting new memory from the system. This is done by creating a pointer that
-points inside the preallocated memory. Such pool can not be reallocated as it
+points inside the preallocated memory. Such pool must not be reallocated as it
 would change its location -- pointers that were pointing inside the pool would
 become invalid. Therefore memory pool requires a very good estimate of the
 required memory space.
