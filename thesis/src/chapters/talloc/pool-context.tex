@@ -32,12 +32,10 @@ memory pool is quite simple due to the following properties of the pool context:
   from the pool as well,
   \item if the pool does not have sufficient portion of memory left, it will
   create a new non-pool context, leaving the pool intact,
-  \item if we change the parent of a child of talloc pool to a parent that is
-  outside of this pool, the whole pool memory will not be freed until the child
-  is freed.
 \end{itemize}
 
-\begin{lstlisting}[caption={Talloc pool},label=lst:talloc_pool]
+\begin{lstlisting}[caption={Talloc pool},label=lst:talloc_pool,
+morekeywords={talloc_pool}]
 /* allocate 1KiB in a pool */
 TALLOC_CTX *pool_ctx = talloc_pool(NULL, 1024);
 
@@ -60,4 +58,68 @@ talloc_free(ptr3);
 /* this will free memory taken by 'pool_ctx'
  *  and 'ptr2' as well */
 talloc_free(pool_ctx);
+\end{lstlisting}
+
+\noindent
+This is very nice. However it has one big issue that we must be aware of. See,
+if we change the parent of a child of talloc pool to a parent that is outside
+this pool, the whole pool memory will not be freed until the child is freed.
+For this reason we must be very careful when stealing a descendant of a pool
+context.
+
+\begin{lstlisting}[caption={Stealing from pool context},
+morekeywords={talloc_pool,talloc_steal,talloc_free}]
+TALLOC_CTX *mem_ctx = talloc_new(NULL);
+TALLOC_CTX *pool_ctx = talloc_pool(NULL, 1024);
+struct foo *foo = talloc(pool_ctx, struct foo);
+
+/* mem_ctx is not in the pool */
+talloc_steal(mem_ctx, foo);
+
+/* pool_ctx is marked as freed but the memory is not
+   deallocated, accessing the pool_ctx again will cause
+   an error */
+talloc_free(pool_ctx);
+
+/* now is pool_ctx deallocated */
+talloc_free(mem_ctx);
+\end{lstlisting}
+
+\noindent
+It may be often better to copy the memory we want to steal to avoid this
+problem. We can use |talloc_memdup()| to do this:
+
+\begin{funcproto}
+TALLOC_CTX *talloc_memdup(TALLOC_CTX *parent,
+                          TALLOC_CTX *ctx, size_t size)
+\end{funcproto}
+\begin{funcdesc}
+Creates new context and copies |size| bytes from |ctx| into it. The name of the
+context will be the location in the source code where is this function called.
+\end{funcdesc}
+\funclistend
+For example, the most effective way of creating the LDAP filter with groups
+(introduced in the Listing \ref{lst:append_buffer}) will look like:
+
+\begin{lstlisting}[caption={Appending a string with a pool context},
+morekeywords={talloc_pool,talloc_memdup}]
+char* create_filter(TALLOC_CTX *mem_ctx, char **groups)
+{
+  int i;
+  TALLOC_CTX *pool_ctx = talloc_pool(mem_ctx, 10240);
+  char *output = NULL;
+  char *filter = talloc_strdup(pool_ctx, "(|");
+  for (i=0; groups[i] != NULL; i++) {
+    filter = talloc_asprintf_append_buffer(
+               filter, "(group=%s)", groups[i]);
+  }
+  filter = talloc_strdup_append_buffer(filter, ")");
+  
+  /* copy the filter */
+  output = talloc_memdup(mem_ctx, filter,
+                         talloc_array_length(filter));
+  talloc_free(pool_ctx);
+
+  return output;
+}
 \end{lstlisting}
