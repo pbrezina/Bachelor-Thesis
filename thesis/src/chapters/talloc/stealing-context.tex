@@ -35,12 +35,23 @@ preferred way of stealing a context as it protects the pointer from being
 accidentally freed and accessed using the old variable after its parent have
 been changed.
 
-\begin{lstlisting}
-struct foo *foo = talloc_zero(mem_ctx, struct foo);
+\begin{lstlisting}[caption={talloc_steal() and talloc_move()}]
+struct foo *foo = talloc_zero(ctx, struct foo);
+foo->a1 = talloc_strdup(foo, "a1");
+foo->a2 = talloc_strdup(foo, "a2");
+foo->a3 = talloc_strdup(foo, "a3");
 
+struct bar *bar = talloc_zero(NULL, struct bar);
 /* change parent of foo from mem_ctx to bar */
 bar->foo = talloc_steal(bar, foo);
 
-/* do the same but and assign foo = NULL */
+/* or do the same but assign foo = NULL */
 bar->foo = talloc_move(bar, &foo);
 \end{lstlisting}
+
+\begin{figure}[H]
+  \centering
+  \input{./figures/talloc/steal}
+  \caption{Stealing a talloc context}
+  \label{fig:steal}
+\end{figure}
