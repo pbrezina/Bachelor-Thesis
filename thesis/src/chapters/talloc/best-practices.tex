@@ -6,6 +6,28 @@ found by the Samba and SSSD developers during the years. Those will help you to
 write a better code, easier to debug and with as little (hopefully none) memory
 leaks as possible.
 
+\subsection{Keep the context hierarchy steady}
+
+The talloc is a hierarchy memory allocator. The hierarchy nature is what makes
+the programming more error proof. It makes the memory easier to manage and free.
+Therefore the first thing we should have on our mind is: always project our data
+structures into the talloc context hierarchy.
+
+That means if we have a structure, we should always use it as a parent context
+for its elements. This way we will not encounter any troubles when freeing this
+structure or when changing its parent. The same rule applies for arrays.
+
+For example, the structure |user| which is defined in the Listing
+\ref{struct-user} (page \pageref{struct-user}) should be created with the
+context hierarchy illustrated in Figure \ref{fig:bp-context-tree}.
+
+\begin{figure}[H]
+  \centering
+  \input{./figures/talloc/context-tree-bp}
+  \caption{Context tree of struct user}
+  \label{fig:bp-context-tree}
+\end{figure}
+
 \subsection{Every function should use it's own context}
 \label{talloc:subsec:function-use-own-context}
 
