@@ -5,6 +5,68 @@ Although talloc makes memory management significantly easier than the standard
 library does, developers are still only humans. Therefore it may be a good idea
 to know the tools for the inspection of talloc memory usage.
 
+\subsection{Talloc log and abort}
+
+We have already encountered with the abort function in section
+\ref{talloc:dyn-ts}. In that case it was used when a type mismatch was
+detected. However talloc calls this abort function in several more situations:
+
+\begin{itemize}
+  \item when the provided pointer is not a valid talloc context,
+  \item when the meta data are invalid -- probably due to a memory corruption,
+  \item and when access after free is detected.
+\end{itemize}
+
+The third one is probably the most interesting. It can help us with detecting
+double free a context or any other manipulation with it via talloc functions
+(using it as a parent, stealing it, etc.).
+
+Before the context is freed talloc sets a flag bit in the meta data. This is
+then used to detect the access after free. It basically works on the assumption
+that the memory will stay unchanged (at least for a while) even when it is
+properly deallocated. This will work event if the memory is filled with the
+value specified in |TALLOC_FREE_FILL| environment variable, because it will
+fill only the data part and leaves the meta data intact.
+
+Apart from the abort function, talloc uses a log function to provide additional
+information to the aforementioned violations. To enable logging we shall set the
+log function with:
+
+\begin{funcproto}
+void talloc_set_log_fn(void (*fn)(const char *message))
+void talloc_set_log_stderr()
+\end{funcproto}
+\funclistend
+The latter one is a shortcut for a common scenario -- it will print the
+|message| in the standard error stream.
+
+Here is an sample output of accessing a context after it has been freed:
+
+\begin{lstlisting}[caption={Talloc error -- access after free}]
+talloc_set_log_stderr();
+TALLOC_CTX *ctx = talloc_new(NULL);
+
+talloc_free(ctx);
+talloc_free(ctx);
+
+results in:
+talloc: access after free error - first free may be at ../src/main.c:55
+Bad talloc magic value - access after free
+\end{lstlisting}
+
+\noindent
+And here is an example of the invalid context:
+
+\begin{lstlisting}[caption={Talloc error -- not a talloc context}]
+talloc_set_log_stderr();
+TALLOC_CTX *ctx = talloc_new(NULL);
+char *str = strdup("not a talloc context");
+talloc_steal(ctx, str);
+
+results in:
+Bad talloc magic value - unknown value
+\end{lstlisting}
+
 \subsection{Memory usage reports}
 
 Talloc can print reports of memory usage of specified talloc context to a file
