@@ -54,31 +54,71 @@ But if the destructor of |ctx| succeeds, |talloc_free(ctx)| will succeed and
 the memory of |ctx| is deallocated even if destructor on one of the children
 fails.
 
-\subsection{Examples}
+\subsection{Example}
 
-\begin{lstlisting}[caption={Close a file}]
-int destroy_fd(void *ctx)
+Imagine that we have a dynamically created linked list. We do not want to use an
+element of the list after it is removed from the list. Therefore removing the
+element would mean also deallocating it. We can do this at once by setting a
+destructor on the element which will remove it from the list and
+|talloc_free()| will do the rest.
+
+The destructor would look like:
+
+\begin{lstlisting}[caption={Remove an element from the list -- destructor}]
+int list_remove(void *ctx)
 {
-  int *fd = talloc_get_type_abort(ctx, int);
-  close(*fd);
-  return 0;
+    struct list_el *el = NULL;
+    el = talloc_get_type_abort(ctx, struct list_el);
+    /* remove element from the list */    
 }
+\end{lstlisting}
 
-int* open_file(TALLOC_CTX *mem_ctx,
-                const char *filename,
-                int flags)
+\noindent
+The |GCC 3| or newer can check for the types during the compilation. So if it is
+our major compiler, we can use a little bit nicer destructor:
+
+\begin{lstlisting}[caption={Remove an element from the list -- type safe
+destructor}]
+int list_remove(struct list_el *el)
 {
-  int *fd = talloc_ptrtype(mem_ctx, fd);
-  if (file == NULL) {
-    return NULL;
-  }
-  *fd = open(filename, flags);
-  if (*fd < 0) {
-    talloc_free(fd);
-    return NULL;
-  }
+    /* remove element from the list */    
+}
+\end{lstlisting}
+
+\noindent
+Now we will assign the destructor to the list element. We can do this directly
+in the function that inserts it.
+
+\begin{lstlisting}[caption={Remove an element from the list when freed},
+morekeywords={talloc_set_destructor}]
+struct list_el* list_insert(TALLOC_CTX *mem_ctx,
+                            struct list_el *where,
+                            void *ptr)
+{
+  struct list_el *el = talloc(mem_ctx, struct list_el);
+  el->data = ptr;
+  /* insert into list */
   
-  talloc_set_destructor(fd, destroy_fd);
-  return fd;
+  talloc_set_destructor(el, list_remove);
+  return el;
+}
+\end{lstlisting}
+
+\noindent
+Because talloc is a hierarchical memory allocator, we can go a step further and
+free the data with the element as well:
+
+\begin{lstlisting}[caption={Free the data with the list element},
+morekeywords={talloc_steal}]
+struct list_el* list_insert_free(TALLOC_CTX *mem_ctx,
+                                 struct list_el *where,
+                                 void *ptr)
+{
+  struct list_el *el = NULL;
+  el = list_insert(mem_ctx, where, ptr);
+
+  talloc_steal(el, ptr);
+
+  return el;
 }
 \end{lstlisting}
