@@ -50,14 +50,14 @@ Every talloc context carries several information along the code:
 \begin{itemize}
   \item name -- which is used in reports of context hierarchy (section
   \ref{talloc:sec:debugging}) and to simulate dynamic type system (section
-  \ref{talloc:dyn-ts})
+  \ref{talloc:dyn-ts}),
   \item size of the requested memory in bytes -- this can be used to determine
-  number of elements in arrays
+  number of elements in arrays,
   \item attached destructor -- which is executed just before the memory block is
-  about to be freed (section \ref{talloc:sec:destructors})
-  \item references to the context
+  about to be freed (section \ref{talloc:sec:destructors}),
+  \item references to the context -- section \ref{talloc:ref-counter},
   \item children and parent contexts -- create the hierarchical view on the
-  memory
+  memory.
 \end{itemize}
 
 \subsection{Hierarchy of talloc contexts}
@@ -392,6 +392,23 @@ representation of the character we want to use. For example:
 \begin{lstlisting}[caption={Automatically fill the memory}]
 setenv("TALLOC_FREE_FILL", "0", 1);
 
-/* the memory occupied by ctx will be filled with '\0' "
+/* the memory occupied by ctx will be filled with '\0' */
 talloc_free(ctx);
 \end{lstlisting}
+
+\subsection{Reference counting mechanism}
+\label{talloc:ref-counter}
+
+Talloc provides API to create multiple references on a talloc context. This may
+be sometimes very handy, however the current stage of the implementation breaks
+the simplicity and hierarchy model of talloc. The SSSD goes so far, that it
+strictly prohibits this feature and creates custom reference counters when
+needed.
+
+The authors of the library are aware of the problem and the API is very likely
+going to change from the ground\cite{MailListReferences}. When I asked about
+the use cases of a context with multiple references, the answer was: ``Do not
+use it. It is very dangerous.'' For this reason I decided not to describe the
+reference counter part in this thesis. If you are interested in it, please,
+take a look at the documentation\cite{TallocDocReferences} and the source
+code.
