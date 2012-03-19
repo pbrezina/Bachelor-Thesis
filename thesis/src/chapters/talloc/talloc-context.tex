@@ -119,6 +119,7 @@ create a context tree that is illustrated on Figure
 \ref{fig:context-tree-1-user}.
 
 \begin{lstlisting}[caption={Building struct user -- talloc library},
+label={lst:context-tree-user},
 morekeywords={talloc,talloc_strdup,talloc_array,talloc_asprintf}]
 /* create new top level context */
 struct user *user = talloc(NULL, struct user);
