@@ -5,7 +5,7 @@
 \usepackage[plainpages=false,pdfpagelabels,unicode]{hyperref}
 \usepackage{setspace}
 \usepackage{biblatex}
-\usepackage{url}
+\usepackage{breakurl}
 \usepackage{underscore}
 \usepackage{perpage}
 \usepackage{enumerate}
@@ -29,7 +29,16 @@
 % \renewcommand{\p@enumii}{\theenumi.}
 %\makeatother
 
+%\DeclareFieldFormat{url}{\newline\mkbibacro{URL}\addcolon\space\url{#1}}
+%\newbibmacro*{url}{%
+% \printfield[url]{url}%   
+% \iffieldundef{urlyear}     
+% {}     
+% {\setunit*{\addspace}%      
+% \printtext[urldate]{}}}
+
 \bibliography{bibliography}
+\nocite{*}
 
 \input{listings}
 \input{hyphenation}
