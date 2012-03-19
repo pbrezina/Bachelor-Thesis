@@ -377,3 +377,20 @@ currently defined as:
   ctx = NULL;                 \
 } while(0);
 \end{lstlisting}
+
+\noindent
+Talloc can automatically fill the memory with some predefined character just
+before the context is freed. We may want to do this to avoid reaccessing the
+data after it has been deallocted -- for security reasons or to help us with
+debugging of our application.
+
+This feature is disabled by default. To enable it, we have to set
+|TALLOC_FREE_FILL| environment variable. It should contain a numeric
+representation of the character we want to use. For example:
+
+\begin{lstlisting}[caption={Automatically fill the memory}]
+setenv("TALLOC_FREE_FILL", "0", 1);
+
+/* the memory occupied by ctx will be filled with '\0' "
+talloc_free(ctx);
+\end{lstlisting}
