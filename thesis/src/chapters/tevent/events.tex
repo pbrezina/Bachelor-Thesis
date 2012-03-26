@@ -1,0 +1,113 @@
+\section{Registering events}
+
+Tevent supports several event types: timers,  signals, file descriptor events
+(readiness for reading or writing) and immediate events. Each of these
+are supported by all built-in event backends.
+
+Although we have to use different functions to set up a new event handler for
+each kind of event, their usage and prototypes are very similar. In order to
+register an event handler, we have to provide five pieces of information:
+
+\begin{itemize}
+  \item the event context where the event handler will be registered,
+  \item a talloc memory context which will be used as a parent for this handler
+  meta data,
+  \item private data that will be passed to the handler,
+  \item the event handler itself,
+  \item plus some event specific parameters (time, signal number, file
+  descriptor, \ldots).
+\end{itemize}
+
+The functions return a pointer to an event specific structure or |NULL| on
+error. This structure is a talloc context. We must not set a destructor on this
+context because it already contains one -- when we call |talloc_free()| on this
+pointer the event handler will be automatically unregistered from the event
+context.
+
+\subsection{Timers}
+
+Timers are events that are triggered after a specified time span has left. The
+important thing to know is that this kind of event is not triggered exactly
+when the selected time is reached but as soon as possible after it is reached.
+Therefore it can not be used in situations where the accuracy is critical.
+
+To create a timed event, we will use:
+
+\begin{funcproto}
+struct tevent_timer* tevent_add_timer(
+             struct tevent_context *event_ctx,
+             TALLOC_CTX *mem_ctx,
+             struct timeval next_event,
+             tevent_timer_handler_t handler,
+             void *private_data)
+\end{funcproto}
+\funclistend
+The |next_event| parameter contains the absolute time when this event should be
+fired. Tevent contains several utility functions\cite{TeventDocTimeval}
+that helps us with the creation of |timeval| structure. In most cases we will
+want to use an offset that is relative to the current time. This can be achieved
+with:
+
+\begin{funcproto}
+struct timeval tevent_timeval_current_ofs(uint32_t secs,
+                                          uint32_t usecs)
+\end{funcproto}
+\funclistend
+The event handler for timers has the following prototype:
+
+\begin{funcproto}
+void handler(struct tevent_context *event_ctx,
+             struct tevent_timer *timer,
+             struct timeval current_time,
+             void *private_data)
+\end{funcproto}
+\funclistend
+The |current_time| parameter is a little tricky. As its name suggests it
+contains the absolute time when the handler has been called. But only if we have
+provided a non-zero time in |tevent_add_timer()|. It will contain zero
+otherwise. However we should use an immediate event for such cases.
+
+Every timer in tevent is only a one time event (the |tevent_timer| structure is
+freed once the handler returns). If we want it to be executed periodically we
+have to call |tevent_add_timer()| in the handler again.
+
+In our example we will set a periodical timer that will be fired every sixty
+seconds.
+
+\begin{lstlisting}[morekeywords={tevent_add_timer},name=PeriodicalUpdateDB]
+struct tevent_timer* set_periodical_update_db(
+                  struct tevent_context *ev,
+                  TALLOC_CTX *mem_ctx,
+                  void *pvt)
+{
+  struct timeval tv;
+  tv = tevent_timeval_current_ofs(60, 0);
+  return tevent_add_timer(ev, mem_ctx, tv,
+                          periodical_update_db, pvt);
+}
+\end{lstlisting}
+\begin{lstlisting}[caption={Periodical update of a database},firstnumber=auto,
+morekeywords={set_periodical_update_db},name=PeriodicalUpdateDB]
+void periodical_update_db(struct tevent_context *event_ctx,
+                          struct tevent_timer *timer,
+                          struct timeval current_time,
+                          void *pvt)
+{
+  struct tevent_timer *timer = NULL;
+  struct update_ctx *ctx = NULL;
+  ctx = talloc_get_type_abort(pvt, struct update_ctx);
+
+  update_db(ctx);
+  
+  timer = set_periodical_update_db(ev, ctx->mem_ctx, ctx);
+  if (timer == NULL) {
+    /* error */
+  }
+}
+\end{lstlisting}
+
+\subsection{Signals}
+
+\subsection{File descriptor events}
+
+\subsection{Immediate events}
