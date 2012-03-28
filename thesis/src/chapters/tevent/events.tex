@@ -108,6 +108,17 @@ void periodical_update_db(struct tevent_context *event_ctx,
 
 \subsection{Signals}
 
+Signals are basically an asynchronous event with very high priority. They can be
+described as an event that is sent to the application (usually) from the outer
+world. Once the program receives this signal it will immediately pause the
+current procedure and executes a handler of the received signal. After the
+handler is finished the application will continue at the point where it was
+interrupted.
+
+Tevent supports standard POSIX signals that are defined in |signal.h|. But it
+does it in a little bit different and more advanced manner than we are used
+from the classic approach with |signal()| or |sigaction()|.
+
 \subsection{File descriptor events}
 
 \subsection{Immediate events}
