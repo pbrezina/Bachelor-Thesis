@@ -42,7 +42,7 @@ foo->a2 = talloc_strdup(foo, "a2");
 foo->a3 = talloc_strdup(foo, "a3");
 
 struct bar *bar = talloc_zero(NULL, struct bar);
-/* change parent of foo from mem_ctx to bar */
+/* change parent of foo from ctx to bar */
 bar->foo = talloc_steal(bar, foo);
 
 /* or do the same but assign foo = NULL */
