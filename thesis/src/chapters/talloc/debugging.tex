@@ -24,7 +24,7 @@ double free a context or any other manipulation with it via talloc functions
 Before the context is freed talloc sets a flag bit in the meta data. This is
 then used to detect the access after free. It basically works on the assumption
 that the memory will stay unchanged (at least for a while) even when it is
-properly deallocated. This will work event if the memory is filled with the
+properly deallocated. This will work even if the memory is filled with the
 value specified in |TALLOC_FREE_FILL| environment variable, because it will
 fill only the data part and leaves the meta data intact.
 
