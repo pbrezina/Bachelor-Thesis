@@ -124,8 +124,8 @@ handlers on a single signal. The handlers are then executed in the last
 in first out order.
 
 The second difference is that tevent breaks the standard thinking of the
-signals as the events that will interrupt our application at any point. Once we
-register a signal handler the signal processing becomes a part of the
+signals as the events that can interrupt our application at any point. Once we
+register a signal handler, the signal processing becomes a part of the
 application processing -- the handler is executed only in the event loop when
 the program is idle. However, we do not have to worry of loosing any signal.
 When our program is not idle (it is not waiting in the event loop), tevent
