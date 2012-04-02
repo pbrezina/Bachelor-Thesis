@@ -57,7 +57,7 @@ The event handler for timers has the following prototype:
 
 \begin{funcproto}
 void handler(struct tevent_context *event_ctx,
-             struct tevent_timer *timer,
+             struct tevent_timer *timer_event,
              struct timeval current_time,
              void *private_data)
 \end{funcproto}
@@ -130,9 +130,58 @@ application processing -- the handler is executed only in the event loop when
 the program is idle. However, we do not have to worry of loosing any signal.
 When our program is not idle (it is not waiting in the event loop), tevent
 counts any incoming signal that we have enrolled to and then gives this
-information to the handler once it is called.
+information to the handler once it is called. This way we can be sure that we
+will not interrupt our application in the middle of processing (for example
+while inserting data into a database).
 
+The most commonly used signals are:
 
+\begin{itemize}
+  \item |SIGINT|, |SIGTERM|, |SIGABRT| -- clean up before the application exits
+  (unlink temporary files, close remote connections, notify children processes,
+  \ldots).
+  \item |SIGHUP| -- originally was used to notify the process when a remote
+  modem hanged up, today it notifies that a virtual terminal has been closed.
+  Service applications frequently use it to force a reload of a configuration,
+  rotate logs or to do a graceful restart.
+  \item |SIGUSR1|, |SIGUSR2| -- purpose of this signals is very arbitrary. It is
+  often used to increase/decrease a debug level. SSSD uses it to force and reset
+  offline mode.
+\end{itemize}
+
+\noindent
+We can register a signal event handler with:
+
+\begin{funcproto}
+struct tevent_signal* tevent_add_signal(
+             struct tevent_context *event_ctx,
+             TALLOC_CTX *mem_ctx,
+             int signum, int sa_flags,
+             tevent_signal_handler_t handler,
+             void *private_data)   
+\end{funcproto}
+\begin{funcdesc}
+The |signum| parameter represents the signal we want to enroll to.
+Parameter |sa_flags| is equivalent to the |sigaction| flags.
+\end{funcdesc}
+\funclistend
+The event handler for signals has the following prototype:
+
+\begin{funcproto}
+void handler(struct tevent_context *event_ctx,
+             struct tevent_signal *signal_event,
+             int signum, int count, void *siginfo,
+             void *private_data)
+\end{funcproto}
+\funclistend
+Unless |SA_SIGINFO| flag is set during the registration, the handler will be
+called only once and the parameter |count| will contain the number of how many
+times was the signal |signum| received before the event handler was called.
+
+But if |SA_SIGINFO| is set, the value of |count| will always be |1| and the
+handler will be executed for each detected signal |signum|. Parameter |siginfo|
+will contain a pointer to |siginfo_t| structure which provides additional
+information about the signal and its source.
 
 \subsection{File descriptor events}
 
