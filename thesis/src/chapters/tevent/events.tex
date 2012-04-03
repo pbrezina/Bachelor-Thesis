@@ -185,4 +185,29 @@ information about the signal and its source.
 
 \subsection{File descriptor events}
 
+A file descriptor is a very generic term in POSIX compliant operating
+systems. It serves as a middleman between programmer and I/O unit. It
+represents files, physical or virtual devices (network cards, virtual
+terminals, \ldots), pipes, sockets and basically all I/O capable tools. This
+approach creates a uniform API for input and output operations.
+
+The I/O operation can be considered blocking (synchronous) or non-blocking
+(asynchronous). Say we have opened a pipe between two applications and one of
+the application calls |read()| on the pipe file descriptor. If the operation is
+blocking the application will wait until there are some data to be read. If it
+is non-blocking, it will return immediately with an appropriate return code
+indicating that we should try it again later.
+
+This is rather inconvenient if we need to use many file descriptors in the
+non-blocking mode. Several tools exist that detects readiness for reading and/or
+writing on a set of file descriptors. A file descriptor is considered to be
+ready when it can perform an input or output operation without blocking. Tevent
+goes one step further and wraps these tools with its own API to make
+asynchronous I/O operations even more simple and event based.
+
+There are two file descriptor events -- one that notifies about readiness for
+reading and the other that signals readiness for writing. A file descriptor is
+considered to be ready when it can perform an input or output operation without
+blocking.
+
 \subsection{Immediate events}
