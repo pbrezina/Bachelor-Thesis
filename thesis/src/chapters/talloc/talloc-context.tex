@@ -5,11 +5,11 @@ A talloc context is the most important part of this library for it is
 responsible for every single feature of this memory allocator. It is a logical
 unit which represents a memory space managed by talloc.
 
-From the programmer's point of view, talloc context is completely equivalent to
-a pointer that would be returned by the memory routines from the C standard
-library. This means that every context that is returned from the talloc library
-can be used directly in functions that do not use talloc internally. For
-example we can do this:
+From the programmer's point of view, the talloc context is completely
+equivalent to a pointer that would be returned by the memory routines from the
+C standard library. This means that every context that is returned from the
+talloc library can be used directly in functions that do not use talloc
+internally. For example we can do this:
 
 \begin{lstlisting}
 char *str1 = strdup("I am NOT a talloc context");
@@ -22,14 +22,15 @@ talloc_free(str2); /* we can not use free(str2) */
 \end{lstlisting}
 
 This is possible because the context is internally handled as a special
-fixed-length structure called talloc chunk. Each chunk stores context meta data
-followed by memory space requested by the programmer. When talloc function
-returns a context (pointer), it returns in fact a pointer to the user space
-part of the chunk. And when we want to manipulate with this context, the
-library will transform the pointer to the user space part back to the starting
-address of the chunk. This is also the reason why we were unable to use
-|free(str2)| in the previous example -- because |str2| does not point at the
-beginning of the allocated block of memory. This is illustrated on Figure
+fixed-length structure called talloc chunk. Each chunk stores context metadata
+followed by the memory space requested by the programmer. When a talloc
+function returns a context (pointer), it in fact returns a pointer to the user
+space portion of the talloc chunk. And when we want to manipulate with this
+context using talloc functions, the talloc library will transform the
+user-space pointer back to the starting address of the chunk. This is also the
+reason why we were unable to use |free(str2)| in the previous example --
+because |str2| does not point at the beginning of the allocated block of
+memory. This is illustrated on Figure
 \ref{fig:talloc-context}.
 
 \begin{figure}[H]
@@ -39,13 +40,14 @@ beginning of the allocated block of memory. This is illustrated on Figure
   \label{fig:talloc-context}
 \end{figure}
 
-A type |TALLOC_CTX| is defined to identify a talloc context in function
-parameters. However, this type is just an alias for |void| and exists only
-for a semantical reason -- so we can differentiate between |void*| (arbitrary
-data) and |TALLOC_CTX*| (talloc context).
+A type |TALLOC_CTX| is defined in |talloc.h| to identify a talloc context in
+function parameters. However, this type is just an alias for |void| and exists
+only for semantical reasons -- so we can differentiate between |void*|
+(arbitrary data) and |TALLOC_CTX*| (talloc context).
 
 \subsubsection{Context meta data}
-Every talloc context carries several information along the code:
+Every talloc context carries several pieces of internal information along with
+the allocated memory:
 
 \begin{itemize}
   \item name -- which is used in reports of context hierarchy (section
@@ -62,7 +64,7 @@ Every talloc context carries several information along the code:
 
 \subsection{Hierarchy of talloc contexts}
 
-Every talloc context contains information about its parent and children. Talloc
+Every talloc context contains information about its parents and children. Talloc
 uses this information to create a hierarchical model of memory or to be more
 precise, it creates an n-ary tree where each node represents a single talloc
 context. The root node of the tree is referred to as a top level context -- a
@@ -145,12 +147,13 @@ for (i = 0; i < user->num_groups; i++) {
   \label{fig:context-tree-1-user}
 \end{figure}
 
-This way, we have gained a lot of abilities one of which is very simple
-deallocation of the structure and all of its elements.
+This way, we have gained a lot of additional capabilities, one of which is
+very simple deallocation of the structure and all of its elements.
 
 With standard C library we need to first iterate over the array of groups and
-free every element separately. Then deallocate the array that stores them.
-Deallocate the username and as the last step free the structure itself.
+free every element separately. Then we must deallocate the array that stores
+them. Next we deallocate the username and as the last step free the structure
+itself.
 
 \begin{lstlisting}[caption={Freeing struct user -- C standard library},
                    label={lst:free-struct-user-c}]
@@ -166,8 +169,8 @@ free(user);
 \end{lstlisting}
 
 \noindent
-But with talloc, the only operation we need to execute is free the structure
-context. Its descendants will be freed automatically.
+But with talloc, the only operation we need to execute is freeing the
+structure context. Its descendants will be freed automatically.
 
 \begin{lstlisting}[caption={Freeing struct user -- talloc library},
                    label={lst:free-struct-user-talloc}]
@@ -188,13 +191,14 @@ types and structures. Functions that are specialized in strings and arrays are
 described later in this text (sections \ref{talloc:sec:strings} and
 \ref{talloc:sec:arrays}).
 
-We can divide these functions to four categories: those that allow us to set a
-name of the context, functions that create a zero-length context and type safe
-and type unsafe functions.
+We can divide these functions into four categories: those that allow us to set
+the name of the context, functions that create a zero-length context and
+type-safe and type-unsafe functions.
 
 All of these functions share the following properties:
 \begin{itemize}
-  \item it return new talloc context or |NULL| if the system is out of memory,
+  \item it returns a new talloc context or |NULL| if the system is out of
+  memory,
   \item the first parameter is a talloc context which serves as a parent of
   the new context,
   \item the parent context can be either an existing context or |NULL| which
@@ -204,9 +208,9 @@ All of these functions share the following properties:
 \subsubsection{Type safe functions that create a new context}
 
 Type safe functions take as one of their parameters a data type we want to
-create. It allocate the size that is necessary for this type and returns a new
-properly casted pointer. This is useful if we want to rely on the compiler to
-detect type mismatches.
+create. It allocates the size that is necessary for this type and returns a
+new, properly-cast pointer. This is useful if we want to rely on the compiler
+to detect type mismatches.
 
 Another feature of these functions is that they automatically set the name of
 the context to the name of the data type. We can find this behaviour very handy
@@ -245,12 +249,11 @@ if (user_zero == NULL) {
 
 \subsubsection{Type unsafe functions that create a new context}
 
-Type unsafe functions take as a parameter directly the size we want to
-allocate instead of the type and return a pointer to |void|. The name of the
-context is set to a current location in the source file where the function is
-called.
+Type unsafe functions take as a parameter the exact size we want to allocate
+instead of the type and return a pointer to |void|. The name of the context
+is set to location in the source file where the function is invoked.
 
-If we choose to use these functions we loose both the compile-time and runtime
+If we choose to use these functions we lose both the compile-time and runtime
 ability to detect a type mismatch. Therefore we should avoid using these
 routines unless we really want to retrieve a |void*| (e.g. reading binary data
 from a file).
@@ -265,7 +268,7 @@ void* talloc_zero_size(TALLOC_CTX *ctx, size_t size)
 \funclistend
 There is also one very interesting macro |talloc_ptrtype(ctx, ptr)| that may or
 may not be type unsafe depending on the compiler. If the compiler is |GCC| of
-version greater or equal to 3, it is type safe (it uses the |__typeof__|
+version greater than or equal to 3, it is type safe (it uses the |__typeof__|
 feature of this compiler). It is type unsafe otherwise.
 
 It is a wrapper around |talloc_size()|, therefore the name of the context will
@@ -284,10 +287,13 @@ struct verylongname *x = talloc(ctx, struct verylongname);
 \subsubsection{Zero-length contexts}
 
 Zero-length context is basically a context without any special semantical
-meaning. We can use it the same way as any other context. The only difference is
-that it consists only from the meta data about the context. Therefore it is
-strictly of type |TALLOC_CTX*|. It is often used in case we want to aggregate
-several data structures under one parent (zero-length) context.
+meaning. We can use it the same way as any other context. The only difference
+is that it consists only of the meta data about the context. Therefore, it is
+strictly of type |TALLOC_CTX*|. It is often used in cases where we want to
+aggregate several data structures under one parent (zero-length) context, such
+as a temporary context to contain memory needed within a single function that
+is not interesting to the caller. Allocating on a zero-length temporary context
+will make clean-up of the function simpler.
 
 \begin{funcproto}
 TALLOC_CTX* talloc_init(const char *fmt, ...)
@@ -328,8 +334,7 @@ bar = talloc(ctx, struct bar);
 
 \subsubsection{Contexts with custom name}
 
-We can create a context with a custom name using the following functions: 
-
+We can create a context with a custom name using the following functions:
 \begin{funcproto}
 void* talloc_named(TALLOC_CTX *ctx, size_t size,
                    const char *fmt, ...)
@@ -341,8 +346,8 @@ However, there is not much practical use for setting a custom name. These two
 functions serves mainly as a generic background for the previous methods.
 
 The only reasonable usage is to set a name of a context that is supposed to
-exist for a very long time (possibly for a life time of the application). The
-name will help us to identify such context during debugging. 
+exist for a very long time (possibly for the life time of the application). The
+name will help us to identify such contexts during debugging.
 
 \subsection{Freeing a context}
 \label{talloc:subsec:free-context}
@@ -355,10 +360,11 @@ is performed.
 int talloc_free(TALLOC_CTX *ctx)
 \end{funcproto}
 \begin{funcdesc}
-  Deallocates memory occupied by the context and recursively frees its 
+  Deallocates memory occupied by the context and recursively frees its
   children as well. The returned value is |0| on success, |-1| if |ctx| is
   |NULL| or if the destructor\footnote{More information on destructors is in
-  section \cmplref{talloc:sec:destructors}} attached to this context fails.
+  section \cmplref{talloc:sec:destructors}} attached to this context or one of
+  its children fails.
 \end{funcdesc}
 \begin{funcproto}
 void talloc_free_children(TALLOC_CTX *ctx)
@@ -401,12 +407,12 @@ talloc_free(ctx);
 
 Talloc provides API to create multiple references on a talloc context. This may
 be sometimes very handy, however the current stage of the implementation breaks
-the simplicity and hierarchy model of talloc. The SSSD goes so far, that it
-strictly prohibits this feature and creates custom reference counters when
+the simplicity and hierarchy model of talloc. The SSSD goes so far as to
+strictly prohibit this feature and creates custom reference counters when
 needed.
 
 The authors of the library are aware of the problem and the API is very likely
-going to change from the ground\cite{MailListReferences}. When I asked about
+going to change from the ground\cite{MailListReferences} up. When I asked about
 the use cases of a context with multiple references, the answer was: ``Do not
 use it. It is very dangerous.'' For this reason I decided not to describe the
 reference counter part in this thesis. If you are interested in it, please,
