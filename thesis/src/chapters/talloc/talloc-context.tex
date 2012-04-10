@@ -64,7 +64,7 @@ the allocated memory:
 
 \subsection{Hierarchy of talloc contexts}
 
-Every talloc context contains information about its parents and children. Talloc
+Every talloc context contains information about its parent and children. Talloc
 uses this information to create a hierarchical model of memory or to be more
 precise, it creates an n-ary tree where each node represents a single talloc
 context. The root node of the tree is referred to as a top level context -- a
@@ -363,8 +363,7 @@ int talloc_free(TALLOC_CTX *ctx)
   Deallocates memory occupied by the context and recursively frees its
   children as well. The returned value is |0| on success, |-1| if |ctx| is
   |NULL| or if the destructor\footnote{More information on destructors is in
-  section \cmplref{talloc:sec:destructors}} attached to this context or one of
-  its children fails.
+  section \cmplref{talloc:sec:destructors}} attached to this context fails.
 \end{funcdesc}
 \begin{funcproto}
 void talloc_free_children(TALLOC_CTX *ctx)
