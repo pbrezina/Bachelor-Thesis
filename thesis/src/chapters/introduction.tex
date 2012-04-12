@@ -1,57 +1,85 @@
 \chapter{Introduction}
 
-Retrieving and storing data have been always much slower than the processing of
-data. Even though the speed of I/O devices has grown dramatically over the
-decades, it is no match for billions of operations that can be done by current
-processors per second. The currently available hard disk drives can transfer
-approximately 100MB per second; solid state drives are a little bit faster with
-200-300MB per second. Although these speeds can be enough for most of the
-applications, it is very popular to store data on a remote system accessed via
-the Internet. The quality of the Internet connectivity depends on the country
-but the global average speed is 2.6Mbps \cite{StateOfTheInternet} which is very
-slow, not to mention that the usual latency is about 100ms. And of course we
-can not forget the slowest input device ever – the user. Therefore many programs
-spend most of their time waiting for an I/O operation to finish. We can find
-plenty of applications where this is not desirable or even acceptable (network
-services, monitoring tools, applications with graphical interface, etc.).
+Although the usual amount of the main memory has grown dramatically over the
+decades, it is still one of the most critical system resources. Therefore a good
+memory management is very important, especially in programs that are expected to
+be running permanently. This no longer applies only to drivers and server
+applications but also more and more desktop programs are used to be running
+for the computer uptime (web browsers, instant messaging clients, gaming
+platforms, etc.). In such programs a proper memory management is very important
+because even a small memory leak that occurs periodically may end up in a much
+bigger memory consumption after several hours of the application runtime. Even
+though many popular programming languages contain garbage collector that takes
+the memory management off the developer's shoulders, many programs are still
+being written using a language such as C where the heap memory is completely
+in the hands of a programmer.
 
-There are two main approaches that give us the option to continue in code
-processing while waiting for the I/O operation to finish – asynchronous
-computation \cite{ParallelComputing} and asynchronous I/O \cite{AsynchronousIO}.
+Managing memory in the C language is a very difficult task. It is mainly due to
+the fact that the standard library does not provide any tools for simple
+deallocation of complex structures. The standard approach is to write a
+specific free function for every custom data type that goes down through the
+elements tree and frees them one by one from the bottom to top. The problem is
+that it takes many lines of code and it is very likely that we will forget to
+free something. Over the years several libraries has been developed that aims
+to make the memory management in C easier and more error proof. [other libs]
 
-Asynchronous computation takes advantage of the current multi-cored processors
-which provides us the ability to run several parts of the same program
-simultaneously using operating system objects called threads \cite{Threads}.
-This, however, requires a whole new level of code complexity to handle the
-synchronization of these threads. Also some libraries do not behave correctly
-when used in multiple threaded programs. Therefore, if we do not really need two
-simultaneous computations, it is still better to use the simpler asynchronous
-I/O which can (but does not necessary have to) operate only as a single thread.
+Talloc is a very mature and easy to use memory allocator written in C, developed
+and maintained by the Samba\footnotemark[1] team. Since it was released in
+[year] it has become the main memory allocator in a few projects, including Samba,
+SSSD\footnotemark[2] and nfsim\footnotemark[3]. Unfortunately the wider
+expansion of this library is being blocked by the lack of tutorial and a
+comprehensive description of its properties and behaviour.
 
-Asynchronous I/O (also referred to as a non-blocking I/O) is a technique
-when instead of waiting for an I/O operation to finish; the program continues
-processing code unrelated to this operation. After a while the program tests
-the status of the transmission (using simple polling or more sophisticated tools
-like signals or interrupts). If it is finished, the application will take
-an appropriate action or does something else otherwise. It can be used with
-multiple I/O operations at once. This technique is widely used in operating
-systems (OS) with multi-tasking capability: if one program starts a synchronous
-(blocking) I/O transaction, OS puts it to sleep and temporarily replaces it
-with another program. The low level API for asynchronous I/O is often aggregated
-in event libraries. One of such library is tevent.
+The goal of this thesis is to create a comprehensive description of the talloc
+features with code samples and a summary of the best practices of its usage
+which will speed up the initial training of a new developer of the SSSD. The
+thesis also aims to create a tutorial that will be published on the library
+homepage and that will hopefully help the talloc to spread to many more projects.
 
-Tevent is a very mature and easy to use event library written in C, developed
-and maintained by the Samba team\footnote{\url{http://www.samba.org}}.
-Unfortunately there is very little documentation available, which makes tevent
-difficult to learn. There are no tutorials, nor examples; there is only a small
-API reference on the Samba web page so one must learn the usage from very
-complex programs like Samba or SSSD\footnote{System Security Services Daemon:
-\url{https://fedorahosted.org/sssd}}. Therefore, the purpose of this thesis is
-to provide a complete set of code samples and tutorials – from simple library
-initialization to complex nested asynchronous events.
+My primary sources of knowledge are the talloc source codes, my and my
+colleagues experience from the development of the SSSD and discussions with the
+authors of this library.
 
-This thesis consists of three parts. The first part is an overview of event
-libraries concepts and describes how they work under the hood. The second part
-contains a description of, and tutorials for, the talloc library – the
-underlying memory allocator that is widely used in tevent. And finally the part
-three focuses on the tevent library itself.
+\footnotetext[1]{Windows interoperability suite: 
+\url{http://www.samba.org}}
+\footnotetext[2]{System Security Services Daemon:
+\url{https://fedorahosted.org/sssd}}
+\footnotetext[3]{Netfilter simulation environment:
+\url{http://ozlabs.org/~jk/projects/nfsim}}
+
+% - why we have to care about memory consumption
+% - something about memory leaks
+% - difficulties of the C language
+% - libraries: 
+%  - libapr memory pools (apache runtime library)
+% 
+% - it is developed and maintained by Samba team
+% - created for Samba, version ?, since ?
+% - widely used in Samba, SSSD and ?
+% - documentation is very short and incomplete 
+% - it is not very spread due to lack of a documentation and tutorials
+% - goals:
+%  - correct documentation
+%  - create tutorial
+%  - describe how it works
+%  - summarize best practices
+% - sources of knowledge:
+%  - existing documentation
+%  - talks with authors
+%  - source codes
+%  - experience from SSSD development
+% 
+% Tevent is a very mature and easy to use event library written in C, developed
+% and maintained by the Samba team.
+% Unfortunately there is very little documentation available, which makes tevent
+% difficult to learn. There are no tutorials, nor examples; there is only a small
+% API reference on the Samba web page so one must learn the usage from very
+% complex programs like Samba or SSSD. Therefore, the purpose of this thesis is
+% to provide a complete set of code samples and tutorials – from simple library
+% initialization to complex nested asynchronous events.
+% 
+% This thesis consists of three parts. The first part is an overview of event
+% libraries concepts and describes how they work under the hood. The second part
+% contains a description of, and tutorials for, the talloc library – the
+% underlying memory allocator that is widely used in tevent. And finally the part
+% three focuses on the tevent library itself.
