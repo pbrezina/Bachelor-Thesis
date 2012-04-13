@@ -8,6 +8,17 @@ BIN=bin
 
 clean:
 	rm -fr $(BIN)
+	
+init:
+	mkdir -p $(BIN)
 
-performance-test-1:
-	$(CMPL) -o $(BIN)/performance-test-1 $(PERFORMANCE)/test1.c
+perftest-string-append: init
+	$(CMPL) -o $(BIN)/perftest-string-append  \
+		$(PERFORMANCE)/string_append/main.c   \
+		$(PERFORMANCE)/string_append/malloc.c \
+		$(PERFORMANCE)/string_append/malloc_strcat.c \
+		$(PERFORMANCE)/string_append/malloc_strncat.c \
+		$(PERFORMANCE)/string_append/malloc_memcpy.c \
+		$(PERFORMANCE)/string_append/talloc.c \
+		$(PERFORMANCE)/string_append/talloc_append.c \
+		$(PERFORMANCE)/string_append/talloc_append_buffer.c
