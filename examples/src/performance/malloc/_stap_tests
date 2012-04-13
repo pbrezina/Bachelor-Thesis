@@ -1,0 +1,5 @@
+perftest-malloc-std/test_malloc
+perftest-malloc-talloc-size/test_talloc_size
+perftest-malloc-talloc-tmpctx/test_talloc_size_tmp_ctx
+perftest-malloc-talloc-pool-exact/test_talloc_pool_exact
+perftest-malloc-talloc-pool-guess/test_talloc_pool_guess

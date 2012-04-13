@@ -1,0 +1,12 @@
+perftest-concat-strcat/test_malloc_strcat
+perftest-concat-strcat-pool/test_malloc_strcat_pool
+perftest-concat-strncat/test_malloc_strncat
+perftest-concat-strncat-pool/test_malloc_strncat_pool
+perftest-concat-memcpy/test_malloc_memcpy
+perftest-concat-memcpy-pool/test_malloc_memcpy_pool
+perftest-concat-append/test_talloc_append
+perftest-concat-append-parent-pool-exact/test_talloc_append_parent_pool_exact
+perftest-concat-append-parent-pool-guess/test_talloc_append_parent_pool_guess
+perftest-concat-buffer/test_talloc_buffer
+perftest-concat-buffer-parent-pool-exact/test_talloc_buffer_parent_pool_exact
+perftest-concat-buffer-parent-pool-guess/test_talloc_buffer_parent_pool_guess
