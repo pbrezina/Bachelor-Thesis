@@ -1,0 +1,2 @@
+perftest-realloc-std/test_realloc
+perftest-realloc-talloc/test_talloc_realloc

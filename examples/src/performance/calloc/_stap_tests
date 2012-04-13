@@ -1,0 +1,2 @@
+perftest-calloc-std/test_calloc
+perftest-calloc-talloc/test_talloc_zero_array
