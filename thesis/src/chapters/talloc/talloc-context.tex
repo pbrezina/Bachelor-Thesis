@@ -255,8 +255,10 @@ is set to location in the source file where the function is invoked.
 
 If we choose to use these functions we lose both the compile-time and runtime
 ability to detect a type mismatch. Therefore we should avoid using these
-routines unless we really want to retrieve a |void*| (e.g. reading binary data
-from a file).
+routines unless we really want to retrieve a |void*|. The primary use for
+these functions is for creating allocation routines for other libraries that
+allow custom memory allocation. In those cases, we can not know ahead of time
+what structure will be passed in, so we are limited to using the size.
 
 The following functions are type unsafe variants of |talloc()| and
 |talloc_zero()|:
