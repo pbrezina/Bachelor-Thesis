@@ -21,21 +21,22 @@ specific free function for every custom data type that goes down through the
 elements tree and frees them one by one from the bottom to top. The problem is
 that it takes many lines of code and it is very likely that we will forget to
 free something. Over the years several libraries has been developed that aims
-to make the memory management in C easier and more error proof. [other libs]
+to make the memory management in C easier and more error proof. Examples of this
+kind of libraries are memory pools from the APR\footnote{Apache Portable
+Runtime: \url{http://apr.apache.org/}} and halloc \footnote{Hierarchical
+memory allocator: \url{http://swapped.cc/halloc}}. Another library which is originally
+based upon halloc is talloc.
 
-Talloc is a very mature and easy to use memory allocator written in C, developed
-and maintained by the Samba\footnotemark[1] team. Since it was released in
-[year] it has become the main memory allocator in a few projects, including Samba,
-SSSD\footnotemark[2] and nfsim\footnotemark[3]. Unfortunately the wider
-expansion of this library is being blocked by the lack of tutorial and a
+Talloc\footnote{Talloc memory allocator: \url{http://talloc.samba.org}} is a
+very mature and easy to use memory allocator written in C, developed and
+maintained by the Samba\footnote{Windows interoperability suite:
+\url{http://www.samba.org}} team. Since its first public release in 2009 it has
+become the main memory allocator in a few projects, including Samba,
+SSSD\footnote{System Security Services Daemon:
+\url{https://fedorahosted.org/sssd}} and nfsim\footnote{Netfilter simulation
+environment: \url{http://ozlabs.org/~jk/projects/nfsim}}. Unfortunately the
+wider expansion of this library is being blocked by the lack of tutorial and a
 comprehensive description of its properties and behaviour.
-
-\footnotetext[1]{Windows interoperability suite: 
-\url{http://www.samba.org}}
-\footnotetext[2]{System Security Services Daemon:
-\url{https://fedorahosted.org/sssd}}
-\footnotetext[3]{Netfilter simulation environment:
-\url{http://ozlabs.org/~jk/projects/nfsim}}
 
 The goal of this thesis is to create a comprehensive description of the talloc
 features with code samples and a summary of the best practices of its usage
