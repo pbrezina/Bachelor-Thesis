@@ -22,3 +22,9 @@ perftest-string-append: init
 		$(PERFORMANCE)/string_append/talloc.c \
 		$(PERFORMANCE)/string_append/talloc_append.c \
 		$(PERFORMANCE)/string_append/talloc_append_buffer.c
+
+perftest-malloc: init
+	$(CMPL) -o $(BIN)/perftest-malloc  \
+		$(PERFORMANCE)/malloc/main.c   \
+		$(PERFORMANCE)/malloc/malloc.c \
+		$(PERFORMANCE)/malloc/talloc.c

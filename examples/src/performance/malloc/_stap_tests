@@ -1,0 +1,3 @@
+test_malloc_size
+test_talloc_size
+test_talloc_size_tmp_ctx
