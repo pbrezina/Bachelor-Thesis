@@ -17,3 +17,4 @@ examples/bin/*
 
 *.log
 *.pdf
+*.stap
