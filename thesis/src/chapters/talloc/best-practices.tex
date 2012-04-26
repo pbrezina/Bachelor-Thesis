@@ -10,8 +10,8 @@ leaks as possible.
 
 The talloc is a hierarchy memory allocator. The hierarchy nature is what makes
 the programming more error proof. It makes the memory easier to manage and free.
-Therefore the first thing we should have on our mind is: always project our data
-structures into the talloc context hierarchy.
+Therefore, the first thing we should have on our mind is: always project our
+data structures into the talloc context hierarchy.
 
 That means if we have a structure, we should always use it as a parent context
 for its elements. This way we will not encounter any troubles when freeing this
@@ -38,7 +38,7 @@ memory leaks are created as long as we do not forget to free the temporary
 context.
 
 This pattern applies to both situations - when a function does not return any
-dynamically allocated value and when it does. However it needs a little
+dynamically allocated value and when it does. However, it needs a little
 extension for the latter case.
 
 \subsubsection{Functions that does not return any dynamically allocated value}
@@ -66,13 +66,13 @@ done:
 \subsubsection{Functions returning dynamically allocated values}
 
 If our function returns any dynamically allocated data, its first parameter
-should always be the destination talloc context. This context will serve
-as a parent for the output values. But again, we will create the output values
-as the descendants of the temporary context. If everything goes well, we will
-change the parent of the output values from the temporary to the destination
-talloc context.
+should always be the destination talloc context. This context serves as a parent
+for the output values. But again, we will create the output values as the
+descendants of the temporary context. If everything goes well, we will change
+the parent of the output values from the temporary to the destination talloc
+context.
 
-This pattern ensures that if some error occurs (e.g. insufficient amount of
+This pattern ensures that if an error occurs (e.g. insufficient amount of
 memory), all allocated data are freed and no garbage appears on the destination
 context.
 
@@ -99,10 +99,10 @@ done:
 \subsection{Allocate temporary contexts on NULL}
 \label{talloc:subsec:tmp-ctx-on-null}
 
-As you can see on the Listing \ref{lst:tmp-ctx-2}, instead of allocating the
+As it can be seen on the Listing \ref{lst:tmp-ctx-2}, instead of allocating the
 temporary context directly on |mem_ctx|, we created a new top level context
 using |NULL| as the parameter for |talloc_new()| function. Take a look at the
-following example.
+following example:
 
 \begin{lstlisting}[caption={Temporary context \#3},label=lst:tmp-ctx-3]
 char * create_user_filter(TALLOC_CTX *mem_ctx,
@@ -136,11 +136,11 @@ char * create_user_filter(TALLOC_CTX *mem_ctx,
 \end{lstlisting}
 
 We forgot to free |tmp_ctx| before the |return| statement on line
-\ref{lst:tmp-ctx-3:leak}. However it is created as a child of |mem_ctx| context
-and as such it will be freed as soon as the |mem_ctx| is freed. Therefore no
+\ref{lst:tmp-ctx-3:leak}. However, it is created as a child of |mem_ctx| context
+and as such it will be freed as soon as the |mem_ctx| is freed. Therefore, no
 detectable memory leak is created.
 
-On the other hand we do not have any way how to access the allocated data
+On the other hand, we do not have any way how to access the allocated data
 and for what we know |mem_ctx| may exists for a lifetime of our application.
 For these reasons this should be considered as a memory leak. But how can we
 detect it when it is properly freed? The only way is to notice the mistake in
@@ -150,13 +150,13 @@ But if we create the temporary context as a top level context, it will not be
 freed and memory diagnostic tools
 (e.g. |valgrind|\footnote{\url{http://valgrind.org}}) are able to do their job.
 
-\subsection{Temporary contexts and talloc pool}
+\subsection{Temporary contexts and the talloc pool}
 \label{talloc:subsec:tmp-ctx-and-pool}
 
 If we want to take the advantage of the talloc pool but also keep to the
 pattern introduced in previous section, we are unable to do it directly. The
 best thing to do is to create a conditional build where we can decide how do we
-want to create the temporary context. For example, we can create following
+want to create the temporary context. For example, we can create the following
 macros:
 
 \begin{lstlisting}[caption={Conditional temporary context

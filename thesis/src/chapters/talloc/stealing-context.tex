@@ -27,11 +27,11 @@ void *talloc_move(TALLOC_CTX *ctx, const void **ptr)
   Additionally assigns |NULL| into |ptr|.
 \end{funcdesc}
 \funclistend
-In general, the pointer itself will not be changed (it will only replace the
-parent in the meta data). But the common usage is that we will assign the
-result to another variable, so we should avoid accessing the pointer from the
-original variable if it is not necessary. Therefore |talloc_move()| is a
-preferred way of stealing a context as it protects the pointer from being
+In general, the pointer itself is not changed (it only replaces the
+parent in the meta data). But the common usage is that the result is assigned
+to another variable, thus further accessing the pointer from the original
+variable should be avoided unless it is necessary. Therefore, |talloc_move()| is
+a preferred way of stealing a context as it protects the pointer from being
 accidentally freed and accessed using the old variable after its parent have
 been changed.
 

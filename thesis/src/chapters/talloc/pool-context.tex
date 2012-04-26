@@ -1,19 +1,19 @@
 \section{Decreasing number of malloc() calls}
 \label{talloc:pool}
 
-Allocation of a new memory is an expensive kernel space operation. Large
-programs can contain thousands of calls of |malloc()| for a single computation.
-This can pour out into an undesirable slowdown of the application. We can avoid
-this slowdown by decreasing number of |malloc()| calls by using a memory pool.
+Allocation of a new memory is an expensive operation and large programs can
+contain thousands of calls of |malloc()| for a single computation, where every
+call allocates only a very small amount of the memory. This can result in an
+undesirable slowdown of the application. We can avoid this slowdown by
+decreasing the number of |malloc()| calls by using a memory pool.
 
-Memory pool\footnote{An example of a simple memory pool can be found in appendix
-@TODO} is a preallocated memory space with a fixed size. If we need to allocate
-new data we will take the desired amount of the memory from the pool instead of
-requesting new memory from the system. This is done by creating a pointer that
-points inside the preallocated memory. Such pool must not be reallocated as it
-would change its location -- pointers that were pointing inside the pool would
-become invalid. Therefore memory pool requires a very good estimate of the
-required memory space.
+Memory pool is a preallocated memory space with a fixed size. If we need to
+allocate new data we will take the desired amount of the memory from the pool
+instead of requesting a new memory from the system. This is done by creating a
+pointer that points inside the preallocated memory. Such pool must not be
+reallocated as it would change its location -- pointers that were pointing
+inside the pool would become invalid. Therefore, a memory pool requires a very
+good estimate of the required memory space.
 
 The talloc library contains its own implementation of a memory pool. It is
 highly transparent for the programmer. The only thing that needs to be done is
@@ -61,11 +61,11 @@ talloc_free(pool_ctx);
 \end{lstlisting}
 
 \noindent
-This is very nice. However it has one big issue that we must be aware of. See,
-if we change the parent of a child of talloc pool to a parent that is outside
-this pool, the whole pool memory will not be freed until the child is freed.
-For this reason we must be very careful when stealing a descendant of a pool
-context.
+The above given is very convenient, but there is one big issue to be kept in
+mind. If the parent of a talloc pool child is changed to a parent that is
+outside of this pool, the whole pool memory will not be freed until the child is
+freed. For this reason we must be very careful when stealing a descendant of a
+pool context.
 
 \begin{lstlisting}[caption={Stealing from pool context},
 morekeywords={talloc_pool,talloc_steal,talloc_free}]
@@ -94,12 +94,13 @@ TALLOC_CTX *talloc_memdup(TALLOC_CTX *parent,
                           TALLOC_CTX *ctx, size_t size)
 \end{funcproto}
 \begin{funcdesc}
-Creates new context and copies |size| bytes from |ctx| into it. The name of the
-context will be the location in the source code where is this function called.
+Creates a new context and copies |size| bytes from |ctx| into it. The name of
+the context will be the location in the source code where is this function
+called.
 \end{funcdesc}
 \funclistend
 For example, the most effective way of creating the LDAP filter with groups
-(introduced in the Listing \ref{lst:append_buffer}) will look like:
+(introduced in the Listing \ref{lst:append_buffer}) would be:
 
 \begin{lstlisting}[caption={Appending a string with a pool context},
 morekeywords={talloc_pool,talloc_memdup}]

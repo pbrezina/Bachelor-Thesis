@@ -1,18 +1,18 @@
 \chapter{Introduction}
 
 Although the usual amount of the main memory has grown dramatically over the
-decades, it is still one of the most critical system resources. Therefore a good
-memory management is very important, especially in programs that are expected to
-be running permanently. This no longer applies only to drivers and server
-applications but also more and more desktop programs are used to be running
-for the computer uptime (web browsers, instant messaging clients, gaming
-platforms, etc.). In such programs a proper memory management is very important
-because even a small memory leak that occurs periodically may end up in a much
-bigger memory consumption after several hours of the application runtime. Even
-though many popular programming languages contain garbage collector that takes
-the memory management off the developer's shoulders, many programs are still
-being written using a language such as C where the heap memory is completely
-in the hands of a programmer.
+decades, it is still one of the most critical system resources. Therefore, a
+good memory management is very important, especially in programs that are
+expected to be running permanently. This no longer applies only to drivers and
+server applications but also more and more desktop programs are used to be
+running for the computer uptime (web browsers, instant messaging clients,
+gaming platforms, etc.). In such programs a proper memory management is very
+important because even a small memory leak that occurs periodically may result
+in a much bigger memory consumption after several hours of the application
+runtime. Even though many popular programming languages contain a garbage
+collector that takes the memory management off the developer's shoulders, many
+programs are still written using a language such as C where the heap memory is
+completely in the hands of the programmer.
 
 \section{Managing memory in C}
 
@@ -20,14 +20,14 @@ Managing memory in the C language is a very difficult task. It is mainly due to
 the fact that the standard library does not provide any tools for simple
 deallocation of complex structures. The standard approach is to write a
 specific free function for every custom data type that goes down through the
-elements tree and frees them one by one from the bottom to top. The problem is
-that it takes many lines of code and it is very likely that we will forget to
-free something. Over the years several libraries has been developed that aims
-to make the memory management in C easier and more error proof. Examples of this
-kind of libraries are memory pools from the APR\footnote{Apache Portable
-Runtime: \url{http://apr.apache.org/}} and halloc \footnote{Hierarchical
-memory allocator: \url{http://swapped.cc/halloc}}. Another library which is originally
-based upon halloc is talloc.
+elements tree and frees them one by one from the bottom to the top. The problem
+is that it takes many lines of code and it is very likely that something is
+forgotten to be freed. Over the years several libraries has been developed that
+aim to make the memory management in C easier and more error proof. Examples of
+this kind of libraries are memory pools from the APR\footnote{Apache Portable
+Runtime: \url{http://apr.apache.org/}} and halloc \footnote{Hierarchical memory
+allocator: \url{http://swapped.cc/halloc}}. Another library, which is
+originally based upon halloc, is talloc.
 
 Talloc\footnote{Talloc memory allocator: \url{http://talloc.samba.org}} is a
 very mature and easy to use memory allocator written in C, developed and
@@ -36,15 +36,15 @@ maintained by the Samba\footnote{Windows interoperability suite:
 become the main memory allocator in a few projects, including Samba,
 SSSD\footnote{System Security Services Daemon:
 \url{https://fedorahosted.org/sssd}} and nfsim\footnote{Netfilter simulation
-environment: \url{http://ozlabs.org/~jk/projects/nfsim}}. Unfortunately the
-wider expansion of this library is being blocked by the lack of tutorial and a
+environment: \url{http://ozlabs.org/~jk/projects/nfsim}}. Unfortunately, the
+wider expansion of this library is being blocked by the lack of tutorials and a
 comprehensive description of its properties and behaviour.
 
 \section{Goals of this thesis}
 
 The goal of this thesis is to create a comprehensive description of the talloc
-features with code samples and a summary of the best practices of its usage
-which will speed up the initial training of a new developer of the SSSD. The
+features with code samples and a summary of the best practices of its usage,
+which can speed up the initial training of new developers of the SSSD. The
 thesis also aims to create a tutorial that will be published on the library
 homepage and that will hopefully help the talloc to spread to many more projects.
 

@@ -1,32 +1,32 @@
 \section{Debugging options}
 \label{talloc:sec:debugging}
 
-Although talloc makes memory management significantly easier than the standard
-library does, developers are still only humans. Therefore it may be a good idea
-to know the tools for the inspection of talloc memory usage.
+Although talloc makes memory management significantly easier than the C standard
+library, developers are still only humans and can make mistakes. Therefore, it
+can be handy to know some tools for the inspection of talloc memory usage.
 
 \subsection{Talloc log and abort}
 
 We have already encountered the abort function in section \ref{talloc:dyn-ts}.
-In that case it was used when a type mismatch was detected. However talloc
+In that case it was used when a type mismatch was detected. However, talloc
 calls this abort function in several more situations:
 
 \begin{itemize}
   \item when the provided pointer is not a valid talloc context,
   \item when the meta data are invalid -- probably due to a memory corruption,
-  \item and when access after free is detected.
+  \item and when an access after free is detected.
 \end{itemize}
 
 The third one is probably the most interesting. It can help us with detecting
 double free a context or any other manipulation with it via talloc functions
 (using it as a parent, stealing it, etc.).
 
-Before the context is freed talloc sets a flag bit in the meta data. This is
-then used to detect the access after free. It basically works on the assumption
-that the memory will stay unchanged (at least for a while) even when it is
-properly deallocated. This will work even if the memory is filled with the
-value specified in |TALLOC_FREE_FILL| environment variable, because it will
-fill only the data part and leaves the meta data intact.
+Before the context is freed talloc sets a flag in the meta data. This is then
+used to detect the access after free. It basically works on the assumption that
+the memory stays unchanged (at least for a while) even when it is properly
+deallocated. This will work even if the memory is filled with the value
+specified in |TALLOC_FREE_FILL| environment variable, because it fills only
+the data part and leaves the meta data intact.
 
 Apart from the abort function, talloc uses a log function to provide additional
 information to the aforementioned violations. To enable logging we shall set the
@@ -40,7 +40,7 @@ void talloc_set_log_stderr()
 The latter one is a shortcut for a common scenario -- it will print the
 |message| in the standard error stream.
 
-Here is an sample output of accessing a context after it has been freed:
+Below given is an sample output of accessing a context after it has been freed:
 
 \begin{lstlisting}[caption={Talloc error -- access after free}]
 talloc_set_log_stderr();
@@ -55,7 +55,7 @@ Bad talloc magic value - access after free
 \end{lstlisting}
 
 \noindent
-And here is an example of the invalid context:
+Another example below is an example of the invalid context:
 
 \begin{lstlisting}[caption={Talloc error -- not a talloc context}]
 talloc_set_log_stderr();
@@ -110,14 +110,14 @@ full talloc report on 'talloc_new: ../src/main.c:82' (total 46 bytes in 5 blocks
 
 \noindent
 We can notice in this report that something is wrong with the context containing
-|struct foo|. We know that the structure has only one string element. However we
-can see in the report that it has two children. This indicates that we have
+|struct foo|. We know that the structure has only one string element. However,
+we can see in the report that it has two children. This indicates that we have
 either violated the memory hierarchy or forgot to free it as a temporary data.
 Looking into the code, we can see that |"Foo is my parent"| should be attached
 to |ctx|.
 
 The following functions affect the behaviour of talloc reports. To get correct
-results, they should be called before any other routine from talloc library.
+results, they should be called before any other routine from the talloc library.
 
 \begin{funcproto}
 void talloc_enable_null_tracking(void)
@@ -134,7 +134,7 @@ void talloc_enable_leak_report(void)
 void talloc_enable_leak_report_full(void)
 \end{funcproto}
 \begin{funcdesc}
-  Enables automatic simple/full report of all contexts at program exit. The
+  Enables an automatic simple/full report of all contexts at program exit. The
   report is printed in |stderr|.
 \end{funcdesc}
 
@@ -168,17 +168,17 @@ if (total_size != talloc_total_size(ctx)) {
 }
 \end{lstlisting}
 
-However such checks are not suitable for an application itself as we have to
-free |foo| before other usage of the parent context. Therefore the proper place
+However, such checks are not suitable for an application itself as we have to
+free |foo| before other usage of the parent context. Therefore, the proper place
 for this is in your test suit, possibly in unit tests.
 
-The SSSD uses a set of functions\footnote{Available in appendinx @TODO} which
-goal is to detect memory leaks on a talloc context in unit tests created with
-the Check\footnote{\url{http://check.sourceforge.net}} library (but it can be
-easily modified for other test suits). It does it in a more advanced manner than
-the previous example introduced. It works on a push/pop basis, where the unit
-test will fail if a context has after the pop operation different size than it
-had during the push operation.
+The SSSD uses a set of functions\footnote{Available in appendinx @TODO} the goal
+of which is to detect memory leaks on a talloc context in unit tests created
+with the Check\footnote{\url{http://check.sourceforge.net}} library (but it can
+be easily modified for other test suits). It does it in a more advanced manner
+than the previous example introduced. It works on a push/pop basis, where the
+unit test will fail if a context has after the pop operation different size
+than it had during the push operation.
 
 \begin{lstlisting}[caption={Memory leaks detection \#2},
 morekeywords={leak_check_setup,check_leaks_push,
