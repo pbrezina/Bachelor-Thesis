@@ -20,37 +20,37 @@ int destructor(void *ctx)
 \end{funcproto}
 \funclistend
 The parameter |ctx| is the talloc context that is about to be freed. The proper
-type can be retrieved with |talloc_get_type()|. The destructor is type safe during
-the compilation if we use |GCC 3| or newer (it uses the |__typeof__|
-feature of this compiler). With this compiler we can avoid 
-using |void*| and the parameter can be any valid pointer type.
+type can be retrieved with |talloc_get_type()|. The destructor is type safe
+during the compilation if we use |GCC 3| or newer (it uses the |__typeof__|
+feature of this compiler). With this compiler we can avoid using |void*| and the
+parameter can be any valid pointer type.
 
 The destructor should return |0| for succes and |-1| on failure. If it returns
-|-1| then |talloc_free()| will fail and the memory of the context and its
-children will not be freed.
+|-1| then |talloc_free()| fails and the memory of the context and its children
+is not deallocated.
 
 \subsection{Managing destructors}
 
-To attach a destructor to a talloc context we will use:
+The following function is used to attach a destructor to a talloc context:
 
 \begin{funcproto}
 void talloc_set_destructor(TALLOC_CTX *ctx,
                            int(*)(void *) destructor) 
 \end{funcproto}
 \funclistend
-Every context can have one destructor attached as a maximum. If we call this
-function more than once on the same context, the current destructor will be
+Every context can have one destructor attached as a maximum. If the function is
+called more than once on the same context, the current destructor is
 overwritten. To detach the destructor from the context we will simply set
 |NULL| as the new destructor.
 
 \subsection{Children contexts with destructors}
 
-If we will attempt to free a talloc context (|ctx|) that has one or more
-children with a destructor attached, we may encounter a strange behaviour. If a
-destructor of |ctx| fails, |talloc_free(ctx)| will fail as well and there will
+If we attempt to free a talloc context (|ctx|) that has one or more children
+with a destructor attached, we may encounter a strange behaviour. If a
+destructor of |ctx| fails, |talloc_free(ctx)| fails as well and there will
 be no attempt to free the children of |ctx|.
 
-But if the destructor of |ctx| succeeds, |talloc_free(ctx)| will succeed and
+But if the destructor of |ctx| succeeds, |talloc_free(ctx)| succeeds too and
 the memory of |ctx| is deallocated even if destructor on one of the children
 fails.
 
