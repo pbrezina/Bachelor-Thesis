@@ -16,14 +16,14 @@ the C standard library but also |asprintf()| and its non-variadic
 equivalent |vasprintf()| which are demanded by the POSIX standard.
 
 As an addition to these basic routines it adds very useful alternatives that
-will append the result to an existing string or at the actual end of the talloc
+will append the result to the existing string or at the actual end of the talloc
 context. This gives us a total of twelve functions for string manipulation.
 
 All of these routines return a string that is also a valid talloc context
 which is named exactly just as the output string. The basic variants take as
 the first parameter an arbitrary talloc context which will serve as a parent to
 the newly created context. The extended |_append| variants take a talloc context
-that has to be a valid string to which the result will be appended.
+that has to be a valid string to which the result is appended.
 
 \subsection{Duplicating a string}
 
@@ -49,7 +49,7 @@ char* talloc_strdup_append_buffer(char *dest, const char *s)
   end of the context itself (it ignores the terminating zero).
 \end{funcdesc}
 \funclistend
-The |strndup| variants have the same behaviour but they will duplicate only |n|
+The |strndup| variants have the same characteristics but they duplicate only |n|
 characters from |str|.
 
 \begin{funcproto}
@@ -104,7 +104,7 @@ for (i = 0; groups[i] != NULL; i++) {
 filter = talloc_strdup_append(filter, ")");
 \end{lstlisting}
 
-To simplify the example, considering that each group has a name that consists
+To simplify the example, consider that each group has a name that consists
 from $n$ characters and the list contains $m$ groups. What will happen is that
 the length of both |filter| and |groups[i]| will be computed every time.
 
