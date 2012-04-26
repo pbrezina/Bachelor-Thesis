@@ -190,7 +190,7 @@ types and structures. Functions that are specialized in strings and arrays are
 described later in this text (sections \ref{talloc:sec:strings} and
 \ref{talloc:sec:arrays}).
 
-We can divide these functions into four categories: those that allow us to set
+These functions can be divided into four categories: those that allow us to set
 the name of the context, functions that create a zero-length context and
 type-safe and type-unsafe functions.
 
@@ -200,8 +200,8 @@ All of these functions share the following properties:
   memory,
   \item the first parameter is a talloc context which serves as a parent of
   the new context,
-  \item the parent context can be either an existing context or |NULL| which
-  will create a new top level context.
+  \item the parent context can be either an existing context or |NULL|, which
+  creates a new top level context.
 \end{itemize}
 
 \subsubsection{Type safe functions that create a new context}
@@ -214,7 +214,7 @@ to detect type mismatches.
 Another feature of these functions is that they automatically set the name of
 the context to the name of the data type. We can find this behaviour very handy
 as it carries the type information even if we cast a variable to some other
-type. We can then check for the type during the runtime as described in section
+type. Then we can check the type during the runtime as described in section
 \cmplref{talloc:dyn-ts}.
 
 The appropriate functions with this behaviour are:
@@ -250,10 +250,10 @@ if (user_zero == NULL) {
 
 Type unsafe functions take as a parameter the exact size we want to allocate
 instead of the type and return a pointer to |void|. The name of the context
-is set to location in the source file where the function is invoked.
+is set to the location in the source file where the function is invoked.
 
-If we choose to use these functions we lose both the compile-time and runtime
-ability to detect a type mismatch. Therefore we should avoid using these
+If we choose to use these functions we lose both the compile-time and the
+runtime ability to detect a type mismatch. Therefore we should avoid using these
 routines unless we really want to retrieve a |void*|. The primary use for
 these functions is for creating allocation routines for other libraries that
 allow custom memory allocation. In those cases, we can not know ahead of time
