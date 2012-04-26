@@ -3,7 +3,7 @@
 
 Although talloc makes memory management significantly easier than the C standard
 library, developers are still only humans and can make mistakes. Therefore, it
-may be a good idea to know the tools for the inspection of talloc memory usage.
+can be handy to know some tools for the inspection of talloc memory usage.
 
 \subsection{Talloc log and abort}
 
@@ -21,12 +21,12 @@ The third one is probably the most interesting. It can help us with detecting
 double free a context or any other manipulation with it via talloc functions
 (using it as a parent, stealing it, etc.).
 
-Before the context is freed talloc sets a flag bit in the meta data. This is
-then used to detect the access after free. It basically works on the assumption
-that the memory will stay unchanged (at least for a while) even when it is
-properly deallocated. This will work even if the memory is filled with the
-value specified in |TALLOC_FREE_FILL| environment variable, because it will
-fill only the data part and leaves the meta data intact.
+Before the context is freed talloc sets a flag in the meta data. This is then
+used to detect the access after free. It basically works on the assumption that
+the memory stays unchanged (at least for a while) even when it is properly
+deallocated. This will work even if the memory is filled with the value
+specified in |TALLOC_FREE_FILL| environment variable, because it fills only
+the data part and leaves the meta data intact.
 
 Apart from the abort function, talloc uses a log function to provide additional
 information to the aforementioned violations. To enable logging we shall set the
