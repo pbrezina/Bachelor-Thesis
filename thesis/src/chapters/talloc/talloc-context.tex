@@ -92,7 +92,7 @@ struct user {
 };
 \end{lstlisting}
 
-Building of such structure with talloc is very similar to the way it is done
+Building of such a structure with talloc is very similar to the way it is done
 using C standard library. We have to allocate memory for every single element of
 |struct user|. The main difference is that we will specify the parent to which
 the new talloc context will be attached to.
@@ -115,7 +115,7 @@ for (i = 0; i < user->num_groups; i++) {
 \end{lstlisting}
 
 \noindent
-The following sample solves the same issue but using talloc library. We will
+The following sample solves the same issue but using the talloc library. We will
 create a context tree that is illustrated on Figure
 \ref{fig:context-tree-1-user}.
 
@@ -149,7 +149,7 @@ for (i = 0; i < user->num_groups; i++) {
 This way, we have gained a lot of additional capabilities, one of which is
 very simple deallocation of the structure and all of its elements.
 
-With standard C library we need to first iterate over the array of groups and
+With standard C library we need first to iterate over the array of groups and
 free every element separately. Then we must deallocate the array that stores
 them. Next we deallocate the username and as the last step free the structure
 itself.
