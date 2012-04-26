@@ -28,12 +28,12 @@ void specific_function()
 }
 \end{lstlisting}
 
-Unfortunately, as a result of this type cast we are loosing the type
-information. The compiler can not check the type during the compilation nor we
-are able to do it during the runtime. Providing an invalid data type to the
-callback will end up in an unexpected behaviour (not necessarily a crash) of
-the application. This mistake is usually hard to detect because it is not the
-first thing on the mind of the developer.
+Unfortunately, as a result of this type cast the type information is lost. The
+compiler can not check the type during the compilation nor we are able to do it
+during the runtime. Providing an invalid data type to the callback will result
+in an unexpected behaviour (not necessarily a crash) of the application. This
+mistake is usually hard to detect because it is not the first thing on the mind
+of the developer.
 
 As we already know, every talloc context contains a name. This name is available
 at any time and it can be used to determine the type of a context even if we
@@ -42,7 +42,7 @@ lose the type of a variable.
 \subsection{Typed context}
 
 Although the name of the context can be set to any arbitrary string, the best
-way of using it to simulate dynamic type system is to set it directly to the
+way of using it to simulate the dynamic type system is to set it directly to the
 type of the variable.
 
 It is recommended to use one of |talloc()| and |talloc_array()| (or its
@@ -59,14 +59,14 @@ both the type check and type cast for us:
 \funclistend
 Both functions take as the first parameter a valid talloc context and as the
 second parameter the type which the context is supposed to be. If the provided
-type equals to the context name, they will return properly casted pointer to
+type equals to the context name, they return a properly casted pointer to
 this type.
 
 They differ in the other scenario -- when the context name is different. The
-first one will simply return |NULL|. The other one will log this violation into
-talloc log (see \ref{talloc:sec:debugging}) and immediately call an abort
-function. By default it will kill the application with |abort()| but we can
-change this behaviour by setting our own function with:
+first one simply returns |NULL|. The other one logs this violation into a talloc
+log (see section \ref{talloc:sec:debugging}) and immediately calls an abort
+function. By default it kills the application with |abort()| but this behaviour
+can be modified by setting our own abort function with:
 
 \begin{funcproto}
 void talloc_set_abort_fn(
@@ -88,7 +88,7 @@ type cast of the returned pointer.
 \subsection{Examples}
 
 Here is an example of a generic programming with talloc -- if we provide invalid
-data to the callback, the program will be aborted. This is sufficient
+data to the callback, the program will be aborted. This is a sufficient
 reaction for such an error in the most applications.
 
 \begin{lstlisting}[caption={Dynamic type system \#1}]
