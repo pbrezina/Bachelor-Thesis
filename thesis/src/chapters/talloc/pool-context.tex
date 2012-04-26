@@ -61,7 +61,7 @@ talloc_free(pool_ctx);
 \end{lstlisting}
 
 \noindent
-This is very nice. However it has one big issue that we must be aware of. See,
+This is very nice. However, it has one big issue that we must be aware of. See,
 if we change the parent of a child of talloc pool to a parent that is outside
 this pool, the whole pool memory will not be freed until the child is freed.
 For this reason we must be very careful when stealing a descendant of a pool

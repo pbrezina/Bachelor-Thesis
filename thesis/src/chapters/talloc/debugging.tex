@@ -8,7 +8,7 @@ to know the tools for the inspection of talloc memory usage.
 \subsection{Talloc log and abort}
 
 We have already encountered the abort function in section \ref{talloc:dyn-ts}.
-In that case it was used when a type mismatch was detected. However talloc
+In that case it was used when a type mismatch was detected. However, talloc
 calls this abort function in several more situations:
 
 \begin{itemize}
@@ -110,8 +110,8 @@ full talloc report on 'talloc_new: ../src/main.c:82' (total 46 bytes in 5 blocks
 
 \noindent
 We can notice in this report that something is wrong with the context containing
-|struct foo|. We know that the structure has only one string element. However we
-can see in the report that it has two children. This indicates that we have
+|struct foo|. We know that the structure has only one string element. However,
+we can see in the report that it has two children. This indicates that we have
 either violated the memory hierarchy or forgot to free it as a temporary data.
 Looking into the code, we can see that |"Foo is my parent"| should be attached
 to |ctx|.
@@ -168,7 +168,7 @@ if (total_size != talloc_total_size(ctx)) {
 }
 \end{lstlisting}
 
-However such checks are not suitable for an application itself as we have to
+However, such checks are not suitable for an application itself as we have to
 free |foo| before other usage of the parent context. Therefore the proper place
 for this is in your test suit, possibly in unit tests.
 

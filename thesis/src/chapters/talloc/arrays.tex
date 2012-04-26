@@ -12,7 +12,7 @@ previous text. We can do it in the same way as in the C standard library using
 |talloc_size()| where the size of the context would be |sizeof(type) *|
 |number_of_elements|.
 
-However this has two disadvantages. First of all we have to use the type unsafe
+However, this has two disadvantages. First of all we have to use the type unsafe
 functions to allocate the requested size which is unreliable. And at second,
 we have to do the multiplication by ourselves. Talloc developers were aware of
 it and they created a separate interface for arrays:

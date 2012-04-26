@@ -118,8 +118,8 @@ we just replace the |_append| with |_append_buffer|, the whole number will
 decrease to $2 + \sum_{i=0}^m n + 1 = 1003$. This can be a big performance
 boost in applications that contains a lot pieces of similar code.
 
-However we must be careful if we put |'\0'| in the middle of the string. The two
-functions will act differently:
+However, we must be careful if we put |'\0'| in the middle of the string. The
+two functions will act differently:
 
 \begin{lstlisting}[caption={Zero in the middle of a string}]
 char *str_a = talloc_strdup(NULL, "hello world");
