@@ -28,9 +28,9 @@ void specific_function()
 }
 \end{lstlisting}
 
-Unfortunately, as a result to this type cast we are loosing the type
-information. The compiler can not check the type during a compilation nor we are
-able to do it during the runtime. Providing an invalid data type to the
+Unfortunately, as a result of this type cast we are loosing the type
+information. The compiler can not check the type during the compilation nor we
+are able to do it during the runtime. Providing an invalid data type to the
 callback will end up in an unexpected behaviour (not necessarily a crash) of
 the application. This mistake is usually hard to detect because it is not the
 first thing on the mind of the developer.
@@ -76,7 +76,7 @@ void talloc_set_abort_fn(
 
 \subsection{Arbitrary name check}
 
-If we want to check the context against some custom name, we can do this with:
+If we want to check the context against some custom name, we can do this using:
 
 \begin{funcproto}
 void* talloc_check_name(TALLOC_CTX *ctx, const char *name)
