@@ -38,7 +38,7 @@ memory leaks are created as long as we do not forget to free the temporary
 context.
 
 This pattern applies to both situations - when a function does not return any
-dynamically allocated value and when it does. However it needs a little
+dynamically allocated value and when it does. However, it needs a little
 extension for the latter case.
 
 \subsubsection{Functions that does not return any dynamically allocated value}
@@ -136,7 +136,7 @@ char * create_user_filter(TALLOC_CTX *mem_ctx,
 \end{lstlisting}
 
 We forgot to free |tmp_ctx| before the |return| statement on line
-\ref{lst:tmp-ctx-3:leak}. However it is created as a child of |mem_ctx| context
+\ref{lst:tmp-ctx-3:leak}. However, it is created as a child of |mem_ctx| context
 and as such it will be freed as soon as the |mem_ctx| is freed. Therefore no
 detectable memory leak is created.
 
