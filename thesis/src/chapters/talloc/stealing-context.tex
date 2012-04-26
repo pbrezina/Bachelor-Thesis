@@ -30,7 +30,7 @@ void *talloc_move(TALLOC_CTX *ctx, const void **ptr)
 In general, the pointer itself will not be changed (it will only replace the
 parent in the meta data). But the common usage is that we will assign the
 result to another variable, so we should avoid accessing the pointer from the
-original variable if it is not necessary. Therefore |talloc_move()| is a
+original variable if it is not necessary. Therefore, |talloc_move()| is a
 preferred way of stealing a context as it protects the pointer from being
 accidentally freed and accessed using the old variable after its parent have
 been changed.

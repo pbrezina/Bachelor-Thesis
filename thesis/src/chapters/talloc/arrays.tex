@@ -88,7 +88,7 @@ the array. We need to store the size of the array in other variable and carry
 this information with the array.
 
 Talloc makes this easier as every talloc context already contains the
-information about its size (in bytes). Therefore instead of carrying the number
+information about its size (in bytes). Therefore, instead of carrying the number
 of the elements separately, we can just divide the context size by the size of
 the data type the array consists of. Talloc has a macro
 |talloc_array_length(ctx)| that serves for this purpose. It requires the name of

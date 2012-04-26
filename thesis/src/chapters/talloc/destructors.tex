@@ -57,7 +57,7 @@ fails.
 \subsection{Example}
 
 Imagine that we have a dynamically created linked list. We do not want to use an
-element of the list after it is removed from the list. Therefore removing the
+element of the list after it is removed from the list. Therefore, removing the
 element would mean also deallocating it. We can do this at once by setting a
 destructor on the element which will remove it from the list and
 |talloc_free()| will do the rest.

@@ -12,7 +12,7 @@ new data we will take the desired amount of the memory from the pool instead of
 requesting new memory from the system. This is done by creating a pointer that
 points inside the preallocated memory. Such pool must not be reallocated as it
 would change its location -- pointers that were pointing inside the pool would
-become invalid. Therefore memory pool requires a very good estimate of the
+become invalid. Therefore, a memory pool requires a very good estimate of the
 required memory space.
 
 The talloc library contains its own implementation of a memory pool. It is

@@ -10,8 +10,8 @@ leaks as possible.
 
 The talloc is a hierarchy memory allocator. The hierarchy nature is what makes
 the programming more error proof. It makes the memory easier to manage and free.
-Therefore the first thing we should have on our mind is: always project our data
-structures into the talloc context hierarchy.
+Therefore, the first thing we should have on our mind is: always project our
+data structures into the talloc context hierarchy.
 
 That means if we have a structure, we should always use it as a parent context
 for its elements. This way we will not encounter any troubles when freeing this
@@ -137,7 +137,7 @@ char * create_user_filter(TALLOC_CTX *mem_ctx,
 
 We forgot to free |tmp_ctx| before the |return| statement on line
 \ref{lst:tmp-ctx-3:leak}. However, it is created as a child of |mem_ctx| context
-and as such it will be freed as soon as the |mem_ctx| is freed. Therefore no
+and as such it will be freed as soon as the |mem_ctx| is freed. Therefore, no
 detectable memory leak is created.
 
 On the other hand we do not have any way how to access the allocated data
