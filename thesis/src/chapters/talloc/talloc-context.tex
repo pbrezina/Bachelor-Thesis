@@ -1,7 +1,7 @@
 \section{Talloc context}
 \label{talloc:sec:context}
 
-A talloc context is the most important part of this library for it is
+The talloc context is the most important part of this library for it is
 responsible for every single feature of this memory allocator. It is a logical
 unit which represents a memory space managed by talloc.
 
@@ -9,7 +9,7 @@ From the programmer's point of view, the talloc context is completely
 equivalent to a pointer that would be returned by the memory routines from the
 C standard library. This means that every context that is returned from the
 talloc library can be used directly in functions that do not use talloc
-internally. For example we can do this:
+internally. For example we can do the following:
 
 \begin{lstlisting}
 char *str1 = strdup("I am NOT a talloc context");
@@ -26,12 +26,11 @@ fixed-length structure called talloc chunk. Each chunk stores context metadata
 followed by the memory space requested by the programmer. When a talloc
 function returns a context (pointer), it in fact returns a pointer to the user
 space portion of the talloc chunk. And when we want to manipulate with this
-context using talloc functions, the talloc library will transform the
-user-space pointer back to the starting address of the chunk. This is also the
-reason why we were unable to use |free(str2)| in the previous example --
-because |str2| does not point at the beginning of the allocated block of
-memory. This is illustrated on Figure
-\ref{fig:talloc-context}.
+context using talloc functions, the talloc library transforms the user-space
+pointer back to the starting address of the chunk. This is also the reason why
+we were unable to use |free(str2)| in the previous example -- because |str2|
+does not point at the beginning of the allocated block of memory. This is
+illustrated on Figure \ref{fig:talloc-context}.
 
 \begin{figure}[H]
   \centering
@@ -42,7 +41,7 @@ memory. This is illustrated on Figure
 
 A type |TALLOC_CTX| is defined in |talloc.h| to identify a talloc context in
 function parameters. However, this type is just an alias for |void| and exists
-only for semantical reasons -- so we can differentiate between |void*|
+only for semantical reasons -- thus we can differentiate between |void*|
 (arbitrary data) and |TALLOC_CTX*| (talloc context).
 
 \subsubsection{Context meta data}
