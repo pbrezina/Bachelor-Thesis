@@ -28,12 +28,12 @@ void specific_function()
 }
 \end{lstlisting}
 
-Unfortunately as a result to this type cast we are loosing the type information.
-The compiler can not check the type during a compilation nor we are able to do
-it during the runtime. Providing an invalid data type to the callback will end
-up in an unexpected behaviour (not necessarily a crash) of the application.
-This mistake is usually hard to detect because it is not the first thing on the
-mind of the developer.
+Unfortunately, as a result to this type cast we are loosing the type
+information. The compiler can not check the type during a compilation nor we are
+able to do it during the runtime. Providing an invalid data type to the
+callback will end up in an unexpected behaviour (not necessarily a crash) of
+the application. This mistake is usually hard to detect because it is not the
+first thing on the mind of the developer.
 
 As we already know, every talloc context contains a name. This name is available
 at any time and it can be used to determine the type of a context even if we
