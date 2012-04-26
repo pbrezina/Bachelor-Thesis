@@ -9,7 +9,7 @@ function for every complex structure, providing a logical organization of
 allocated memory blocks and reducing the likelihood of creating memory leaks in
 long-running applications. All of this is achieved by allocating memory in a
 hierarchical structure of talloc contexts such that deallocating one context
-will recursively free all of its descendants as well.
+recursively frees all of its descendants as well.
 
 \subsubsection{Main features}
 \begin{itemize}
@@ -18,6 +18,6 @@ will recursively free all of its descendants as well.
   \item Natural projection of data structures into memory space
   \item Simplifies memory management of large data structures
   \item Automatic execution of a destructor before the memory is freed
-  \item Simulates dynamic type system
+  \item Simulates a dynamic type system
   \item A transparent memory pool
 \end{itemize}
