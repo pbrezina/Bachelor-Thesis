@@ -72,7 +72,7 @@ as the descendants of the temporary context. If everything goes well, we will
 change the parent of the output values from the temporary to the destination
 talloc context.
 
-This pattern ensures that if some error occurs (e.g. insufficient amount of
+This pattern ensures that if an error occurs (e.g. insufficient amount of
 memory), all allocated data are freed and no garbage appears on the destination
 context.
 
@@ -140,7 +140,7 @@ We forgot to free |tmp_ctx| before the |return| statement on line
 and as such it will be freed as soon as the |mem_ctx| is freed. Therefore, no
 detectable memory leak is created.
 
-On the other hand we do not have any way how to access the allocated data
+On the other hand, we do not have any way how to access the allocated data
 and for what we know |mem_ctx| may exists for a lifetime of our application.
 For these reasons this should be considered as a memory leak. But how can we
 detect it when it is properly freed? The only way is to notice the mistake in
@@ -150,13 +150,13 @@ But if we create the temporary context as a top level context, it will not be
 freed and memory diagnostic tools
 (e.g. |valgrind|\footnote{\url{http://valgrind.org}}) are able to do their job.
 
-\subsection{Temporary contexts and talloc pool}
+\subsection{Temporary contexts and the talloc pool}
 \label{talloc:subsec:tmp-ctx-and-pool}
 
 If we want to take the advantage of the talloc pool but also keep to the
 pattern introduced in previous section, we are unable to do it directly. The
 best thing to do is to create a conditional build where we can decide how do we
-want to create the temporary context. For example, we can create following
+want to create the temporary context. For example, we can create the following
 macros:
 
 \begin{lstlisting}[caption={Conditional temporary context
