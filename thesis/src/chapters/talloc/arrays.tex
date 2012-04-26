@@ -15,7 +15,7 @@ previous text. We can do it in the same way as in the C standard library using
 However, this has two disadvantages. First of all we have to use the type unsafe
 functions to allocate the requested size which is unreliable. And at second,
 we have to do the multiplication by ourselves. Talloc developers were aware of
-it and they created a separate interface for arrays:
+it and they have created a separate interface for arrays:
 
 \begin{funcproto}
 (#type)* talloc_array(TALLOC_CTX *ctx, #type,
@@ -45,8 +45,8 @@ location, therefore always replace it by the returned pointer.
 \end{funcdesc}
 \funclistend
 We should always project the natural structure of an array into talloc context
-hierarchy. That is, always use the array as a parent of its dynamically created
-elements.
+hierarchy. That is, the array should be always used as a parent of its
+dynamically created elements.
 
 \begin{lstlisting}[caption={Array of users and context hierarchy},
 label={array-users}] int i, j;
@@ -82,10 +82,10 @@ listing can be find on Figure \ref{fig:context-tree-array}.
 
 \subsection{Determining the length of an array}
 
-We can find ourselves in situation when we need to iterate through an array but
-we are not able or we do not want to use a special delimiter to mark the end of
-the array. We need to store the size of the array in other variable and carry
-this information with the array.
+We can find ourselves in a situation when we need to iterate through an array
+but we are not able or we do not want to use a special delimiter to mark the
+end of the array. We need to store the size of the array in other variable and
+carry this information with the array.
 
 Talloc makes this easier as every talloc context already contains the
 information about its size (in bytes). Therefore, instead of carrying the number
