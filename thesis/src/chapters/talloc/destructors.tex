@@ -40,7 +40,7 @@ void talloc_set_destructor(TALLOC_CTX *ctx,
 \funclistend
 Every context can have one destructor attached as a maximum. If the function is
 called more than once on the same context, the current destructor is
-overwritten. To detach the destructor from the context we will simply set
+overwritten. To detach the destructor from the context we shall simply set
 |NULL| as the new destructor.
 
 \subsection{Children contexts with destructors}
