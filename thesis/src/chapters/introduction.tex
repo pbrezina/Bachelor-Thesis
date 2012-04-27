@@ -21,12 +21,12 @@ the fact that the standard library does not provide any tools for simple
 deallocation of complex structures. The standard approach is to write a
 specific free function for every custom data type that goes down through the
 elements tree and frees them one by one from the bottom to the top. The problem
-is that it takes many lines of code and it is very likely that we will forget to
-free something. Over the years several libraries has been developed that aim
-to make the memory management in C easier and more error proof. Examples of this
-kind of libraries are memory pools from the APR\footnote{Apache Portable
-Runtime: \url{http://apr.apache.org/}} and halloc \footnote{Hierarchical
-memory allocator: \url{http://swapped.cc/halloc}}. Another library, which is
+is that it takes many lines of code and it is very likely that something is
+forgotten to be freed. Over the years several libraries has been developed that
+aim to make the memory management in C easier and more error proof. Examples of
+this kind of libraries are memory pools from the APR\footnote{Apache Portable
+Runtime: \url{http://apr.apache.org/}} and halloc \footnote{Hierarchical memory
+allocator: \url{http://swapped.cc/halloc}}. Another library, which is
 originally based upon halloc, is talloc.
 
 Talloc\footnote{Talloc memory allocator: \url{http://talloc.samba.org}} is a
