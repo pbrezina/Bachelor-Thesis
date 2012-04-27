@@ -40,7 +40,7 @@ void talloc_set_log_stderr()
 The latter one is a shortcut for a common scenario -- it will print the
 |message| in the standard error stream.
 
-Here is an sample output of accessing a context after it has been freed:
+Below given is an sample output of accessing a context after it has been freed:
 
 \begin{lstlisting}[caption={Talloc error -- access after free}]
 talloc_set_log_stderr();
@@ -55,7 +55,7 @@ Bad talloc magic value - access after free
 \end{lstlisting}
 
 \noindent
-And here is an example of the invalid context:
+Another example below is an example of the invalid context:
 
 \begin{lstlisting}[caption={Talloc error -- not a talloc context}]
 talloc_set_log_stderr();
