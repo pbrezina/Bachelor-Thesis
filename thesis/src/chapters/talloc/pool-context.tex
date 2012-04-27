@@ -62,11 +62,11 @@ talloc_free(pool_ctx);
 \end{lstlisting}
 
 \noindent
-This is very nice. However, it has one big issue that we must be aware of. See,
-if we change the parent of a child of talloc pool to a parent that is outside
-this pool, the whole pool memory will not be freed until the child is freed.
-For this reason we must be very careful when stealing a descendant of a pool
-context.
+The above given is very convenient, but there is one big issue to be kept in
+mind. If the parent of a talloc pool child is changed to a parent that is
+outside of this pool, the whole pool memory will not be freed until the child is
+freed. For this reason we must be very careful when stealing a descendant of a
+pool context.
 
 \begin{lstlisting}[caption={Stealing from pool context},
 morekeywords={talloc_pool,talloc_steal,talloc_free}]
