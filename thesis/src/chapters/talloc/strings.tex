@@ -105,8 +105,8 @@ filter = talloc_strdup_append(filter, ")");
 \end{lstlisting}
 
 To simplify the example, consider that each group has a name that consists
-from $n$ characters and the list contains $m$ groups. What will happen is that
-the length of both |filter| and |groups[i]| will be computed every time.
+from $n$ characters and the list contains $m$ groups. What happens is that
+the length of both |filter| and |groups[i]| is computed every time.
 
 The length of the string is determined by |strlen()|, that means it iterates
 over each character of the string and increments the character counter until it
@@ -114,12 +114,12 @@ finds the terminating zero. This gives us $2 + \sum_{i=1}^m (2 + 8*i + n*i) +
 n*m + 1$\footnote{$2$ for \lstinline{"(|"}, $\sum_{i=1}^m (2 + 8*i + n*i)$ for
 \lstinline{filter}, $m*n$ for \lstinline{groups[i]} and $1$ for \lstinline{")"}}
 iterations in |strlen()|. For $n = 10, m = 100$ it is $92.103$ iterations. If
-we just replace the |_append| with |_append_buffer|, the whole number will
-decrease to $2 + \sum_{i=0}^m n + 1 = 1003$. This can be a big performance
-boost in applications that contain a lot pieces of similar code.
+we just replace the |_append| with |_append_buffer|, the whole number decreases
+to $2 + \sum_{i=0}^m n + 1 = 1003$. This can be a big performance boost in
+applications that contain a lot pieces of similar code.
 
-However, we must be careful if we put |'\0'| in the middle of the string. The
-two functions will act differently:
+However, a great caution must be paid when |'\0'| is put in the middle of the
+string. In this case the two functions act differently:
 
 \begin{lstlisting}[caption={Zero in the middle of a string}]
 char *str_a = talloc_strdup(NULL, "hello world");
