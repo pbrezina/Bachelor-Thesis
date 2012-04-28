@@ -32,7 +32,7 @@ parent in the meta data). But the common usage is that the result is assigned
 to another variable, thus further accessing the pointer from the original
 variable should be avoided unless it is necessary. Therefore, |talloc_move()| is
 a preferred way of stealing a context as it protects the pointer from being
-accidentally freed and accessed using the old variable after its parent have
+accidentally freed and accessed using the old variable after its parent has
 been changed.
 
 \begin{lstlisting}[caption={talloc_steal() and talloc_move()}]
