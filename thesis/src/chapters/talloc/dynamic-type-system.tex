@@ -1,11 +1,11 @@
 \section{Dynamic type system}
 \label{talloc:dyn-ts}
 
-Generic programming in C language is very difficult. There is no inheritance nor
-templates known from object oriented languages, neither the dynamic type system.
-Therefore, generic programming in this language is usually done by type casting
-a variable to |void*| and transfer it through a generic function to a specialized
-callback as illustrated on the next listing.
+Generic programming in the C language is very difficult. There is no inheritance
+nor templates known from object oriented languages, neither the dynamic type
+system. Therefore, generic programming in this language is usually done by type
+casting a variable to |void*| and transfer it through a generic function to a
+specialized callback as illustrated on the next listing.
 
 \begin{lstlisting}[caption={Generic programming pattern},label=lst-generic-prg]
 void generic_function(callback_fn cb, void *pvt)
@@ -28,7 +28,8 @@ void specific_function()
 }
 \end{lstlisting}
 
-Unfortunately, as a result of this type cast the type information is lost. The
+\noindent
+Unfortunately, the type information is lost as a result of this type cast. The
 compiler can not check the type during the compilation nor we are able to do it
 during the runtime. Providing an invalid data type to the callback will result
 in an unexpected behaviour (not necessarily a crash) of the application. This
@@ -50,7 +51,7 @@ variants) to create the context as they set its name to the name of the type
 automatically.
 
 If we have a context with such a name, we can use two similar functions that do
-both the type check and type cast for us:
+both the type check and the type cast for us:
 
 \begin{funcproto}
 (#type)* talloc_get_type(TALLOC_CTX *ctx, #type)
@@ -101,10 +102,7 @@ void foo_callback(void *pvt)
 int do_foo()
 {
   struct foo *data = talloc_zero(NULL, struct foo);
-  if (foo == NULL) {
-    return ENOMEM;
-  }
-
+  /* ... */
   return generic_function(foo_callback, data);
 }
 \end{lstlisting}
@@ -114,7 +112,7 @@ But what if we are creating a service application that should be running for the
 uptime of a server? We may want to abort the application during the development
 process (to make sure the error is not overlooked) but try to recover from the
 error in the customer release. This can be achieved by creating a custom abort
-function with conditional build.
+function with a conditional build.
 
 \begin{lstlisting}[caption={Custom abort function}]
 void my_abort(const char *reason)
