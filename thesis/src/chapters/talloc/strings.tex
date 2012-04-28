@@ -12,14 +12,12 @@ formatted string -- |asprintf()| that allocates all the necessary space
 automatically.
 
 Talloc has adopted its own variants of not only |strdup()| and |strndup()| from
-the C standard library but also |asprintf()| and its non-variadic
-equivalent |vasprintf()| which are demanded by the POSIX standard.
+the C standard library but also |asprintf()| and its non-variadic equivalent
+|vasprintf()| which are demanded by the POSIX standard. As an addition to these
+basic routines it adds very useful alternatives that will append the result to
+the existing string or at the actual end of the talloc context.
 
-As an addition to these basic routines it adds very useful alternatives that
-will append the result to the existing string or at the actual end of the talloc
-context. This gives us a total of twelve functions for string manipulation.
-
-All of these routines return a string that is also a valid talloc context
+All of these functions return a string that is also a valid talloc context
 which is named exactly just as the output string. The basic variants take as
 the first parameter an arbitrary talloc context which will serve as a parent to
 the newly created context. The extended |_append| variants take a talloc context
@@ -65,7 +63,7 @@ char* talloc_strndup_append_buffer(char *dest, const char
 
 Functions for formatted strings are very similar to the previous ones. The
 difference is that they take a printf-style format string and its parameters.
-Talloc define both variadic and non-variadic variants.
+Talloc defines both variadic and non-variadic variants.
 
 Variadic:
 \begin{funcproto}
@@ -104,6 +102,7 @@ for (i = 0; groups[i] != NULL; i++) {
 filter = talloc_strdup_append(filter, ")");
 \end{lstlisting}
 
+\noindent
 To simplify the example, consider that each group has a name that consists
 from $n$ characters and the list contains $m$ groups. What happens is that
 the length of both |filter| and |groups[i]| is computed every time.
