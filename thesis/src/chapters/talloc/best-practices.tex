@@ -72,9 +72,9 @@ descendants of the temporary context. If everything goes well, we will change
 the parent of the output values from the temporary to the destination talloc
 context.
 
-This pattern ensures that if an error occurs (e.g. insufficient amount of
-memory), all allocated data are freed and no garbage appears on the destination
-context.
+This pattern ensures that if an error occurs (e.g. I/O error or insufficient
+amount of the memory), all allocated data are freed and no garbage appears on
+the destination context.
 
 \begin{lstlisting}[caption={Temporary context \#2},label=lst:tmp-ctx-2]
 int struct_foo_init(TALLOC_CTX *mem_ctx, struct foo **_foo)
@@ -135,6 +135,7 @@ char * create_user_filter(TALLOC_CTX *mem_ctx,
 }
 \end{lstlisting}
 
+\noindent
 We forgot to free |tmp_ctx| before the |return| statement on line
 \ref{lst:tmp-ctx-3:leak}. However, it is created as a child of |mem_ctx| context
 and as such it will be freed as soon as the |mem_ctx| is freed. Therefore, no
@@ -154,7 +155,7 @@ freed and memory diagnostic tools
 \label{talloc:subsec:tmp-ctx-and-pool}
 
 If we want to take the advantage of the talloc pool but also keep to the
-pattern introduced in previous section, we are unable to do it directly. The
+pattern introduced in the previous section, we are unable to do it directly. The
 best thing to do is to create a conditional build where we can decide how do we
 want to create the temporary context. For example, we can create the following
 macros:
@@ -170,6 +171,7 @@ macros},label=lst:tmp-ctx-4]
 #endif
 \end{lstlisting}
 
+\noindent
 Now if our application is under development, we will build it with macro
 |USE_POOL_CONTEXT| undefined. This way, we  can use memory diagnostic
 utilities to detect memory leaks.
