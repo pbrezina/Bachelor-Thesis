@@ -109,14 +109,22 @@ the length of both |filter| and |groups[i]| is computed every time.
 
 The length of the string is determined by |strlen()|, that means it iterates
 over each character of the string and increments the character counter until it
-finds the terminating zero. This gives us $2 + \sum_{i=1}^m (2 + 8*i + n*i) +
-n*m + 1$\footnote{$2$ for \lstinline{"(|"}, $\sum_{i=1}^m (2 + 8*i + n*i)$ for
-\lstinline{filter}, $m*n$ for \lstinline{groups[i]} and $1$ for \lstinline{")"}}
-iterations in |strlen()|. For $n = 10, m = 100$ it is $92.103$ iterations. If
-we just replace the |_append| with |_append_buffer|, the whole number decreases
-to $2 + \sum_{i=0}^m n + 1 = 1003$. This can be a big performance boost in
-applications that contain a lot pieces of similar code.
+finds the terminating zero. This gives us (\ref{eq:append})
+iterations\footnotemark in |strlen()|. For $n = 10, m = 100$ it is $92.103$
+iterations. If we just replace the |_append| with |_append_buffer|, the
+equation changes to (\ref{eq:buffer}) and the result decreases to $1003$. This
+can be a big performance boost in applications that contain a lot pieces of
+similar code.
 
+\footnotetext{$2$ for \lstinline{"(|"}, $\sum_{i=1}^m (2 + 8*i + n*i)$ for
+\lstinline{filter}, $m*n$ for \lstinline{groups[i]} and $1$ for \lstinline{")"}}
+
+\begin{align}
+&2 + \sum_{i=1}^m (2 + 8*i + n*i) + n*m + 1 \label{eq:append} \\
+&2 + \sum_{i=0}^m n + 1 \label{eq:buffer}
+\end{align}
+
+\noindent
 However, a great caution must be paid when |'\0'| is put in the middle of the
 string. In this case the two functions act differently:
 
