@@ -134,8 +134,8 @@ void talloc_enable_leak_report(void)
 void talloc_enable_leak_report_full(void)
 \end{funcproto}
 \begin{funcdesc}
-  Enables an automatic simple/full report of all contexts at program exit. The
-  report is printed in |stderr|.
+  Enables an automatic simple/full report of all contexts at the program exit.
+  The report is printed in |stderr|.
 \end{funcdesc}
 
 \subsection{Detecting memory leaks}
@@ -146,7 +146,7 @@ programmer makes a mistake and allocates something more on the output context
 than he is supposed to.
 
 This issue can not be usually seen in talloc reports, but fortunately it can be
-tested automatically with the knowledge of total size (size of a context and
+tested automatically with the knowledge of the total size (size of a context and
 its children) of the parent context.
 
 \begin{lstlisting}[caption={Memory leaks detection \#1},
@@ -168,12 +168,13 @@ if (total_size != talloc_total_size(ctx)) {
 }
 \end{lstlisting}
 
+\noindent
 However, such checks are not suitable for an application itself as we have to
 free |foo| before other usage of the parent context. Therefore, the proper place
 for this is in your test suit, possibly in unit tests.
 
 The SSSD uses a set of functions\footnote{Available in appendinx @TODO} the goal
-of which is to detect memory leaks on a talloc context in unit tests created
+of which is to detect memory leaks on a talloc context in the unit tests created
 with the Check\footnote{\url{http://check.sourceforge.net}} library (but it can
 be easily modified for other test suits). It does it in a more advanced manner
 than the previous example introduced. It works on a push/pop basis, where the
