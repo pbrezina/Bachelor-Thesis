@@ -39,6 +39,7 @@ illustrated on Figure \ref{fig:talloc-context}.
   \label{fig:talloc-context}
 \end{figure}
 
+\noindent
 The type |TALLOC_CTX| is defined in |talloc.h| to identify a talloc context in
 function parameters. However, this type is just an alias for |void| and exists
 only for semantical reasons -- thus we can differentiate between |void*|
@@ -53,7 +54,7 @@ the allocated memory:
   \ref{talloc:sec:debugging}) and to simulate a dynamic type system (section
   \ref{talloc:dyn-ts}),
   \item size of the requested memory in bytes -- this can be used to determine
-  number of elements in arrays,
+  the number of elements in arrays,
   \item attached destructor -- which is executed just before the memory block is
   about to be freed (section \ref{talloc:sec:destructors}),
   \item references to the context -- section \ref{talloc:ref-counter},
@@ -79,6 +80,7 @@ This approach has several advantages:
   \item it creates a more natural way of managing data structures
 \end{itemize}
 
+\noindent
 Let me illustrate this on an example. We have a structure that stores basic
 information about a user -- his/her name, identification number and groups
 he/she is a member of:
@@ -92,6 +94,7 @@ struct user {
 };
 \end{lstlisting}
 
+\noindent
 Building of such a structure with talloc is very similar to the way it is done
 using C standard library. We have to allocate memory for every single element of
 |struct user|. The main difference is that we will specify the parent to which
@@ -146,11 +149,12 @@ for (i = 0; i < user->num_groups; i++) {
   \label{fig:context-tree-1-user}
 \end{figure}
 
+\noindent
 This way, we have gained a lot of additional capabilities, one of which is
 very simple deallocation of the structure and all of its elements.
 
-With standard C library we need first to iterate over the array of groups and
-free every element separately. Then we must deallocate the array that stores
+With the C standard library we need first to iterate over the array of groups
+and free every element separately. Then we must deallocate the array that stores
 them. Next we deallocate the username and as the last step free the structure
 itself.
 
@@ -181,8 +185,8 @@ talloc_free(user);
 
 Creating a new talloc context means that we want to create a new talloc chunk
 (which stores the information about this context -- especially its parent and
-children), allocate the desired amount of system memory and retrieve a pointer
-to this memory.
+children), allocate the desired amount of the system memory and retrieve a
+pointer to this memory.
 
 Many functions exist that have the ability to create a new talloc context. This
 section describes only the most fundamental ones that deal with primitive data
@@ -229,9 +233,6 @@ the whole new memory space to be initialized with zeros.
 
 \begin{lstlisting}[caption={talloc() and talloc_zero()},label=lst:talloc_zero]
 struct user *user = talloc(ctx, struct user);
-if (user == NULL) {
-  return ENOMEM;
-}
 
 /* initialize to default values */
 user->uid = 0;
@@ -241,9 +242,6 @@ user->groups = NULL;
 
 /* or we can achieve the same result with */
 struct user *user_zero = talloc_zero(ctx, struct user);
-if (user_zero == NULL) {
-  return ENOMEM;
-}
 \end{lstlisting}
 
 \subsubsection{Type unsafe functions that create a new context}
@@ -267,8 +265,8 @@ void* talloc_size(TALLOC_CTX *ctx, size_t size)
 void* talloc_zero_size(TALLOC_CTX *ctx, size_t size)
 \end{funcproto}
 \funclistend
-There is also one very interesting macro |talloc_ptrtype(ctx, ptr)| that may or
-may not be type unsafe depending on the compiler. If the compiler is |GCC| of
+There is also one very interesting macro~~|talloc_ptrtype(ctx, ptr)| \\ that
+may or may not be type unsafe depending on the compiler. If the compiler is |GCC| of
 version greater than or equal to 3, it is type safe (it uses the |__typeof__|
 feature of this compiler). Otherwise, it is type unsafe.
 
@@ -355,8 +353,8 @@ name will help us to identify such contexts during debugging.
 \label{talloc:subsec:free-context}
 
 There are two functions defined that deal with deallocating a context. Both
-take memory context as their argument. If this context is |NULL| then no action
-is performed.
+take a talloc context as their argument. If this context is |NULL| then no
+action is performed.
 
 \begin{funcproto}
 int talloc_free(TALLOC_CTX *ctx)
