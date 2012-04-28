@@ -60,17 +60,18 @@ for (i = 0; i < N; i++) {
   
   for (j = 0; j < i; j++) {
     users[i]->groups[j] = talloc_asprintf(
-                          users[i]->groups[j],"Group %d",j);
+                          users[i]->groups,"Group %d",j);
   }
 }
 \end{lstlisting}
 
+\noindent
 This way we gain a lot of flexibility. We do not have to free every element
 separately to deallocate the whole array, we can achieve this simply by calling
 |talloc_free(users)|. Or we can move any part of the array to another parent
 context to keep it accessible even if we free the array later.
 
-The context tree that graphically illustrates the hierarchy from previous
+The context tree that graphically illustrates the hierarchy from the previous
 listing can be find on Figure \ref{fig:context-tree-array}.
 
 \begin{figure}[H]
@@ -109,8 +110,9 @@ printf("%lu\n", talloc_array_length(array)); /* 10 */
 talloc_free(ctx);
 \end{lstlisting}
 
+\noindent
 It can be also used as a more efficient way of computing a number of characters
-in a string that has been created with talloc library. However, we need to
+in a string that has been created with the talloc library. However, we need to
 create our own function (or macro) to do this. Although we must be very careful
 with the usage as it will misbehave once we put a |'\0'| character inside the
 string, having that on mind we will gain the constant complexity. For example:
