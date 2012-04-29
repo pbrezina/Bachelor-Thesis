@@ -1,0 +1,4 @@
+talloc: 13627255 ops/sec
+talloc_pool: 38672923 ops/sec
+malloc: 15449604 ops/sec
+
