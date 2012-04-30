@@ -92,9 +92,7 @@ Talloc makes this easier as every talloc context already contains the
 information about its size (in bytes). Therefore, instead of carrying the number
 of the elements separately, we can just divide the context size by the size of
 the data type the array consists of. Talloc has a macro
-|talloc_array_length(ctx)| that serves for this purpose. It requires the name
-embedded within the context to be the name of the data type. Thus if we want to
-use this feature, we should use the type-safe functions to create the array.
+|talloc_array_length(ctx)| that serves for this purpose.
 
 \begin{lstlisting}[caption={Length of an array},label=lst:array-length]
 TALLOC_CTX *ctx = talloc_new(NULL);
