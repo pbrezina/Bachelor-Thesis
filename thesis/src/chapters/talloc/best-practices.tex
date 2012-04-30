@@ -186,8 +186,7 @@ int struct_foo_init(TALLOC_CTX *mem_ctx, struct foo **_foo)
   int ret;
   struct foo *foo = NULL;
   TALLOC_CTX *tmp_ctx = CREATE_TMP_CTX(mem_ctx);
-
-  ...
+  /* ... */
 }
 
 errno_t handle_request(TALLOC_CTX mem_ctx)
@@ -195,8 +194,7 @@ errno_t handle_request(TALLOC_CTX mem_ctx)
   int ret;
   struct foo *foo = NULL;
   TALLOC_CTX *pool_ctx = CREATE_POOL_CTX(NULL, 1024);
-  
   ret = struct_foo_init(mem_ctx, &foo);
-  ...
+  /* ... */
 }
 \end{lstlisting}
