@@ -128,3 +128,47 @@ perftest-realloc-talloc: init
 	$(CMPL) -o $(BIN)/perftest-realloc-talloc  \
 		$(PERFORMANCE)/realloc/args.c \
 		$(PERFORMANCE)/realloc/talloc.c
+
+double-free: init
+	$(CMPL) -o $(BIN)/double-free  \
+		$(SRC)/double_free.c
+
+invalid-context: init
+	$(CMPL) -o $(BIN)/invalid-context  \
+		$(SRC)/invalid_context.c
+
+report: init
+	$(CMPL) -o $(BIN)/report  \
+		$(SRC)/report.c
+
+struct-user: init
+	$(CMPL) -o $(BIN)/struct-user  \
+		$(SRC)/struct_user.c
+
+array-length: init
+	$(CMPL) -o $(BIN)/array-length  \
+		$(SRC)/talloc_array_length.c
+
+get-type: init
+	$(CMPL) -o $(BIN)/get-type  \
+		$(SRC)/talloc_get_type.c
+
+move: init
+	$(CMPL) -o $(BIN)/move  \
+		$(SRC)/talloc_move.c
+
+new: init
+	$(CMPL) -o $(BIN)/new  \
+		$(SRC)/talloc_new.c
+		
+pool: init
+	$(CMPL) -o $(BIN)/pool  \
+		$(SRC)/talloc_pool.c
+
+strlen: init
+	$(CMPL) -o $(BIN)/strlen  \
+		$(SRC)/talloc_strlen.c
+
+zero: init
+	$(CMPL) -o $(BIN)/zero  \
+		$(SRC)/talloc_zero.c
