@@ -12,7 +12,7 @@ previous text. We can do it in the same way as in the C standard library using
 |talloc_size()| where the size of the context would be |sizeof(type) *|
 |number_of_elements|.
 
-However, this has two disadvantages. First of all we have to use the type unsafe
+However, this has two disadvantages. First of all we have to use the type-unsafe
 functions to allocate the requested size which is unreliable. And at second,
 we have to do the multiplication by ourselves. Talloc developers were aware of
 it and they have created a separate interface for arrays:
@@ -94,7 +94,7 @@ of the elements separately, we can just divide the context size by the size of
 the data type the array consists of. Talloc has a macro
 |talloc_array_length(ctx)| that serves for this purpose. It requires the name of
 the context to be the name of the data type. Thus if we want to use this
-feature, we should use the type safe functions to create the array.
+feature, we should use the type-safe functions to create the array.
 
 \begin{lstlisting}[caption={Length of an array},label=lst:array-length]
 TALLOC_CTX *ctx = talloc_new(NULL);
