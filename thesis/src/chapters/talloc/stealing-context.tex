@@ -31,10 +31,10 @@ void *talloc_move(TALLOC_CTX *ctx, const void **ptr)
 In general, the pointer itself is not changed (it only replaces the
 parent in the meta data). But the common usage is that the result is assigned
 to another variable, thus further accessing the pointer from the original
-variable should be avoided unless it is necessary. Therefore, |talloc_move()| is
-the preferred way of stealing a context as it protects the pointer from being
-accidentally freed and accessed using the old variable after its parent has
-been changed.
+variable should be avoided unless it is necessary. In this case is
+|talloc_move()| the preferred way of stealing a context as it protects the
+pointer from being accidentally freed and accessed using the old variable after
+its parent has been changed.
 
 \begin{lstlisting}[caption={talloc_steal() and talloc_move()}]
 struct foo *foo = talloc_zero(ctx, struct foo);
