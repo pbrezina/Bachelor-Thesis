@@ -173,13 +173,13 @@ However, such checks are not suitable for an application itself as we have to
 free |foo| before other usage of the parent context. Therefore, the proper place
 for this is in your test suit, possibly in unit tests.
 
-The SSSD uses a set of functions\footnote{Available in appendinx @TODO}, the goal
-of which is to detect memory leaks on a talloc context in the unit tests created
-with the Check\footnote{\url{http://check.sourceforge.net}} library (but it can
-be easily modified for other test suites). It does it in a more advanced manner
-than the previous example introduced. It works on a push/pop basis, where the
-unit test will fail if a context has after the pop operation a different size
-than it had during the push operation.
+The SSSD uses a set of functions\footnote{Available on the attached DVD}, the
+goal of which is to detect memory leaks on a talloc context in the unit tests
+created with the Check\footnote{\url{http://check.sourceforge.net}} library
+(but it can be easily modified for other test suites). It does it in a more
+advanced manner than the previous example introduced. It works on a push/pop
+basis, where the unit test will fail if a context has after the pop operation a
+different size than it had during the push operation.
 
 \begin{lstlisting}[caption={Memory leaks detection \#2},
 morekeywords={leak_check_setup,check_leaks_push,

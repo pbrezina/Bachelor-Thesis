@@ -1,0 +1,4 @@
+Copied from sssd master on 30th April 2012.
+The original location in sssd is:
+src/util/dlinklist.h
+src/tests/common_check.c
