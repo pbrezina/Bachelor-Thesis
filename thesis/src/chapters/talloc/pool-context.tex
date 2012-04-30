@@ -87,7 +87,8 @@ talloc_free(mem_ctx);
 
 \noindent
 It may be often better to copy the memory we want to steal to avoid this
-problem. We can use |talloc_memdup()| to do this:
+problem. If we do not need to retain the context name (to keep the type
+information), we can use |talloc_memdup()| to do this:
 
 \begin{funcproto}
 TALLOC_CTX *talloc_memdup(TALLOC_CTX *parent,
