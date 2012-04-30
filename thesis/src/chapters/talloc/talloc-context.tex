@@ -208,9 +208,9 @@ All of these functions share the following properties:
   creates a new top level context.
 \end{itemize}
 
-\subsubsection{Type safe functions that create a new context}
+\subsubsection{Type-safe functions that create a new context}
 
-Type safe functions take as one of their parameters a data type we want to
+Type-safe functions take as one of their parameters a data type we want to
 create. It allocates the size that is necessary for this type and returns a
 new, properly-cast pointer. This is useful if we want to rely on the compiler
 to detect type mismatches.
@@ -244,9 +244,9 @@ user->groups = NULL;
 struct user *user_zero = talloc_zero(ctx, struct user);
 \end{lstlisting}
 
-\subsubsection{Type unsafe functions that create a new context}
+\subsubsection{Type-unsafe functions that create a new context}
 
-Type unsafe functions take as a parameter the exact size we want to allocate
+Type-unsafe functions take as a parameter the exact size we want to allocate
 instead of the type and return a pointer to |void|. The name of the context
 is set to the location in the source file where the function is invoked.
 
@@ -257,7 +257,7 @@ these functions is for creating allocation routines for other libraries that
 allow custom memory allocation. In those cases, we can not know ahead of time
 what structure will be passed in, so we are limited to using the size.
 
-The following functions are type unsafe variants of |talloc()| and
+The following functions are type-unsafe variants of |talloc()| and
 |talloc_zero()|:
 
 \begin{funcproto}
@@ -266,13 +266,13 @@ void* talloc_zero_size(TALLOC_CTX *ctx, size_t size)
 \end{funcproto}
 \funclistend
 There is also one very interesting macro~~|talloc_ptrtype(ctx, ptr)| \\ that
-may or may not be type unsafe depending on the compiler. If the compiler is |GCC| of
-version greater than or equal to 3, it is type safe (it uses the |__typeof__|
-feature of this compiler). Otherwise, it is type unsafe.
+may or may not be type-unsafe depending on the compiler. If the compiler is |GCC| of
+version greater than or equal to 3, it is type-safe (it uses the |__typeof__|
+feature of this compiler). Otherwise, it is type-unsafe.
 
 As it is a wrapper around |talloc_size()|, the name of the context will be the
 location in the source file where the macro is used. This does not depend on
-whether it will be type safe or type unsafe during the compilation.
+whether it will be type-safe or type-unsafe during the compilation.
 
 We can use it to shorten the notation if we do not need to carry the type
 information in the talloc context:
