@@ -44,8 +44,9 @@ char* talloc_strdup_append(char *dest, const char *str)
 char* talloc_strdup_append_buffer(char *dest, const char *s)
 \end{funcproto}
 \begin{funcdesc}
-  This is similar to the previous function but it appends |str| to the actual
-  end of the context itself (it ignores the terminating zero).
+  This is similar to the previous function but it uses the size of the context
+  to determine the |dest| length. The difference is more closer explained in the
+  section \ref{append-vs-buffer}.
 \end{funcdesc}
 \funclistend
 The |strndup| variants have the same characteristics but they duplicate only |n|
@@ -86,6 +87,7 @@ char* talloc_vasprintf_append_buffer(char *dest, const char
 \end{funcproto}
 
 \subsection{Difference between append and append_buffer}
+\label{append-vs-buffer}
 
 The behaviour of |_append| and |_append_buffer| is the same in the majority
 of cases. The latter one serves as the much more efficient way of appending a
