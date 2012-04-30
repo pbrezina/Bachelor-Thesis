@@ -10,7 +10,7 @@ decreasing the number of |malloc()| calls by using a memory pool.
 Memory pool is a preallocated memory space with a fixed size. If we need to
 allocate new data we will take the desired amount of the memory from the pool
 instead of requesting a new memory from the system. This is done by creating a
-pointer that points inside the preallocated memory. Such pool must not be
+pointer that points inside the preallocated memory. Such a pool must not be
 reallocated as it would change its location -- pointers that were pointing
 inside the pool would become invalid. Therefore, a memory pool requires a very
 good estimate of the required memory space.
@@ -22,7 +22,7 @@ it can be used in the same way as any other context.
 
 \footnotetext{\lstinline{TALLOC_CTX *talloc_pool(TALLOC_CTX *ctx, size_t size)}}
 
-Refactoring of an existing code (that uses talloc) to take the advantage of a
+Refactoring of existing code (that uses talloc) to take the advantage of a
 memory pool is quite simple due to the following properties of the pool context:
 
 \begin{itemize}
@@ -31,7 +31,7 @@ memory pool is quite simple due to the following properties of the pool context:
   \item if the context is a descendant of the pool context, it takes the space
   from the pool as well,
   \item if the pool does not have sufficient portion of memory left, it will
-  create a new non-pool context, leaving the pool intact,
+  create a new non-pool context, leaving the pool intact
 \end{itemize}
 
 \begin{lstlisting}[caption={Talloc pool},label=lst:talloc_pool,

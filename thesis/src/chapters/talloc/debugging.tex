@@ -13,13 +13,13 @@ calls this abort function in several more situations:
 
 \begin{itemize}
   \item when the provided pointer is not a valid talloc context,
-  \item when the meta data are invalid -- probably due to a memory corruption,
+  \item when the meta data is invalid -- probably due to memory corruption,
   \item and when an access after free is detected.
 \end{itemize}
 
 The third one is probably the most interesting. It can help us with detecting
-double free a context or any other manipulation with it via talloc functions
-(using it as a parent, stealing it, etc.).
+an attempt to double-free a context or any other manipulation with it via
+talloc functions (using it as a parent, stealing it, etc.).
 
 Before the context is freed talloc sets a flag in the meta data. This is then
 used to detect the access after free. It basically works on the assumption that
@@ -112,7 +112,7 @@ full talloc report on 'talloc_new: ../src/main.c:82' (total 46 bytes in 5 blocks
 We can notice in this report that something is wrong with the context containing
 |struct foo|. We know that the structure has only one string element. However,
 we can see in the report that it has two children. This indicates that we have
-either violated the memory hierarchy or forgot to free it as a temporary data.
+either violated the memory hierarchy or forgotten to free it as temporary data.
 Looking into the code, we can see that |"Foo is my parent"| should be attached
 to |ctx|.
 
@@ -125,7 +125,7 @@ void talloc_disable_null_tracking(void)
 \end{funcproto}
 \begin{funcdesc}
 Enables/disables tracking of talloc contexts without a parent. If it is enabled,
-we can use |NULL| as a context for report and it will print the summary of all
+we can use |NULL| as a context for the report and it will print the summary of all
 available contexts.
 \end{funcdesc}
 
@@ -173,12 +173,12 @@ However, such checks are not suitable for an application itself as we have to
 free |foo| before other usage of the parent context. Therefore, the proper place
 for this is in your test suit, possibly in unit tests.
 
-The SSSD uses a set of functions\footnote{Available in appendinx @TODO} the goal
+The SSSD uses a set of functions\footnote{Available in appendinx @TODO}, the goal
 of which is to detect memory leaks on a talloc context in the unit tests created
 with the Check\footnote{\url{http://check.sourceforge.net}} library (but it can
-be easily modified for other test suits). It does it in a more advanced manner
+be easily modified for other test suites). It does it in a more advanced manner
 than the previous example introduced. It works on a push/pop basis, where the
-unit test will fail if a context has after the pop operation different size
+unit test will fail if a context has after the pop operation a different size
 than it had during the push operation.
 
 \begin{lstlisting}[caption={Memory leaks detection \#2},

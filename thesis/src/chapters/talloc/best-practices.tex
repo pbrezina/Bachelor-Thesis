@@ -2,8 +2,8 @@
 \label{talloc:sec:best-practices}
 
 The following sections contain several best practices and good manners that were
-found by the Samba and SSSD developers during the years. Those will help you to
-write a better code, easier to debug and with as little (hopefully none) memory
+found by the Samba and SSSD developers over the years. These will help you to
+write better code, easier to debug and with as few (hopefully none) memory
 leaks as possible.
 
 \subsection{Keep the context hierarchy steady}
@@ -41,7 +41,7 @@ This pattern applies to both situations - when a function does not return any
 dynamically allocated value and when it does. However, it needs a little
 extension for the latter case.
 
-\subsubsection{Functions that does not return any dynamically allocated value}
+\subsubsection{Functions that do not return any dynamically allocated value}
 
 If the function does not return any value created on the heap, we will just obey
 the aforementioned pattern.
@@ -73,7 +73,7 @@ the parent of the output values from the temporary to the destination talloc
 context.
 
 This pattern ensures that if an error occurs (e.g. I/O error or insufficient
-amount of the memory), all allocated data are freed and no garbage appears on
+amount of the memory), all allocated data is freed and no garbage appears on
 the destination context.
 
 \begin{lstlisting}[caption={Temporary context \#2},label=lst:tmp-ctx-2]
@@ -141,10 +141,10 @@ We forgot to free |tmp_ctx| before the |return| statement on line
 and as such it will be freed as soon as the |mem_ctx| is freed. Therefore, no
 detectable memory leak is created.
 
-On the other hand, we do not have any way how to access the allocated data
-and for what we know |mem_ctx| may exists for a lifetime of our application.
+On the other hand, we do not have any way to access the allocated data
+and for all we know |mem_ctx| may exist for the lifetime of our application.
 For these reasons this should be considered as a memory leak. But how can we
-detect it when it is properly freed? The only way is to notice the mistake in
+detect it when it is not properly freed? The only way is to notice the mistake in
 the source code.
 
 But if we create the temporary context as a top level context, it will not be

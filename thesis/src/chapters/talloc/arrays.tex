@@ -13,7 +13,7 @@ previous text. We can do it in the same way as in the C standard library using
 |number_of_elements|.
 
 However, this has two disadvantages. First of all we have to use the type-unsafe
-functions to allocate the requested size which is unreliable. And at second,
+functions to allocate the requested size which is unreliable. And second,
 we have to do the multiplication by ourselves. Talloc developers were aware of
 it and they have created a separate interface for arrays:
 
@@ -40,13 +40,13 @@ void* talloc_realloc_size(TALLOC_CTX *parent,
 \end{funcproto}
 \begin{funcdesc}
 If |ctx| is |NULL| a new context is created. If |count| or |size| is zero, it
-will free the context. The memory occupied by |ctx| may be moved to other
+will free the context. The memory occupied by |ctx| may be moved to another
 location, therefore always replace it by the returned pointer.
 \end{funcdesc}
 \funclistend
-We should always project the natural structure of an array into talloc context
-hierarchy. That is, the array should be always used as a parent of its
-dynamically created elements.
+We should always project the natural structure of an array into the talloc
+context hierarchy. That is, the array should be always used as a parent of
+its dynamically created elements.
 
 \begin{lstlisting}[caption={Array of users and context hierarchy},
 label={array-users}] int i, j;
@@ -85,16 +85,16 @@ listing can be find on Figure \ref{fig:context-tree-array}.
 
 We can find ourselves in a situation when we need to iterate through an array
 but we are not able or we do not want to use a special delimiter to mark the
-end of the array. We need to store the size of the array in other variable and
+end of the array. We need to store the size of the array in another variable and
 carry this information with the array.
 
 Talloc makes this easier as every talloc context already contains the
 information about its size (in bytes). Therefore, instead of carrying the number
 of the elements separately, we can just divide the context size by the size of
 the data type the array consists of. Talloc has a macro
-|talloc_array_length(ctx)| that serves for this purpose. It requires the name of
-the context to be the name of the data type. Thus if we want to use this
-feature, we should use the type-safe functions to create the array.
+|talloc_array_length(ctx)| that serves for this purpose. It requires the name
+embedded within the context to be the name of the data type. Thus if we want to
+use this feature, we should use the type-safe functions to create the array.
 
 \begin{lstlisting}[caption={Length of an array},label=lst:array-length]
 TALLOC_CTX *ctx = talloc_new(NULL);
