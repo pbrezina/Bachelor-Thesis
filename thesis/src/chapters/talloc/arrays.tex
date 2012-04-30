@@ -120,7 +120,7 @@ string, having that on mind we will gain the constant complexity. For example:
 \begin{lstlisting}[caption={Length of a string},label=lst:array-length]
 size_t talloc_strlen(const char *str)
 {
-  return talloc_array_length(ctx) - 1;
+  return talloc_array_length(str) - 1;
 }
 
 char *str = talloc_strdup(ctx, "hello world");
