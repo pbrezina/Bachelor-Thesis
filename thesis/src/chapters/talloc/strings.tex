@@ -2,7 +2,7 @@
 \label{talloc:sec:strings}
 
 One of the most common issues that a programmer must take care of in the C
-programming language is a duplication of and formatting a string.
+programming language is the duplication and formatting of strings.
 
 In the C standard library this is usually done with |strdup()| (string
 duplication), |strndup()| (string duplication with a length limit) and
@@ -18,7 +18,7 @@ basic routines it adds very useful alternatives that will append the result to
 the existing string or at the actual end of the talloc context.
 
 All of these functions return a string that is also a valid talloc context
-which is named exactly just as the output string. The basic variants take as
+which is named identically to the output string. The basic variants take as
 the first parameter an arbitrary talloc context which will serve as a parent to
 the newly created context. The extended |_append| variants take a talloc context
 that has to be a valid string to which the result is appended.
@@ -37,7 +37,8 @@ char* talloc_strdup_append(char *dest, const char *str)
 \end{funcproto}
 \begin{funcdesc}
   Reallocates |dest| to the required length and appends |str| to |dest|. Returns
-  the new pointer to |dest| (the original pointer may not be longer valid).
+  the new pointer to |dest|. This may change the pointer address of |dest|, so
+  it is unsafe to rely on the old address after calling this function.
 \end{funcdesc}
 \begin{funcproto}
 char* talloc_strdup_append_buffer(char *dest, const char *s)
@@ -86,8 +87,8 @@ char* talloc_vasprintf_append_buffer(char *dest, const char
 
 \subsection{Difference between append and append_buffer}
 
-The behaviour of |_append| and |_append_buffer| is the same in the most majority
-of cases. The later one serves as the much more efficient way of appending a
+The behaviour of |_append| and |_append_buffer| is the same in the majority
+of cases. The latter one serves as the much more efficient way of appending a
 string as it does not calculate the length of the destination string. This
 performance trick takes effect in loops with many iterations. For example, we
 want to build an LDAP filter to search all users that are member of at least one

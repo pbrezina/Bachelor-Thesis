@@ -43,7 +43,7 @@ called more than once on the same context, the current destructor is
 overwritten. To detach the destructor from the context we shall simply set
 |NULL| as the new destructor.
 
-\subsection{Children contexts with destructors}
+\subsection{Child contexts with destructors}
 
 If we attempt to free a talloc context (|ctx|) that has one or more children
 with a destructor attached, we may encounter a strange behaviour. If a

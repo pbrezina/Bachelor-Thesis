@@ -2,10 +2,10 @@
 \label{talloc:dyn-ts}
 
 Generic programming in the C language is very difficult. There is no inheritance
-nor templates known from object oriented languages, neither the dynamic type
-system. Therefore, generic programming in this language is usually done by type
-casting a variable to |void*| and transfer it through a generic function to a
-specialized callback as illustrated on the next listing.
+nor templates known from object oriented languages. There is no dynamic type
+system. Therefore, generic programming in this language is usually done by
+type-casting a variable to |void*| and transferring it through a generic function
+to a specialized callback as illustrated on the next listing.
 
 \begin{lstlisting}[caption={Generic programming pattern},label=lst-generic-prg]
 void generic_function(callback_fn cb, void *pvt)
@@ -30,9 +30,9 @@ void specific_function()
 
 \noindent
 Unfortunately, the type information is lost as a result of this type cast. The
-compiler can not check the type during the compilation nor we are able to do it
-during the runtime. Providing an invalid data type to the callback will result
-in an unexpected behaviour (not necessarily a crash) of the application. This
+compiler cannot check the type during the compilation nor are we able to do it
+at runtime. Providing an invalid data type to the callback will result
+in unexpected behaviour (not necessarily a crash) of the application. This
 mistake is usually hard to detect because it is not the first thing on the mind
 of the developer.
 
@@ -88,9 +88,9 @@ type cast of the returned pointer.
 
 \subsection{Examples}
 
-Below given is an example of a generic programming with talloc -- if we provide
+Below given is an example of generic programming with talloc -- if we provide
 invalid data to the callback, the program will be aborted. This is a sufficient
-reaction for such an error in the most applications.
+reaction for such an error in most applications.
 
 \begin{lstlisting}[caption={Dynamic type system \#1}]
 void foo_callback(void *pvt)
