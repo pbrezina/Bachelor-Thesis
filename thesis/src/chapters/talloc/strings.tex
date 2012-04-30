@@ -36,9 +36,10 @@ char* talloc_strdup(TALLOC_CTX *ctx, const char *str)
 char* talloc_strdup_append(char *dest, const char *str)
 \end{funcproto}
 \begin{funcdesc}
-  Reallocates |dest| to the required length and appends |str| to |dest|. Returns
-  the new pointer to |dest|. This may change the pointer address of |dest|, so
-  it is unsafe to rely on the old address after calling this function.
+  Reallocates |dest| to the required length and concatenates |str| with the
+  original |dest| string. Returns the new pointer to |dest|. This may change the
+  pointer address of |dest|, so it is unsafe to rely on the old address after
+  calling this function.
 \end{funcdesc}
 \begin{funcproto}
 char* talloc_strdup_append_buffer(char *dest, const char *s)
