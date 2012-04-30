@@ -143,9 +143,9 @@ detectable memory leak is created.
 
 On the other hand, we do not have any way to access the allocated data
 and for all we know |mem_ctx| may exist for the lifetime of our application.
-For these reasons this should be considered as a memory leak. But how can we
-detect it when it is properly freed? The only way is to notice the mistake in
-the source code.
+For these reasons this should be considered as a memory leak. How can we detect
+if it is unreferenced but still attached to its parent context? The only way
+is to notice the mistake in the source code.
 
 But if we create the temporary context as a top level context, it will not be
 freed and memory diagnostic tools
