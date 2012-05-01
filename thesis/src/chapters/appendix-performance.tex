@@ -4,7 +4,10 @@ The official documentation says that talloc is about 4 \% slower than
 malloc\cite{TallocDoc}. However, it does not specify the testing environment and
 measuring methodology. Therefore, I was eager to try it myself and I have
 prepared several test cases: basic memory allocation, array allocation, memory
-reallocation and string concatenation. 
+reallocation and string concatenation.
+
+The values I have measured are stored in the spreadsheet which is located on the
+attached DVD medium at |/documents/results.ods|. 
 
 \section{Environment}
 
@@ -36,7 +39,7 @@ generating invalid results, mainly in calloc and realloc tests -- they were
 faster then malloc. And talloc equivalents that were executed at last were
 faster then these tests. Probably the |glibc| is performing some sort of
 optimization in these functions. Therefore, I have split the test into
-separated programs to get the most accurate results.
+separated programs to get more accurate results.
 
 To make the testing automatic and easy to reproduce, I have create a shell
 script for each test. The output of this script is in the format of comma
@@ -54,9 +57,6 @@ The source code of this test can be found on the attached DVD at
 \begin{commandline}
 sudo bash <dvd>/examples/scripts/perftest-malloc.sh > output_file.csv
 \end{commandline}
-\funclistend
-The values I have measured are stored in the ODS file which is located on the
-attached DVD medium at |/documents/results.ods|.
 
 \subsection{Conclusion}
 
@@ -71,9 +71,6 @@ The source code of this test can be found on the attached DVD at
 \begin{commandline}
 sudo bash <dvd>/examples/scripts/perftest-calloc.sh > output_file.csv
 \end{commandline}
-\funclistend
-The values I have measured are stored in the ODS file which is located on the
-attached DVD medium at |/documents/results.ods|.
 
 \subsection{Conclusion}
 
@@ -88,9 +85,6 @@ The source code of this test can be found on the attached DVD at
 \begin{commandline}
 sudo bash <dvd>/examples/scripts/perftest-realloc.sh > output_file.csv
 \end{commandline}
-\funclistend
-The values I have measured are stored in the ODS file which is located on the
-attached DVD medium at |/documents/results.ods|.
 
 \subsection{Conclusion}
 
@@ -106,8 +100,5 @@ with:
 \begin{commandline}
 sudo bash <dvd>/examples/scripts/perftest-string-append.sh > output_file.csv
 \end{commandline}
-\funclistend
-The values I have measured are stored in the ODS file which is located on the
-attached DVD medium at |/documents/results.ods|.
 
 \subsection{Conclusion}
