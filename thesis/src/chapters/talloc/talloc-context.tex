@@ -20,7 +20,7 @@ printf("%d\n", strcmp(str1, str2) == 0);
 free(str1);
 talloc_free(str2); /* we can not use free(str2) */
 \end{lstlisting}
-
+\noindent
 This is possible because the context is internally handled as a special
 fixed-length structure called talloc chunk. Each chunk stores context metadata
 followed by the memory space requested by the programmer. When a talloc
