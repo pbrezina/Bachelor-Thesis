@@ -100,6 +100,12 @@ the context will be the location in the source code where is this function
 called.
 \end{funcdesc}
 \funclistend
+Copying the memory out of the pool may, however, discard all the performance
+boost given by the pool, depending on the size of the copied memory. Therefore,
+the code should be well profiled before taking this path. In general, the
+golden rule is: if we need to steal from the pool context, we should not
+use the pool context.
+
 For example, the most effective way of creating the LDAP filter with groups
 (introduced in the Listing \ref{lst:append_buffer}) would be:
 
