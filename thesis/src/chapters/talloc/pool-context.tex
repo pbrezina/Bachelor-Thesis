@@ -105,29 +105,3 @@ boost given by the pool, depending on the size of the copied memory. Therefore,
 the code should be well profiled before taking this path. In general, the
 golden rule is: if we need to steal from the pool context, we should not
 use the pool context.
-
-For example, the most effective way of creating the LDAP filter with groups
-(introduced in the Listing \ref{lst:append_buffer}) would be:
-
-\begin{lstlisting}[caption={Appending a string with a pool context},
-morekeywords={talloc_pool,talloc_memdup}]
-char* create_filter(TALLOC_CTX *mem_ctx, char **groups)
-{
-  int i;
-  TALLOC_CTX *pool_ctx = talloc_pool(mem_ctx, 10240);
-  char *output = NULL;
-  char *filter = talloc_strdup(pool_ctx, "(|");
-  for (i=0; groups[i] != NULL; i++) {
-    filter = talloc_asprintf_append_buffer(
-               filter, "(group=%s)", groups[i]);
-  }
-  filter = talloc_strdup_append_buffer(filter, ")");
-  
-  /* copy the filter */
-  output = talloc_memdup(mem_ctx, filter,
-                         talloc_array_length(filter));
-  talloc_free(pool_ctx);
-
-  return output;
-}
-\end{lstlisting}
