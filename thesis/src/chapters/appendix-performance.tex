@@ -6,9 +6,6 @@ measuring methodology. Therefore, I was eager to try it myself and I have
 prepared several test cases: basic memory allocation, array allocation, memory
 reallocation and string concatenation.
 
-The values I have measured are stored in the spreadsheet which is located on the
-attached DVD medium at |/documents/results.ods|. 
-
 \section{Environment}
 
 Basic information:
@@ -41,64 +38,64 @@ faster then these tests. Probably the |glibc| is performing some sort of
 optimization in these functions. Therefore, I have split the test into
 separated programs to get more accurate results.
 
-To make the testing automatic and easy to reproduce, I have create a shell
-script for each test. The output of this script is in the format of comma
-separated values. The header line consists of names of the measured functions.
-The values represent a time span in microseconds that was required to run the
-function.
+To make the testing automatic and easy to reproduce, I have created several
+shell scripts. The output of these scripts is in the format of comma separated
+values. The header line consists of names of the measured functions. The values
+represent a time span in microseconds that was required to run the function.
 
-\section{Test: Memory allocation}
+\section{Test suite}
 
-This test measures the time needed to allocate 100B for 100,000 times.
+The test suite consists of:
+\begin{itemize}
+  \item Memory allocation (malloc)
+  \item Array allocation (calloc)
+  \item Memory reallocation (realloc)
+  \item String concatenation (strcat)
+\end{itemize}
 
-\funclistend
-The source code of this test can be found on the attached DVD at
-|/examples/src/performance/malloc|. The test can be run automatically with:
+\noindent
+To execute all tests at once with the exact same parameters as I have used run:
 \begin{commandline}
-sudo bash <dvd>/examples/scripts/perftest-malloc.sh > output_file.csv
+sudo bash <dvd>/examples/scripts/perftest-run.sh PREFIX
 \end{commandline}
-
-\subsection{Conclusion}
-
-\section{Test: Array allocation}
-
-This test measures the time needed to allocate 100 elements of |int| for 100,000
-times.
-
 \funclistend
-The source code of this test can be found on the attached DVD at
-|/examples/src/performance/calloc|. The test can be run automatically with:
+It stores the measured values in |<PREFIX><testcase>|.
+
+\noindent
+The tests can be also run separately using:
 \begin{commandline}
-sudo bash <dvd>/examples/scripts/perftest-calloc.sh > output_file.csv
+sudo bash <dvd>/examples/scripts/perftest-malloc.sh
+     \ loops size pool-guess testcount > output_file.csv
+sudo bash <dvd>/examples/scripts/perftest-calloc.sh
+     \ loops array-length testcount > output_file.csv
+sudo bash <dvd>/examples/scripts/perftest-realloc.sh
+     \ loops increment testcount > output_file.csv
+sudo bash <dvd>/examples/scripts/perftest-concat.sh
+     \ array-length string pool-guess testcount > output_file.csv
 \end{commandline}
+\begin{itemize}
+  \item |testcount| -- how many times is the test binary executed
+  \item |loops| -- how many times is the tested function called
+  \item |array-length| -- how many elements should be stored in the array
+  \item |pool-guess| -- what size should be used for the |talloc_pool()|
+  \item |string| -- each element of the array in the concatenation test is this
+  a duplication of this string
+\end{itemize}
 
-\subsection{Conclusion}
+\noindent
+The source codes of these tests can be found on the attached DVD at
+|<dvd>/examples/src/performance|.
 
-\section{Test: Memory reallocation}
+\section{Conclusion}
 
-This test measures the time needed to reallocate a pointer for 100,000 times
-where each iteration increases the memory occupied by this pointer by 100B.
+The official speed test run on my computer says that the talloc is about 12 \%
+slower than malloc. The results I have measured with my test suite cannot be
+simply summarized on a few lines. Therefore, I have prepared a spreadsheet that
+contains a lot of computed data and charts, which I believe are for this
+case much better than words. The document is located at
+|<dvd>/documents/results.ods|.
 
-\funclistend
-The source code of this test can be found on the attached DVD at
-|/examples/src/performance/realloc|. The test can be run automatically with:
-\begin{commandline}
-sudo bash <dvd>/examples/scripts/perftest-realloc.sh > output_file.csv
-\end{commandline}
-
-\subsection{Conclusion}
-
-\section{Test: String concatenation}
-
-This test measures the time needed to concatenate an array that contains
-100,000 strings where each string consists of ten characters.
-
-\funclistend
-The source code of this test can be found on the attached DVD at
-|/examples/src/performance/concat|. The test can be run automatically
-with:
-\begin{commandline}
-sudo bash <dvd>/examples/scripts/perftest-string-append.sh > output_file.csv
-\end{commandline}
-
-\subsection{Conclusion}
+Statistically speaking, the talloc is much slower than the glibc allocator.
+However, even when the tests use values that can be hardly achieved in most
+applications, it still makes the difference only in miliseconds precision.
+ 
