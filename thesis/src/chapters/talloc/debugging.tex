@@ -17,6 +17,7 @@ calls this abort function in several more situations:
   \item and when an access after free is detected.
 \end{itemize}
 
+\noindent
 The third one is probably the most interesting. It can help us with detecting
 an attempt to double-free a context or any other manipulation with it via
 talloc functions (using it as a parent, stealing it, etc.).
