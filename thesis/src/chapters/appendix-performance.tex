@@ -55,37 +55,42 @@ The test suite consists of:
 \end{itemize}
 
 \noindent
-To execute all tests at once with the exact same parameters as I have used run:
-\begin{commandline}
-sudo bash <dvd>/examples/scripts/perftest-run.sh PREFIX
-\end{commandline}
-\funclistend
-It stores the measured values in |<PREFIX><testcase>|.
+The source codes of these tests can be found on the attached DVD at
+|<dvd>/examples/src/performance|.
 
-\noindent
-The tests can be also run separately using:
+\funclistend
+The tests can be run separately using:
 \begin{commandline}
-sudo bash <dvd>/examples/scripts/perftest-malloc.sh
-     \ loops size pool-guess testcount > output_file.csv
-sudo bash <dvd>/examples/scripts/perftest-calloc.sh
-     \ loops array-length testcount > output_file.csv
-sudo bash <dvd>/examples/scripts/perftest-realloc.sh
-     \ loops increment testcount > output_file.csv
-sudo bash <dvd>/examples/scripts/perftest-concat.sh
-     \ array-length string pool-guess testcount > output_file.csv
+sudo bash <dvd>/examples/scripts/perftest-malloc.sh \
+     loops size pool-guess testcount > output_file.csv
+
+sudo bash <dvd>/examples/scripts/perftest-calloc.sh \
+     loops array-length testcount > output_file.csv
+
+sudo bash <dvd>/examples/scripts/perftest-realloc.sh \
+     loops increment testcount > output_file.csv
+
+sudo bash <dvd>/examples/scripts/perftest-concat.sh \
+     array-length string pool-guess testcount \
+     > output_file.csv
 \end{commandline}
 \begin{itemize}
   \item |testcount| -- how many times is the test binary executed
   \item |loops| -- how many times is the tested function called
   \item |array-length| -- how many elements should be stored in the array
   \item |pool-guess| -- what size should be used for the |talloc_pool()|
-  \item |string| -- each element of the array in the concatenation test is this
+  \item |string| -- each element of the array in the concatenation test is
   a duplication of this string
 \end{itemize}
 
 \noindent
-The source codes of these tests can be found on the attached DVD at
-|<dvd>/examples/src/performance|.
+The tests can be also executed all at once with the same parameters as I
+have used with the following command:
+\begin{commandline}
+sudo bash <dvd>/examples/scripts/perftest-run.sh PREFIX
+\end{commandline}
+\funclistend
+It stores the measured values in |<PREFIX><testcase>|.
 
 \section{Conclusion}
 
