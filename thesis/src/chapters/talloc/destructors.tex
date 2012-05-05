@@ -54,6 +54,12 @@ But if the destructor of |ctx| succeeds, |talloc_free(ctx)| succeeds too and
 the memory of |ctx| is deallocated even if destructor on one of the children
 fails.
 
+There has been a discussion on the samba-technical mailing list that addresses
+this destructor characteristics. The conclusion of this discussion is, that
+returning |-1| from the destructor means that there is a very good reason to
+reject deallocation of the context and all of its
+children\cite{MailListDestructors}.
+
 \subsection{Example}
 
 Imagine that we have a dynamically created linked list. Before we deallocate an
