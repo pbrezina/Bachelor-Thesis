@@ -31,7 +31,7 @@ the data part and leaves the meta data intact.
 
 Apart from the abort function, talloc uses a log function to provide additional
 information to the aforementioned violations. To enable logging we shall set the
-log function with:
+log function with one of:
 
 \begin{funcproto}
 void talloc_set_log_fn(void (*fn)(const char *message))
