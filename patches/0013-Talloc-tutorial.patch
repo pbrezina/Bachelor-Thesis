@@ -1,0 +1,1328 @@
+From 7b446c8fa39103e2016d54ad6663f418a999e521 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Pavel=20B=C5=99ezina?= <pbrezina@redhat.com>
+Date: Sun, 6 May 2012 14:34:48 +0200
+Subject: [PATCH] Talloc tutorial
+
+---
+ lib/talloc/doc/context.png                |  Bin 0 -> 4715 bytes
+ lib/talloc/doc/context_tree.png           |  Bin 0 -> 6158 bytes
+ lib/talloc/doc/mainpage.dox               |    5 +
+ lib/talloc/doc/stealing.png               |  Bin 0 -> 6994 bytes
+ lib/talloc/doc/tutorial_bestpractices.dox |  192 ++++++++++++++++++++++++++++
+ lib/talloc/doc/tutorial_context.dox       |  196 +++++++++++++++++++++++++++++
+ lib/talloc/doc/tutorial_debugging.dox     |  115 +++++++++++++++++
+ lib/talloc/doc/tutorial_destructors.dox   |   81 ++++++++++++
+ lib/talloc/doc/tutorial_dts.dox           |  108 ++++++++++++++++
+ lib/talloc/doc/tutorial_introduction.dox  |   43 +++++++
+ lib/talloc/doc/tutorial_pools.dox         |   92 ++++++++++++++
+ lib/talloc/doc/tutorial_stealing.dox      |   40 ++++++
+ lib/talloc/doxy.config                    |    2 +-
+ 13 files changed, 873 insertions(+), 1 deletions(-)
+ create mode 100644 lib/talloc/doc/context.png
+ create mode 100644 lib/talloc/doc/context_tree.png
+ create mode 100644 lib/talloc/doc/stealing.png
+ create mode 100644 lib/talloc/doc/tutorial_bestpractices.dox
+ create mode 100644 lib/talloc/doc/tutorial_context.dox
+ create mode 100644 lib/talloc/doc/tutorial_debugging.dox
+ create mode 100644 lib/talloc/doc/tutorial_destructors.dox
+ create mode 100644 lib/talloc/doc/tutorial_dts.dox
+ create mode 100644 lib/talloc/doc/tutorial_introduction.dox
+ create mode 100644 lib/talloc/doc/tutorial_pools.dox
+ create mode 100644 lib/talloc/doc/tutorial_stealing.dox
+
+diff --git a/lib/talloc/doc/context.png b/lib/talloc/doc/context.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..48a6ca0e6a0ecce971f1867a960681a3b157cc3c
+GIT binary patch
+literal 4715
+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
+
+literal 0
+HcmV?d00001
+
+diff --git a/lib/talloc/doc/context_tree.png b/lib/talloc/doc/context_tree.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..9723459337649af7343134c6b6348739d779a497
+GIT binary patch
+literal 6158
+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
+KD3>alKl~S`IRk9~
+
+literal 0
+HcmV?d00001
+
+diff --git a/lib/talloc/doc/mainpage.dox b/lib/talloc/doc/mainpage.dox
+index 3204e8a..3b56898 100644
+--- a/lib/talloc/doc/mainpage.dox
++++ b/lib/talloc/doc/mainpage.dox
+@@ -10,6 +10,11 @@
+  * <a href="http://samba.org/ftp/talloc" target="_blank">talloc directory</a>
+  * on the samba public source archive.
+  *
++ * @section main-tutorial Tutorial
++ *
++ * You should start by reading @subpage libtalloc_tutorial, then reading the documentation of
++ * the interesting functions as you go.
++
+  * @section talloc_bugs Discussion and bug reports
+  *
+  * talloc does not currently have its own mailing list or bug tracking system.
+diff --git a/lib/talloc/doc/stealing.png b/lib/talloc/doc/stealing.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..8833e06a187709fe650ed436e8da8c02eaa68134
+GIT binary patch
+literal 6994
+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
+OgOHU}lqeB14*nm1k&3YZ
+
+literal 0
+HcmV?d00001
+
+diff --git a/lib/talloc/doc/tutorial_bestpractices.dox b/lib/talloc/doc/tutorial_bestpractices.dox
+new file mode 100644
+index 0000000..034d63a
+--- /dev/null
++++ b/lib/talloc/doc/tutorial_bestpractices.dox
+@@ -0,0 +1,192 @@
++/**
++@page libtalloc_bestpractices Chapter 7: Best practises
++
++The following sections contain several best practices and good manners that were
++found by the <a href="http://www.samba.org">Samba</a> and
++<a href="https://fedorahosted.org/sssd">SSSD</a> developers over the years.
++These will help you to write better code, easier to debug and with as few
++(hopefully none) memory leaks as possible.
++
++@section bp-hierarchy Keep the context hierarchy steady
++
++The talloc is a hierarchy memory allocator. The hierarchy nature is what makes
++the programming more error proof. It makes the memory easier to manage and free.
++Therefore, the first thing we should have on our mind is: always project our
++data structures into the talloc context hierarchy.
++
++That means if we have a structure, we should always use it as a parent context
++for its elements. This way we will not encounter any troubles when freeing this
++structure or when changing its parent. The same rule applies for arrays.
++
++For example, the structure <code>user</code> from section @ref context-hierarchy
++should be created with the context hierarchy illustrated on the next image.
++
++@image html context_tree.png
++
++@section bp-tmpctx Every function should use its own context
++
++It is a good practice to create a temporary talloc context at the function
++beginning and free this context just before the return statement. All the data
++must be allocated on this context or on its children. This ensures that no
++memory leaks are created as long as we do not forget to free the temporary
++context.
++
++This pattern applies to both situations - when a function does not return any
++dynamically allocated value and when it does. However, it needs a little
++extension for the latter case.
++
++@subsection bp-tmpctx-1 Functions that do not return any dynamically allocated
++value
++
++If the function does not return any value created on the heap, we will just obey
++the aforementioned pattern.
++
++@code
++int bar()
++{
++  int ret;
++  TALLOC_CTX *tmp_ctx = talloc_new(NULL);
++  if (tmp_ctx == NULL) {
++    ret = ENOMEM;
++    goto done;
++  }
++  /* allocate data on tmp_ctx or on its descendants */
++  ret = EOK;
++done:
++  talloc_free(tmp_ctx);
++  return ret;
++}
++@endcode
++
++@subsection bp-tmpctx-2 Functions returning dynamically allocated values
++
++If our function returns any dynamically allocated data, its first parameter
++should always be the destination talloc context. This context serves as a parent
++for the output values. But again, we will create the output values as the
++descendants of the temporary context. If everything goes well, we will change
++the parent of the output values from the temporary to the destination talloc
++context.
++
++This pattern ensures that if an error occurs (e.g. I/O error or insufficient
++amount of the memory), all allocated data is freed and no garbage appears on
++the destination context.
++
++@code
++int struct_foo_init(TALLOC_CTX *mem_ctx, struct foo **_foo)
++{
++  int ret;
++  struct foo *foo = NULL;
++  TALLOC_CTX *tmp_ctx = talloc_new(NULL);
++  if (tmp_ctx == NULL) {
++    ret = ENOMEM;
++    goto done;
++  }
++  foo = talloc_zero(tmp_ctx, struct foo);
++  /* ... */
++  *_foo = talloc_steal(mem_ctx, foo);
++  ret = EOK;
++done:
++  talloc_free(tmp_ctx);
++  return ret;
++}
++@endcode
++
++@section bp-null Allocate temporary contexts on NULL
++
++As it can be seen on the previous listing, instead of allocating the temporary
++context directly on <code>mem_ctx</code>, we created a new top level context
++using <code>NULL</code> as the parameter for <code>talloc_new()</code> function.
++Take a look at the following example:
++
++@code
++char * create_user_filter(TALLOC_CTX *mem_ctx,
++                          uid_t uid, const char *username)
++{
++  char *filter = NULL;
++  char *sanitized_username = NULL;
++  /* tmp_ctx is a child of mem_ctx */
++  TALLOC_CTX *tmp_ctx = talloc_new(mem_ctx);
++  if (tmp_ctx == NULL) {
++    return NULL;
++  }
++
++  sanitized_username = sanitize_string(tmp_ctx, username);
++  if (sanitized_username == NULL) {
++    talloc_free(tmp_ctx);
++    return NULL;
++  }
++
++  filter = talloc_aprintf(tmp_ctx,"(|(uid=%llu)(uname=%s))",
++                          uid, sanitized_username);
++  if (filter == NULL) {
++    return NULL; /* tmp_ctx is not freed */ (*@\label{lst:tmp-ctx-3:leak}@*)
++  }
++
++  /* filter becomes a child of mem_ctx */
++  filter = talloc_steal(mem_ctx, filter);
++  talloc_free(tmp_ctx);
++  return filter;
++}
++@endcode
++
++We forgot to free <code>tmp_ctx</code> before the <code>return</code> statement
++in the <code>filter == NULL</code> condition. However, it is created as a child
++of <code>mem_ctx</code> context and as such it will be freed as soon as the
++<code>mem_ctx</code> is freed. Therefore, no detectable memory leak is created.
++
++On the other hand, we do not have any way to access the allocated data
++and for all we know <code>mem_ctx</code> may exist for the lifetime of our
++application. For these reasons this should be considered as a memory leak. How
++can we detect if it is unreferenced but still attached to its parent context?
++The only way is to notice the mistake in the source code.
++
++But if we create the temporary context as a top level context, it will not be
++freed and memory diagnostic tools
++(e.g. <a href="http://valgrind.org">valgrind</a>) are able to do their job.
++
++@section bp-pool Temporary contexts and the talloc pool
++
++If we want to take the advantage of the talloc pool but also keep to the
++pattern introduced in the previous section, we are unable to do it directly. The
++best thing to do is to create a conditional build where we can decide how do we
++want to create the temporary context. For example, we can create the following
++macros:
++
++@code
++#ifdef USE_POOL_CONTEXT
++  #define CREATE_POOL_CTX(ctx, size) talloc_pool(ctx, size)
++  #define CREATE_TMP_CTX(ctx)        talloc_new(ctx)
++#else
++  #define CREATE_POOL_CTX(ctx, size) talloc_new(ctx)
++  #define CREATE_TMP_CTX(ctx)        talloc_new(NULL)
++#endif
++@endcode
++
++Now if our application is under development, we will build it with macro
++<code>USE_POOL_CONTEXT</code> undefined. This way, we  can use memory diagnostic
++utilities to detect memory leaks.
++
++The release version will be compiled with the macro defined. This will  enable
++pool contexts and therefore reduce the <code>malloc()</code> calls, which will
++end up in a little bit faster processing.
++
++@code
++int struct_foo_init(TALLOC_CTX *mem_ctx, struct foo **_foo)
++{
++  int ret;
++  struct foo *foo = NULL;
++  TALLOC_CTX *tmp_ctx = CREATE_TMP_CTX(mem_ctx);
++  /* ... */
++}
++
++errno_t handle_request(TALLOC_CTX mem_ctx)
++{
++  int ret;
++  struct foo *foo = NULL;
++  TALLOC_CTX *pool_ctx = CREATE_POOL_CTX(NULL, 1024);
++  ret = struct_foo_init(mem_ctx, &foo);
++  /* ... */
++}
++@endcode
++
++*/
+\ No newline at end of file
+diff --git a/lib/talloc/doc/tutorial_context.dox b/lib/talloc/doc/tutorial_context.dox
+new file mode 100644
+index 0000000..2141318
+--- /dev/null
++++ b/lib/talloc/doc/tutorial_context.dox
+@@ -0,0 +1,196 @@
++/**
++@page libtalloc_context Chapter 1: Talloc context
++@section context Talloc context
++
++The talloc context is the most important part of this library for it is
++responsible for every single feature of this memory allocator. It is a logical
++unit which represents a memory space managed by talloc.
++
++From the programmer's point of view, the talloc context is completely
++equivalent to a pointer that would be returned by the memory routines from the
++C standard library. This means that every context that is returned from the
++talloc library can be used directly in functions that do not use talloc
++internally. For example we can do the following:
++
++@code
++char *str1 = strdup("I am NOT a talloc context");
++char *str2 = talloc_strdup(NULL, "I AM a talloc context");
++
++printf("%d\n", strcmp(str1, str2) == 0);
++
++free(str1);
++talloc_free(str2); /* we can not use free(str2) */
++@endcode
++
++This is possible because the context is internally handled as a special
++fixed-length structure called talloc chunk. Each chunk stores context metadata
++followed by the memory space requested by the programmer. When a talloc
++function returns a context (pointer), it in fact returns a pointer to the user
++space portion of the talloc chunk. And when we want to manipulate with this
++context using talloc functions, the talloc library transforms the user-space
++pointer back to the starting address of the chunk. This is also the reason why
++we were unable to use <code>free(str2)</code> in the previous example - because
++<code>str2</code> does not point at the beginning of the allocated block of
++memory. This is illustrated on the next image:
++
++@image html context.png
++
++The type TALLOC_CTX is defined in talloc.h to identify a talloc context in
++function parameters. However, this type is just an alias for <code>void</code>
++and exists only for semantical reasons - thus we can differentiate between
++<code>void*</code> (arbitrary data) and TALLOC_CTX* (talloc context).
++
++@subsection metadata Context meta data
++Every talloc context carries several pieces of internal information along with
++the allocated memory:
++
++  - name - which is used in reports of context hierarchy and to simulate
++    a dynamic type system,
++  - size of the requested memory in bytes - this can be used to determine
++    the number of elements in arrays,
++  - attached destructor - which is executed just before the memory block is
++    about to be freed,
++  - references to the context
++  - children and parent contexts - create the hierarchical view on the
++    memory.
++
++@section context-hierarchy Hierarchy of talloc context
++
++Every talloc context contains information about its parent and children. Talloc
++uses this information to create a hierarchical model of memory or to be more
++precise, it creates an n-ary tree where each node represents a single talloc
++context. The root node of the tree is referred to as a top level context - a
++context without any parent.
++
++This approach has several advantages:
++
++  - as a consequence of freeing a talloc context, all of its children
++    will be properly deallocated as well,
++  - the parent of a context can be changed at any time, which
++    results in moving the whole subtree under another node,
++  - it creates a more natural way of managing data structures.
++
++@subsection Example
++
++We have a structure that stores basic information about a user - his/her name,
++identification number and groups he/she is a member of:
++
++@code
++struct user {
++  uid_t uid;
++  char *username;
++  size_t num_groups;
++  char **groups;
++};
++@endcode
++
++We will allocate this structure using talloc. The result will be the following
++context tree:
++
++@image html context_tree.png
++
++@code
++/* create new top level context */
++struct user *user = talloc(NULL, struct user);
++
++user->uid = 1000;
++user->num_groups = N;
++
++/* make user the parent of following contexts */
++user->username = talloc_strdup(user, "Test user");
++user->groups = talloc_array(user, char*, user->num_groups);
++
++for (i = 0; i < user->num_groups; i++) {
++  /* make user->groups the parent of following context */
++  user->groups[i] = talloc_asprintf(user->groups,
++                                    "Test group %d", i);
++}
++@endcode
++
++This way, we have gained a lot of additional capabilities, one of which is
++very simple deallocation of the structure and all of its elements.
++
++With the C standard library we need first to iterate over the array of groups
++and free every element separately. Then we must deallocate the array that stores
++them. Next we deallocate the username and as the last step free the structure
++itself. But with talloc, the only operation we need to execute is freeing the
++structure context. Its descendants will be freed automatically.
++
++@code
++talloc_free(user);
++@endcode
++
++@section keep-hierarchy Always keep the hieararchy steady!
++
++The talloc is a hierarchy memory allocator. The hierarchy nature is what makes
++the programming more error proof. It makes the memory easier to manage and free.
++Therefore, the first thing we should have on our mind is: <strong>always project
++our data structures into the talloc context hierarchy</strong>.
++
++That means if we have a structure, we should always use it as a parent context
++for its elements. This way we will not encounter any troubles when freeing this
++structure or when changing its parent. The same rule applies for arrays.
++
++@section creating-context Creating a talloc context
++
++Here are the most important functions that creates a new talloc context.
++
++@subsection type-safe Type-safe functions
++
++It allocates the size that is necessary for the this type and returns a
++new, properly-cast pointer. This is the preferred way to create a new context
++as we can rely on the compiler to detect type mismatches.
++
++They automatically set the name of the context to the name of the data type.
++Which is used to simulate the dynamic type system.
++
++@code
++struct user *user = talloc(ctx, struct user);
++
++/* initialize to default values */
++user->uid = 0;
++user->name = NULL;
++user->num_groups = 0;
++user->groups = NULL;
++
++/* or we can achieve the same result with */
++struct user *user_zero = talloc_zero(ctx, struct user);
++@endcode
++
++@subsection zero-length Zero-lenght contexts
++
++The zero-length context is basically a context without any special semantical
++meaning. We can use it the same way as any other context. The only difference
++is that it consists only of the meta data about the context. Therefore, it is
++strictly of type |TALLOC_CTX*|. It is often used in cases where we want to
++aggregate several data structures under one parent (zero-length) context, such
++as a temporary context to contain memory needed within a single function that
++is not interesting to the caller. Allocating on a zero-length temporary context
++will make clean-up of the function simpler.
++
++@code
++TALLOC_CTX *ctx = NULL;
++struct foo *foo = NULL;
++struct bar *bar = NULL;
++
++/* new zero-length top level context */
++ctx = talloc_new(NULL);
++if (ctx == NULL) {
++  return ENOMEM;
++}
++
++foo = talloc(ctx, struct foo);
++bar = talloc(ctx, struct bar);
++
++/* free everything at once */
++talloc_free(ctx);
++@endcode
++
++@subsection context-see-also See also
++
++- talloc_size()
++- talloc_named()
++- @ref talloc_array
++- @ref talloc_string
++
++*/
+\ No newline at end of file
+diff --git a/lib/talloc/doc/tutorial_debugging.dox b/lib/talloc/doc/tutorial_debugging.dox
+new file mode 100644
+index 0000000..0cc0866
+--- /dev/null
++++ b/lib/talloc/doc/tutorial_debugging.dox
+@@ -0,0 +1,115 @@
++/**
++@page libtalloc_debugging Chapter 6: Debugging
++
++Although talloc makes memory management significantly easier than the C standard
++library, developers are still only humans and can make mistakes. Therefore, it
++can be handy to know some tools for the inspection of talloc memory usage.
++
++@section log-abort Talloc log and abort
++
++We have already encountered the abort function in section @ref dts.
++In that case it was used when a type mismatch was detected. However, talloc
++calls this abort function in several more situations:
++
++- when the provided pointer is not a valid talloc context,
++- when the meta data is invalid - probably due to memory corruption,
++- and when an access after free is detected.
++
++The third one is probably the most interesting. It can help us with detecting
++an attempt to double-free a context or any other manipulation with it via
++talloc functions (using it as a parent, stealing it, etc.).
++
++Before the context is freed talloc sets a flag in the meta data. This is then
++used to detect the access after free. It basically works on the assumption that
++the memory stays unchanged (at least for a while) even when it is properly
++deallocated. This will work even if the memory is filled with the value
++specified in <code>TALLOC_FREE_FILL</code> environment variable, because it
++fills only the data part and leaves the meta data intact.
++
++Apart from the abort function, talloc uses a log function to provide additional
++information to the aforementioned violations. To enable logging we shall set the
++log function with one of:
++
++- talloc_set_log_fn()
++- talloc_set_log_stderr()
++
++Below given is an sample output of accessing a context after it has been freed:
++
++@code
++talloc_set_log_stderr();
++TALLOC_CTX *ctx = talloc_new(NULL);
++
++talloc_free(ctx);
++talloc_free(ctx);
++
++results in:
++talloc: access after free error - first free may be at ../src/main.c:55
++Bad talloc magic value - access after free
++@endcode
++
++Another example below is an example of the invalid context:
++
++@code
++talloc_set_log_stderr();
++TALLOC_CTX *ctx = talloc_new(NULL);
++char *str = strdup("not a talloc context");
++talloc_steal(ctx, str);
++
++results in:
++Bad talloc magic value - unknown value
++@endcode
++
++@section reports Memory usage reports
++
++Talloc can print reports of memory usage of specified talloc context to a file
++(or to <code>stdout</code> or <code>stderr</code>). The report can be simple or
++full. The simple report provides information only about the context itself and
++its direct descendants. The full report goes recursively through the entire
++context tree. See:
++
++- talloc_report()
++- talloc_report_full()
++
++We will use following code to retrieve the sample report:
++
++@code
++struct foo {
++  char *str;
++};
++
++TALLOC_CTX *ctx = talloc_new(NULL);
++char *str =  talloc_strdup(ctx, "my string");
++struct foo *foo = talloc_zero(ctx, struct foo);
++foo->str = talloc_strdup(foo, "I am Foo");
++char *str2 = talloc_strdup(foo, "Foo is my parent");
++
++/* print full report */
++talloc_report_full(ctx, stdout);
++@endcode
++
++It will print a full report of <code>ctx</code> to the standard output.
++The message should be similar to:
++
++@code
++full talloc report on 'talloc_new: ../src/main.c:82' (total 46 bytes in 5 blocks)
++  struct foo contains 34 bytes in 3 blocks (ref 0) 0x1495130
++    Foo is my parent contains 17 bytes in 1 blocks (ref 0) 0x1495200
++    I am Foo contains 9 bytes in 1 blocks (ref 0) 0x1495190
++  my string contains 10 bytes in 1 blocks (ref 0) 0x14950c0
++@endcode
++
++We can notice in this report that something is wrong with the context containing
++<code>struct foo</code>. We know that the structure has only one string element.
++However, we can see in the report that it has two children. This indicates that
++we have either violated the memory hierarchy or forgotten to free it as
++temporary data. Looking into the code, we can see that <code>"Foo is my parent"
++</code> should be attached to <code>ctx</code>.
++
++See also:
++
++- talloc_enable_null_tracking()
++- talloc_disable_null_tracking()
++- talloc_enable_leak_report()
++- talloc_enable_leak_report_full()
++
++*/
+\ No newline at end of file
+diff --git a/lib/talloc/doc/tutorial_destructors.dox b/lib/talloc/doc/tutorial_destructors.dox
+new file mode 100644
+index 0000000..178f4cc
+--- /dev/null
++++ b/lib/talloc/doc/tutorial_destructors.dox
+@@ -0,0 +1,81 @@
++/**
++@page libtalloc_destructors Chapter 4: Using destructors
++@section destructors Using destructors
++
++Destructors are well known methods in the world of object oriented programming.
++A destructor is a method of an object that is automatically run when the object
++is destroyed. It is usually used to return resources taken by the object back to
++the system (e.g. closing file descriptors, terminating connection to a database,
++deallocating memory).
++
++With talloc we can take the advantage of destructors even in C. We can easily
++attach our own destructor to a talloc context. When the context is freed, the
++destructor is run automatically.
++
++To attach/detach a destructor to a talloc context use: talloc_set_destructor().
++
++@section destructors-example Example
++
++Imagine that we have a dynamically created linked list. Before we deallocate an
++element of the list, we need to make sure that we have successfully removed it
++from the list. Normally, this would be done by two commands in the exact order:
++remove it from the list and then free the element. With talloc, we can do this
++at once by setting a destructor on the element which will remove it from the
++list and talloc_free() will do the rest.
++
++The destructor would be:
++
++@code
++int list_remove(void *ctx)
++{
++    struct list_el *el = NULL;
++    el = talloc_get_type_abort(ctx, struct list_el);
++    /* remove element from the list */
++}
++@endcode
++
++GCC3+ can check for the types during the compilation. So if it is
++our major compiler, we can use a little bit nicer destructor:
++
++@code
++int list_remove(struct list_el *el)
++{
++    /* remove element from the list */
++}
++@endcode
++
++Now we will assign the destructor to the list element. We can do this directly
++in the function that inserts it.
++
++@code
++struct list_el* list_insert(TALLOC_CTX *mem_ctx,
++                            struct list_el *where,
++                            void *ptr)
++{
++  struct list_el *el = talloc(mem_ctx, struct list_el);
++  el->data = ptr;
++  /* insert into list */
++
++  talloc_set_destructor(el, list_remove);
++  return el;
++}
++@endcode
++
++Because talloc is a hierarchical memory allocator, we can go a step further and
++free the data with the element as well:
++
++@code
++struct list_el* list_insert_free(TALLOC_CTX *mem_ctx,
++                                 struct list_el *where,
++                                 void *ptr)
++{
++  struct list_el *el = NULL;
++  el = list_insert(mem_ctx, where, ptr);
++
++  talloc_steal(el, ptr);
++
++  return el;
++}
++@endcode
++
++*/
+\ No newline at end of file
+diff --git a/lib/talloc/doc/tutorial_dts.dox b/lib/talloc/doc/tutorial_dts.dox
+new file mode 100644
+index 0000000..9065d7a
+--- /dev/null
++++ b/lib/talloc/doc/tutorial_dts.dox
+@@ -0,0 +1,108 @@
++/**
++@page libtalloc_dts Chapter 3: Dynamic type system
++@section dts Dynamic type system
++
++Generic programming in the C language is very difficult. There is no inheritance
++nor templates known from object oriented languages. There is no dynamic type
++system. Therefore, generic programming in this language is usually done by
++type-casting a variable to |void*| and transferring it through a generic function
++to a specialized callback as illustrated on the next listing.
++
++@code
++void generic_function(callback_fn cb, void *pvt)
++{
++  /* do some stuff and call the callback */
++  cb(pvt);
++}
++
++void specific_callback(void *pvt)
++{
++  struct specific_struct *data;
++  data = (struct specific_struct*)pvt;
++  /* ... */
++}
++
++void specific_function()
++{
++  struct specific_struct data;
++  generic_function(callback, &data);
++}
++@endcode
++
++Unfortunately, the type information is lost as a result of this type cast. The
++compiler cannot check the type during the compilation nor are we able to do it
++at runtime. Providing an invalid data type to the callback will result
++in unexpected behaviour (not necessarily a crash) of the application. This
++mistake is usually hard to detect because it is not the first thing on the mind
++of the developer.
++
++As we already know, every talloc context contains a name. This name is available
++at any time and it can be used to determine the type of a context even if we
++lose the type of a variable.
++
++Although the name of the context can be set to any arbitrary string, the best
++way of using it to simulate the dynamic type system is to set it directly to the
++type of the variable.
++
++It is recommended to use one of |talloc()| and |talloc_array()| (or its
++variants) to create the context as they set its name to the name of the type
++automatically.
++
++If we have a context with such a name, we can use two similar functions that do
++both the type check and the type cast for us:
++
++- talloc_get_type()
++- talloc_get_type_abort()
++
++@section dts-examples Examples
++
++Below given is an example of generic programming with talloc - if we provide
++invalid data to the callback, the program will be aborted. This is a sufficient
++reaction for such an error in most applications.
++
++@code
++void foo_callback(void *pvt)
++{
++  struct foo *data = talloc_get_type_abort(pvt, struct foo);
++  /* ... */
++}
++
++int do_foo()
++{
++  struct foo *data = talloc_zero(NULL, struct foo);
++  /* ... */
++  return generic_function(foo_callback, data);
++}
++@endcode
++
++But what if we are creating a service application that should be running for the
++uptime of a server? We may want to abort the application during the development
++process (to make sure the error is not overlooked) but try to recover from the
++error in the customer release. This can be achieved by creating a custom abort
++function with a conditional build.
++
++@code
++void my_abort(const char *reason)
++{
++  fprintf(stderr, "talloc abort: %s\n", reason);
++#ifdef ABORT_ON_TYPE_MISMATCH
++  abort();
++#endif
++}
++@endcode
++
++The usage of talloc_get_type_abort() would be then:
++
++@code
++talloc_set_abort_fn(my_abort);
++
++TALLOC_CTX *ctx = talloc_new(NULL);
++char *str = talloc_get_type_abort(ctx, char);
++if (str == NULL) {
++  /* recovery code */
++}
++/* talloc abort: ../src/main.c:25: Type mismatch:
++   name[talloc_new: ../src/main.c:24] expected[char] */
++@endcode
++
++*/
+\ No newline at end of file
+diff --git a/lib/talloc/doc/tutorial_introduction.dox b/lib/talloc/doc/tutorial_introduction.dox
+new file mode 100644
+index 0000000..02777b9
+--- /dev/null
++++ b/lib/talloc/doc/tutorial_introduction.dox
+@@ -0,0 +1,43 @@
++/**
++@page libtalloc_tutorial The Tutorial
++@section introduction Introduction
++
++Talloc is a hierarchical, reference counted memory pool system with destructors.
++It is built atop the C standard library and it defines a set of utility
++functions that altogether simplifies allocation and deallocation of data,
++especially for complex structures that contain many dynamically allocated
++elements such as strings and arrays.
++
++The main goals of this library are: removing the needs for creating a cleanup
++function for every complex structure, providing a logical organization of
++allocated memory blocks and reducing the likelihood of creating memory leaks in
++long-running applications. All of this is achieved by allocating memory in a
++hierarchical structure of talloc contexts such that deallocating one context
++recursively frees all of its descendants as well.
++
++@section main-features Main features
++- An open source project
++- A hierarchical memory model
++- Natural projection of data structures into the memory space
++- Simplifies memory management of large data structures
++- Automatic execution of a destructor before the memory is freed
++- Simulates a dynamic type system
++- Implements a transparent memory pool
++
++@section toc Table of contents:
++
++@subpage libtalloc_context
++
++@subpage libtalloc_stealing
++
++@subpage libtalloc_dts
++
++@subpage libtalloc_destructors
++
++@subpage libtalloc_pools
++
++@subpage libtalloc_debugging
++
++@subpage libtalloc_bestpractices
++
++*/
+\ No newline at end of file
+diff --git a/lib/talloc/doc/tutorial_pools.dox b/lib/talloc/doc/tutorial_pools.dox
+new file mode 100644
+index 0000000..8645b37
+--- /dev/null
++++ b/lib/talloc/doc/tutorial_pools.dox
+@@ -0,0 +1,92 @@
++/**
++@page libtalloc_pools Chapter 5: Memory pools
++@section pools Memory pools
++
++Allocation of a new memory is an expensive operation and large programs can
++contain thousands of calls of malloc() for a single computation, where every
++call allocates only a very small amount of the memory. This can result in an
++undesirable slowdown of the application. We can avoid this slowdown by
++decreasing the number of malloc() calls by using a memory pool.
++
++Memory pool is a preallocated memory space with a fixed size. If we need to
++allocate new data we will take the desired amount of the memory from the pool
++instead of requesting a new memory from the system. This is done by creating a
++pointer that points inside the preallocated memory. Such a pool must not be
++reallocated as it would change its location - pointers that were pointing
++inside the pool would become invalid. Therefore, a memory pool requires a very
++good estimate of the required memory space.
++
++The talloc library contains its own implementation of a memory pool. It is
++highly transparent for the programmer. The only thing that needs to be done is
++an initialization of a new pool context using talloc_pool() -
++it can be used in the same way as any other context.
++
++Refactoring of existing code (that uses talloc) to take the advantage of a
++memory pool is quite simple due to the following properties of the pool context:
++
++- if we are allocating data on a pool context, it takes the desired
++  amount of memory from the pool,
++- if the context is a descendant of the pool context, it takes the space
++  from the pool as well,
++- if the pool does not have sufficient portion of memory left, it will
++  create a new non-pool context, leaving the pool intact
++
++@code
++/* allocate 1KiB in a pool */
++TALLOC_CTX *pool_ctx = talloc_pool(NULL, 1024);
++
++/* take 512B from the pool, 512B is left there */
++void *ptr = talloc_size(pool_ctx, 512);
++
++/* 1024B > 512B, this will create new talloc chunk outside
++   the pool */
++void *ptr2 = talloc_size(ptr, 1024);
++
++/* the pool still contains 512 free bytes
++ * this will take 200B from them */
++void *ptr3 = talloc_size(ptr, 200);
++
++/* this will destroy context 'ptr3' but the memory
++ * is not freed, the available space in the pool
++ * will increase to 512B */
++talloc_free(ptr3);
++
++/* this will free memory taken by 'pool_ctx'
++ *  and 'ptr2' as well */
++talloc_free(pool_ctx);
++@endcode
++
++The above given is very convenient, but there is one big issue to be kept in
++mind. If the parent of a talloc pool child is changed to a parent that is
++outside of this pool, the whole pool memory will not be freed until the child is
++freed. For this reason we must be very careful when stealing a descendant of a
++pool context.
++
++@code
++TALLOC_CTX *mem_ctx = talloc_new(NULL);
++TALLOC_CTX *pool_ctx = talloc_pool(NULL, 1024);
++struct foo *foo = talloc(pool_ctx, struct foo);
++
++/* mem_ctx is not in the pool */
++talloc_steal(mem_ctx, foo);
++
++/* pool_ctx is marked as freed but the memory is not
++   deallocated, accessing the pool_ctx again will cause
++   an error */
++talloc_free(pool_ctx);
++
++/* now is pool_ctx deallocated */
++talloc_free(mem_ctx);
++@endcode
++
++It may be often better to copy the memory we want to steal to avoid this
++problem. If we do not need to retain the context name (to keep the type
++information), we can use talloc_memdup() to do this.
++
++Copying the memory out of the pool may, however, discard all the performance
++boost given by the pool, depending on the size of the copied memory. Therefore,
++the code should be well profiled before taking this path. In general, the
++golden rule is: if we need to steal from the pool context, we should not
++use the pool context.
++
++*/
+\ No newline at end of file
+diff --git a/lib/talloc/doc/tutorial_stealing.dox b/lib/talloc/doc/tutorial_stealing.dox
+new file mode 100644
+index 0000000..9ac5cbd
+--- /dev/null
++++ b/lib/talloc/doc/tutorial_stealing.dox
+@@ -0,0 +1,40 @@
++/**
++@page libtalloc_stealing Chapter 2: Stealing a context
++@section stealing Stealing a context
++
++Talloc has the ability to change the parent of a talloc context to another
++one. This operation is commonly referred to as stealing and it is one of
++the most important actions performed with talloc contexts.
++
++Stealing a context is necessary if we want the pointer to outlive the context it
++is created on. This has many possible use cases, for instance stealing a result
++of a database search to an in-memory cache context, changing the parent of a
++field of a generic structure to a more specific one or vice-versa. The most
++common scenario, at least in SSSD, is to steal output data from a function-specific
++context to the output context given as an argument of that function.
++
++@code
++struct foo *foo = talloc_zero(ctx, struct foo);
++foo->a1 = talloc_strdup(foo, "a1");
++foo->a2 = talloc_strdup(foo, "a2");
++foo->a3 = talloc_strdup(foo, "a3");
++
++struct bar *bar = talloc_zero(NULL, struct bar);
++/* change parent of foo from ctx to bar */
++bar->foo = talloc_steal(bar, foo);
++
++/* or do the same but assign foo = NULL */
++bar->foo = talloc_move(bar, &foo);
++@endcode
++
++In general, the pointer itself is not changed (it only replaces the
++parent in the meta data). But the common usage is that the result is assigned
++to another variable, thus further accessing the pointer from the original
++variable should be avoided unless it is necessary. In this case
++talloc_move() is the preferred way of stealing a context as it protects the
++pointer from being accidentally freed and accessed using the old variable after
++its parent has been changed.
++
++@image html stealing.png
++
++*/
+\ No newline at end of file
+diff --git a/lib/talloc/doxy.config b/lib/talloc/doxy.config
+index 5e3a319..1d8e712 100644
+--- a/lib/talloc/doxy.config
++++ b/lib/talloc/doxy.config
+@@ -664,7 +664,7 @@ EXAMPLE_RECURSIVE      = NO
+ # directories that contain image that are included in the documentation (see
+ # the \image command).
+ 
+-IMAGE_PATH             =
++IMAGE_PATH             = doc
+ 
+ # The INPUT_FILTER tag can be used to specify a program that doxygen should
+ # invoke to filter for each input file. Doxygen will invoke the filter program
+-- 
+1.7.6.4
+

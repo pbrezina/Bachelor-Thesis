@@ -1,0 +1,45 @@
+From c8210bb7175759de2e62e0e2a3f0c38f4508956a Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Pavel=20B=C5=99ezina?= <pbrezina@redhat.com>
+Date: Mon, 16 Apr 2012 13:12:41 +0200
+Subject: [PATCH 03/10] Talloc doc: talloc_strndup_append()
+
+The destination string is reallocated instead of duplicating the result.
+---
+ lib/talloc/talloc.h |   14 ++++++++++++--
+ 1 files changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/lib/talloc/talloc.h b/lib/talloc/talloc.h
+index 419bb53..a77740f 100644
+--- a/lib/talloc/talloc.h
++++ b/lib/talloc/talloc.h
+@@ -1373,8 +1373,17 @@ char *talloc_strdup_append_buffer(char *s, const char *a);
+ char *talloc_strndup(const void *t, const char *p, size_t n);
+ 
+ /**
+- * @brief Append at most n characters of a string to given string and duplicate
+- *        the result.
++ * @brief Append at most n characters of a string to given string.
++ *
++ * The destination string is reallocated to take
++ * <code>strlen(s) + strnlen(a, n) + 1</code> characters.
++ *
++ * This functions sets the name of the new pointer to the new
++ * string. This is equivalent to:
++ *
++ * @code
++ *      talloc_set_name_const(ptr, ptr)
++ * @endcode
+  *
+  * @param[in]  s        The destination string to append to.
+  *
+@@ -1386,6 +1395,7 @@ char *talloc_strndup(const void *t, const char *p, size_t n);
+  * @return              The duplicated string, NULL on error.
+  *
+  * @see talloc_strndup()
++ * @see talloc_strndup_append_buffer()
+  */
+ char *talloc_strndup_append(char *s, const char *a, size_t n);
+ 
+-- 
+1.7.6.5
+

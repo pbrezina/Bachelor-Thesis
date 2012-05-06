@@ -1,0 +1,64 @@
+From 3be31564ceb971d31fed875f76138310b488274c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Pavel=20B=C5=99ezina?= <pbrezina@redhat.com>
+Date: Mon, 30 Apr 2012 19:02:06 +0200
+Subject: [PATCH] added talloc_named_memdup()
+
+---
+ lib/talloc/talloc.h |   34 ++++++++++++++++++++++++++++++++++
+ 1 files changed, 34 insertions(+), 0 deletions(-)
+
+diff --git a/lib/talloc/talloc.h b/lib/talloc/talloc.h
+index 05e6292..0d9e320 100644
+--- a/lib/talloc/talloc.h
++++ b/lib/talloc/talloc.h
+@@ -694,6 +694,7 @@ size_t talloc_total_blocks(const void *ptr);
+  * @return              The allocated memory chunk.
+  *
+  * @see talloc_size()
++ * @see talloc_named_memdup()
+  */
+ void *talloc_memdup(const void *t, const void *p, size_t size);
+ #else
+@@ -703,6 +704,39 @@ void *_talloc_memdup(const void *t, const void *p, size_t size, const char *name
+ 
+ #ifdef DOXYGEN
+ /**
++ * @brief Duplicates a memory occupied by a talloc context into
++ *        a new talloc chunk keeping its name.
++ *
++ * The child contexts are not copied. Therefore, if there are any,
++ * they should be manually copied as well.
++ *
++ * The function is equivalent to:
++ *
++ * @code
++ *      ptr = talloc_size(t, talloc_get_size(p));
++ *      if (ptr) {
++ *          memcpy(ptr, p, talloc_get_size(p));
++ *          talloc_set_name(ptr, talloc_get_name(p));
++ *      }
++ * @endcode
++ *
++ * @param[in]  t        The talloc context to hang the result off.
++ *
++ * @param[in]  p        The talloc context you want to duplicate.
++ *
++ * @return              The allocated memory chunk.
++ *
++ * @see talloc_size()
++ * @see talloc_memdup()
++ */
++void *talloc_named_memdup(const void *t, const void *p);
++#else
++#define talloc_named_memdup(t, p) _talloc_memdup(t, p, \
++                                       talloc_get_size(p), talloc_get_name(p))
++#endif
++
++#ifdef DOXYGEN
++/**
+  * @brief Assign a type to a talloc chunk.
+  *
+  * This macro allows you to force the name of a pointer to be of a particular
+-- 
+1.7.6.5
+

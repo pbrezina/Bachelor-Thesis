@@ -1,0 +1,31 @@
+From 412f502ca507db84c82613284c7f3e9db089779e Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Pavel=20B=C5=99ezina?= <pbrezina@redhat.com>
+Date: Mon, 16 Apr 2012 14:49:03 +0200
+Subject: [PATCH 08/10] Talloc doc: talloc_set_log_stderr()
+
+Documents this function.
+---
+ lib/talloc/talloc.h |    7 +++++++
+ 1 files changed, 7 insertions(+), 0 deletions(-)
+
+diff --git a/lib/talloc/talloc.h b/lib/talloc/talloc.h
+index a77287a..f8160db 100644
+--- a/lib/talloc/talloc.h
++++ b/lib/talloc/talloc.h
+@@ -1814,6 +1814,13 @@ void talloc_set_abort_fn(void (*abort_fn)(const char *reason));
+  * @see talloc_set_abort_fn()
+  */
+ void talloc_set_log_fn(void (*log_fn)(const char *message));
++
++/**
++ * @brief Set stderr as the output for logs.
++ *
++ * @see talloc_set_log_fn()
++ * @see talloc_set_abort_fn()
++ */
+ void talloc_set_log_stderr(void);
+ 
+ /* @} ******************************************************************/
+-- 
+1.7.6.5
+

@@ -1,0 +1,33 @@
+From 2cc11d54e2cdb39f9240e3b1eb7692f72f8b00e8 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Pavel=20B=C5=99ezina?= <pbrezina@redhat.com>
+Date: Mon, 16 Apr 2012 14:47:16 +0200
+Subject: [PATCH 07/10] Talloc doc: talloc_set_log_fn()
+
+Documents this function.
+---
+ lib/talloc/talloc.h |    9 +++++++++
+ 1 files changed, 9 insertions(+), 0 deletions(-)
+
+diff --git a/lib/talloc/talloc.h b/lib/talloc/talloc.h
+index f87d4cc..a77287a 100644
+--- a/lib/talloc/talloc.h
++++ b/lib/talloc/talloc.h
+@@ -1804,6 +1804,15 @@ void talloc_enable_leak_report_full(void);
+  * @see talloc_get_type()
+  */
+ void talloc_set_abort_fn(void (*abort_fn)(const char *reason));
++
++/**
++ * @brief Set a logging function.
++ *
++ * @param[in]  log_fn      The logging function.
++ *
++ * @see talloc_set_log_stderr()
++ * @see talloc_set_abort_fn()
++ */
+ void talloc_set_log_fn(void (*log_fn)(const char *message));
+ void talloc_set_log_stderr(void);
+ 
+-- 
+1.7.6.5
+

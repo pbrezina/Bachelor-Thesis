@@ -1,0 +1,70 @@
+From 879a990e88dbef9769b5f96d54f74b69c11e5da1 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Pavel=20B=C5=99ezina?= <pbrezina@redhat.com>
+Date: Fri, 20 Apr 2012 14:29:59 +0200
+Subject: [PATCH 1/2] Talloc doc: when s == NULL in _append functions
+
+---
+ lib/talloc/talloc.h |   12 ++++++++++++
+ 1 files changed, 12 insertions(+), 0 deletions(-)
+
+diff --git a/lib/talloc/talloc.h b/lib/talloc/talloc.h
+index ebd2ab5..3e2e9ec 100644
+--- a/lib/talloc/talloc.h
++++ b/lib/talloc/talloc.h
+@@ -1311,6 +1311,8 @@ char *talloc_strdup(const void *t, const char *p);
+  *      talloc_set_name_const(ptr, ptr)
+  * @endcode
+  *
++ * If <code>s == NULL</code> then new context is created.
++ *
+  * @param[in]  s        The destination to append to.
+  *
+  * @param[in]  a        The string you want to append.
+@@ -1344,6 +1346,8 @@ char *talloc_strdup_append(char *s, const char *a);
+  *      printf("%s\n", buf); // hello (buf = "hello\0world, hello")
+  * @endcode
+  *
++ * If <code>s == NULL</code> then new context is created.
++ *
+  * @param[in]  s        The destination buffer to append to.
+  *
+  * @param[in]  a        The string you want to append.
+@@ -1391,6 +1395,8 @@ char *talloc_strndup(const void *t, const char *p, size_t n);
+  *      talloc_set_name_const(ptr, ptr)
+  * @endcode
+  *
++ * If <code>s == NULL</code> then new context is created.
++ *
+  * @param[in]  s        The destination string to append to.
+  *
+  * @param[in]  a        The source string you want to append.
+@@ -1427,6 +1433,8 @@ char *talloc_strndup_append(char *s, const char *a, size_t n);
+  *      printf("%s\n", buf); // hello (buf = "hello\0world, hello")
+  * @endcode
+  *
++ * If <code>s == NULL</code> then new context is created.
++ *
+  * @param[in]  s        The destination buffer to append to.
+  *
+  * @param[in]  a        The source string you want to append.
+@@ -1533,6 +1541,8 @@ char *talloc_asprintf(const void *t, const char *fmt, ...) PRINTF_ATTRIBUTE(2,3)
+  *      talloc_set_name_const(ptr, ptr)
+  * @endcode
+  *
++ * If <code>s == NULL</code> then new context is created.
++ *
+  * @param[in]  s        The string to append to.
+  *
+  * @param[in]  fmt      The format string.
+@@ -1565,6 +1575,8 @@ char *talloc_asprintf_append(char *s, const char *fmt, ...) PRINTF_ATTRIBUTE(2,3
+  *      printf("%s\n", buf); // hello (buf = "hello\0world, hello")
+  * @endcode
+  *
++ * If <code>s == NULL</code> then new context is created.
++ *
+  * @param[in]  s        The string to append to
+  *
+  * @param[in]  fmt      The format string.
+-- 
+1.7.6.5
+

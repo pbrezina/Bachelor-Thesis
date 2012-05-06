@@ -1,0 +1,28 @@
+From 3a90801d32c7eae6fc0541aeaaaea9056d139e26 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Pavel=20B=C5=99ezina?= <pbrezina@redhat.com>
+Date: Mon, 16 Apr 2012 15:23:55 +0200
+Subject: [PATCH 10/10] Talloc doc: talloc_pool() when not enough memory in
+ the pool
+
+---
+ lib/talloc/talloc.h |    4 ++++
+ 1 files changed, 4 insertions(+), 0 deletions(-)
+
+diff --git a/lib/talloc/talloc.h b/lib/talloc/talloc.h
+index 09a2b81..5d90507 100644
+--- a/lib/talloc/talloc.h
++++ b/lib/talloc/talloc.h
+@@ -827,6 +827,10 @@ void *talloc_find_parent_bytype(const void *ptr, #type);
+  * recursively. If you use the child of the talloc pool as a parent for
+  * grand-children, their memory is also taken from the talloc pool.
+  *
++ * If there is not enough memory in the pool to allocate the new child,
++ * it will create a new talloc chunk as if the parent was a normal talloc
++ * context.
++ *
+  * If you talloc_free() children of a talloc pool, the memory is not given
+  * back to the system. Instead, free(3) is only called if the talloc_pool()
+  * itself is released with talloc_free().
+-- 
+1.7.6.5
+

@@ -1,0 +1,63 @@
+From a0ac87458fd01d1111d9a1a46bb54b3a68d3a85c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Pavel=20B=C5=99ezina?= <pbrezina@redhat.com>
+Date: Mon, 16 Apr 2012 14:43:37 +0200
+Subject: [PATCH 06/10] Talloc doc: talloc_set_abort_fn()
+
+Documents this function.
+---
+ lib/talloc/talloc.h |   35 +++++++++++++++++++++++++++++++++--
+ 1 files changed, 33 insertions(+), 2 deletions(-)
+
+diff --git a/lib/talloc/talloc.h b/lib/talloc/talloc.h
+index c1b5650..f87d4cc 100644
+--- a/lib/talloc/talloc.h
++++ b/lib/talloc/talloc.h
+@@ -1772,12 +1772,43 @@ void talloc_enable_leak_report(void);
+  */
+ void talloc_enable_leak_report_full(void);
+ 
+-/* @} ******************************************************************/
+-
++/**
++ * @brief Set a custom "abort" function that is called on serious error.
++ *
++ * The default "abort" function is <code>abort()</code>.
++ *
++ * The "abort" function is called when:
++ *
++ * <ul>
++ *  <li>talloc_get_type_abort() fails</li>
++ *  <li>the provided pointer is not a valid talloc context</li>
++ *  <li>when the context meta data are invalid</li>
++ *  <li>when access after free is detected</li>
++ * </ul>
++ *
++ * Example:
++ *
++ * @code
++ * void my_abort(const char *reason)
++ * {
++ *      fprintf(stderr, "talloc abort: %s\n", reason);
++ *      abort();
++ * }
++ *
++ *      talloc_set_abort_fn(my_abort);
++ * @endcode
++ *
++ * @param[in]  abort_fn      The new "abort" function.
++ *
++ * @see talloc_set_log_fn()
++ * @see talloc_get_type()
++ */
+ void talloc_set_abort_fn(void (*abort_fn)(const char *reason));
+ void talloc_set_log_fn(void (*log_fn)(const char *message));
+ void talloc_set_log_stderr(void);
+ 
++/* @} ******************************************************************/
++
+ #if TALLOC_DEPRECATED
+ #define talloc_zero_p(ctx, type) talloc_zero(ctx, type)
+ #define talloc_p(ctx, type) talloc(ctx, type)
+-- 
+1.7.6.5
+

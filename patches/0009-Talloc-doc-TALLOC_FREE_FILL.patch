@@ -1,0 +1,28 @@
+From 5740c1aeeda6f53c119de9f5fa14cff720aae3f9 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Pavel=20B=C5=99ezina?= <pbrezina@redhat.com>
+Date: Mon, 16 Apr 2012 15:04:44 +0200
+Subject: [PATCH 09/10] Talloc doc: TALLOC_FREE_FILL
+
+---
+ lib/talloc/talloc.h |    5 +++++
+ 1 files changed, 5 insertions(+), 0 deletions(-)
+
+diff --git a/lib/talloc/talloc.h b/lib/talloc/talloc.h
+index f8160db..09a2b81 100644
+--- a/lib/talloc/talloc.h
++++ b/lib/talloc/talloc.h
+@@ -194,6 +194,11 @@ void *talloc_init(const char *fmt, ...) PRINTF_ATTRIBUTE(1,2);
+  * talloc_set_log_stderr() for more information on talloc logging
+  * functions.
+  *
++ * If <code>TALLOC_FREE_FILL</code> environment variable is set,
++ * the memory occupied by the context is filled with the value of this variable.
++ * The value should be a numeric representation of the character you want to
++ * use.
++ *
+  * talloc_free() operates recursively on its children.
+  *
+  * @param[in]  ptr      The chunk to be freed.
+-- 
+1.7.6.5
+
