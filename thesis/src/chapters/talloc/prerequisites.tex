@@ -3,12 +3,20 @@
 
 This thesis uses talloc version 2.0.6 as a reference.
 
+\funclistend
 The current version of the talloc library can be obtained from the project
 homepage:
-{\footnotesize\url{http://talloc.samba.org}}.
+{\footnotesize\url{http://talloc.samba.org}}. On UNIX-like operating systems,
+the source code may be compiled with the following commands:
 
-It is also available in the Fedora and Ubuntu distribution repositories and
-can be installed on those systems using:
+\begin{commandline}
+$ cd <talloc>
+$ ./configure
+$ make
+\end{commandline}
+\funclistend
+It is also available at least in the Fedora and Ubuntu distributions
+repositories and can be installed on those systems using:
 
 \begin{commandline}
 # on Fedora
@@ -21,9 +29,8 @@ apt-get install libtalloc2 libtalloc-dev
 Each example in this chapter expects that the |talloc.h| header file is included
 and the |talloc| library is properly linked against the binary.
 
-Further, the error checking code is included only for a case, when a new
-function is introduced in order to make the examples simpler and shorter. The
-full version of the examples with the error checks can be found on the attached
-DVD medium.
+Further, the error checking code is skipped in order to make the examples
+simpler and shorter. The full version of the examples with the error checks can
+be found on the attached DVD medium.
 
 
