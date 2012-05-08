@@ -18,7 +18,7 @@ char *str2 = talloc_strdup(NULL, "I AM a talloc context");
 printf("%d\n", strcmp(str1, str2) == 0);
 
 free(str1);
-talloc_free(str2); /* we can not use free(str2) */
+talloc_free(str2); /* we can not use free() on str2 */
 \end{lstlisting}
 \noindent
 This is possible because the context is internally handled as a special
@@ -211,7 +211,7 @@ All of these functions share the following properties:
 \subsubsection{Type-safe functions that create a new context}
 
 Type-safe functions take as one of their parameters a data type we want to
-create. It allocates the size that is necessary for this type and returns a
+create. It allocates the size that is necessary for the given type and returns a
 new, properly-cast pointer. This is useful if we want to rely on the compiler
 to detect type mismatches.
 

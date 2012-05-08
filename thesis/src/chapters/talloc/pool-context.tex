@@ -7,7 +7,7 @@ call allocates only a very small amount of the memory. This can result in an
 undesirable slowdown of the application. We can avoid this slowdown by
 decreasing the number of |malloc()| calls by using a memory pool.
 
-Memory pool is a preallocated memory space with a fixed size. If we need to
+A memory pool is a preallocated memory space with a fixed size. If we need to
 allocate new data we will take the desired amount of the memory from the pool
 instead of requesting a new memory from the system. This is done by creating a
 pointer that points inside the preallocated memory. Such a pool must not be
@@ -18,7 +18,7 @@ good estimate of the required memory space.
 The talloc library contains its own implementation of a memory pool. It is
 highly transparent for the programmer. The only thing that needs to be done is
 an initialization of a new pool context using |talloc_pool()|\footnotemark --
-it can be used in the same way as any other context.
+which can be used in the same way as any other context.
 
 \footnotetext{\lstinline{TALLOC_CTX *talloc_pool(TALLOC_CTX *ctx, size_t size)}}
 
@@ -104,4 +104,4 @@ Copying the memory out of the pool may, however, discard all the performance
 boost given by the pool, depending on the size of the copied memory. Therefore,
 the code should be well profiled before taking this path. In general, the
 golden rule is: if we need to steal from the pool context, we should not
-use the pool context.
+use a pool context.
