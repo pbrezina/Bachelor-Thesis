@@ -6,16 +6,16 @@ programming language is the duplication and formatting of strings.
 
 In the C standard library this is usually done with |strdup()| (string
 duplication), |strndup()| (string duplication with a length limit) and
-|sprintf()| (stores the formatted string in a preallocated buffer). The POSIX
-compliant systems contain in addition a much nicer function for creating a
-formatted string -- |asprintf()| that allocates all the necessary space
-automatically.
+|sprintf()| (stores the formatted string in a preallocated buffer). The GNU
+extension of the C standard contains in addition a much nicer function for
+creating a formatted string called |asprintf()| that allocates all the necessary
+space automatically.
 
 Talloc has adopted its own variants of not only |strdup()| and |strndup()| from
 the C standard library but also |asprintf()| and its non-variadic equivalent
-|vasprintf()| which are demanded by the POSIX standard. As an addition to these
-basic routines it adds very useful alternatives that will append the result to
-the existing string or at the actual end of the talloc context.
+|vasprintf()|. As an addition to these basic routines it adds very useful
+alternatives that will append the result to the existing string or at the
+actual end of the talloc context.
 
 All of these functions return a string that is also a valid talloc context
 which is named identically to the output string. The basic variants take as
