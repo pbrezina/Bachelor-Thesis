@@ -69,6 +69,7 @@ log (see section \ref{talloc:sec:debugging}) and immediately calls an abort
 function. By default it kills the application with |abort()| but this behaviour
 can be modified by setting our own abort function with:
 
+\newpage
 \begin{funcproto}
 void talloc_set_abort_fn(
   void (*abort_fn)(const char *reason)
@@ -114,6 +115,7 @@ process (to make sure the error is not overlooked) but try to recover from the
 error in the customer release. This can be achieved by creating a custom abort
 function with a conditional build.
 
+\newpage
 \begin{lstlisting}[caption={Custom abort function}]
 void my_abort(const char *reason)
 {

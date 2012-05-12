@@ -188,6 +188,7 @@ Creating a new talloc context means that we want to create a new talloc chunk
 children), allocate the desired amount of the system memory and retrieve a
 pointer to this memory.
 
+\noindent
 Many functions exist that have the ability to create a new talloc context. This
 section describes only the most fundamental ones that deal with primitive data
 types and structures. Functions that are specialized in strings and arrays are
@@ -277,6 +278,7 @@ whether it will be type-safe or type-unsafe during the compilation.
 We can use it to shorten the notation if we do not need to carry the type
 information in the talloc context:
 
+\newpage
 \begin{lstlisting}[caption={talloc_ptrtype(ctx, ptr)},label=lst:talloc_ptrtype]
 struct verylongname *x = talloc_ptrtype(ctx, x);
 // instead of

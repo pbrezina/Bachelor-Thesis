@@ -13,6 +13,7 @@ the programming more error proof. It makes the memory easier to manage and
 to free. Therefore, the first thing we should have on our mind is: always
 project our data structures into the talloc context hierarchy.
 
+\noindent
 That means if we have a structure, we should always use it as a parent context
 for its elements. This way we will not encounter any troubles when freeing this
 structure or when changing its parent. The same rule applies for arrays.

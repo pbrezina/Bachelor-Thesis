@@ -21,7 +21,7 @@ an initialization of a new pool context using |talloc_pool()|\footnotemark --
 which can be used in the same way as any other context.
 
 \footnotetext{\lstinline{TALLOC_CTX *talloc_pool(TALLOC_CTX *ctx, size_t size)}}
-
+\noindent
 Refactoring of existing code (that uses talloc) to take the advantage of a
 memory pool is quite simple due to the following properties of the pool context:
 
