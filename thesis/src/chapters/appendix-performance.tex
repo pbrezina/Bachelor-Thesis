@@ -101,7 +101,16 @@ contains a lot of computed data and charts, which I believe are for this
 case much better than words. The document is located at
 |<dvd>/documents/results.ods|.
 
+Probably the most surprising part of these results is the speed of |strncat()|.
+Concatenation of one hundred thousand ten-character strings took
+this function more than twenty seconds, where |strcat()| managed to do it in
+three and a half seconds and |memcpy()| made it in less than one thousandth
+seconds. The talloc append buffer function was very close to |memcpy()| and in
+some situations suprisingly even little bit faster.
+
 Statistically speaking, the talloc is much slower than the glibc allocator.
 However, even when the tests use values that can be hardly achieved in most
 applications, it still makes the difference only in miliseconds precision.
+Therefore it should not be taken as a point for not picking the talloc for your
+next project.
  
